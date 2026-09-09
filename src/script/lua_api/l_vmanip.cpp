@@ -113,6 +113,45 @@ int LuaVoxelManip::l_get_data(lua_State *L)
 	return 1;
 }
 
+// get_data_ptr() -> lightuserdata, volume
+/* Hands out a pointer to the MMVManip's node array so that callers can read and
+ * write it in place, instead of marshalling every voxel through a Lua table in
+ * get_data()/set_data(). Those two loops run one Lua C API call per voxel and
+ * dominate the cost of any mapgen written in Lua.
+ *
+ * The pointer is returned as a lightuserdata, which is inert on its own: turning
+ * it into something indexable needs the LuaJIT FFI, which the mod sandbox does
+ * not hand out (see the whitelist in ScriptApiSecurity::initializeSecurity()).
+ * So this is only usable from builtin, from an insecure environment, or when
+ * mod security is off -- deliberately the same boundary that already guards
+ * every other way of reaching raw memory.
+ *
+ * The memory is laid out as `struct MapNode { uint16_t param0; uint8_t param1;
+ * uint8_t param2; }` (4 bytes, u32-aligned), so it also covers what
+ * get/set_light_data() and get/set_param2_data() copy.
+ *
+ * The pointer is owned by the VoxelManip and is invalidated by close(), by
+ * read_from_map()/initialize(), or when the object is collected.
+ */
+int LuaVoxelManip::l_get_data_ptr(lua_State *L)
+{
+	NO_MAP_LOCK_REQUIRED;
+
+	LuaVoxelManip *o = checkObjectValid(L, 1);
+	MMVManip *vm = o->vm;
+
+	static_assert(sizeof(MapNode) == 4,
+		"get_data_ptr() hands the node array to the FFI, so its layout is ABI");
+
+	// The caller writes the array directly, so from here on we have to assume
+	// every voxel is meaningful -- same reasoning as at the end of set_data().
+	vm->clearFlags(vm->m_area, VOXELFLAG_NO_DATA);
+
+	lua_pushlightuserdata(L, vm->m_data);
+	lua_pushinteger(L, vm->m_area.getVolume());
+	return 2;
+}
+
 int LuaVoxelManip::l_set_data(lua_State *L)
 {
 	NO_MAP_LOCK_REQUIRED;
@@ -500,6 +539,7 @@ const luaL_Reg LuaVoxelManip::methods[] = {
 	luamethod(LuaVoxelManip, initialize),
 	luamethod(LuaVoxelManip, get_data),
 	luamethod(LuaVoxelManip, set_data),
+	luamethod(LuaVoxelManip, get_data_ptr),
 	luamethod(LuaVoxelManip, get_node_at),
 	luamethod(LuaVoxelManip, set_node_at),
 	luamethod(LuaVoxelManip, write_to_map),

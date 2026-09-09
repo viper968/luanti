@@ -5657,6 +5657,30 @@ Methods
     * if the param `buffer` is present, this table will be used to store the
       result instead.
 * `set_data(data)`: Sets the data contents of the `VoxelManip` object
+* `get_data_ptr()`: Returns `pointer, volume`, giving direct access to the
+  node array instead of copying it.
+    * `pointer` is a lightuserdata pointing at the first node, `volume` is the
+      number of nodes, matching the length of the `get_data()` array.
+    * The nodes are laid out as
+      `struct { uint16_t param0; uint8_t param1; uint8_t param2; }`
+      (4 bytes each), so this covers what `get_data()`, `get_light_data()` and
+      `get_param2_data()` return, and writes through it replace the
+      corresponding `set_*` calls.
+    * Indices are 0-based here, while `VoxelArea:index()` is 1-based.
+    * Intended for mapgen code written in Lua: `get_data()`/`set_data()` cost
+      one Lua C API call per node in each direction, which for a mapgen that
+      touches the whole chunk usually outweighs the generation itself.
+    * A lightuserdata is inert by itself; making it indexable requires the
+      LuaJIT FFI, which the mod sandbox does not provide. So this is usable
+      only from an insecure environment or with mod security disabled, and it
+      does nothing at all on a build without LuaJIT.
+    * There is no bounds checking. Reading or writing outside
+      `[0, volume - 1]`, or using the pointer after `close()`,
+      `read_from_map()`, `initialize()` or after the `VoxelManip` has been
+      collected, corrupts memory.
+    * Unlike `get_data()`, this does not substitute `CONTENT_IGNORE` for nodes
+      that were never loaded; it exposes the buffer as it is, and marks all of
+      it as present, the same way `set_data()` does.
 * `update_map()`: Does nothing, kept for compatibility.
 * `set_lighting(light, [p1, p2])`: Set the lighting within the `VoxelManip` to
   a uniform value.
