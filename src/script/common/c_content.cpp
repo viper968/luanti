@@ -2128,13 +2128,12 @@ std::vector<ItemStack> read_items(lua_State *L, int index, IGameDef *gdef)
 /******************************************************************************/
 void luaentity_get(lua_State *L, u16 id)
 {
-	// Get core.luaentities[i]
-	lua_getglobal(L, "core");
-	lua_getfield(L, -1, "luaentities");
+	// Get core.luaentities[i] via the cached reference set up by
+	// ServerScripting::InitializeModApi(), avoiding two string lookups here.
+	lua_rawgeti(L, LUA_REGISTRYINDEX, CUSTOM_RIDX_LUAENTITIES);
 	luaL_checktype(L, -1, LUA_TTABLE);
 	lua_rawgeti(L, -1, id);
 	lua_remove(L, -2); // Remove luaentities
-	lua_remove(L, -2); // Remove core
 }
 
 /******************************************************************************/

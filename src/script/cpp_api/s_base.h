@@ -100,7 +100,8 @@ public:
 
 	// IMPORTANT: These cannot be used for any security-related uses, they exist
 	// only to enrich error messages.
-	const std::string &getOrigin() { return m_last_run_mod; }
+	/// @note Reads back from the Lua state, don't call this on a hot path.
+	const std::string &getOrigin();
 	void setOriginDirect(const char *origin);
 	void setOriginFromTableRaw(int index, const char *fxn);
 
@@ -174,6 +175,8 @@ protected:
 	void pushPlayerHPChangeReason(lua_State *L, const PlayerHPChangeReason& reason);
 
 	std::recursive_mutex m_luastackmutex;
+	// Scratch buffer backing getOrigin(); the origin itself is kept in the
+	// Lua registry, see CUSTOM_RIDX_LAST_RUN_MOD.
 	std::string     m_last_run_mod;
 
 #ifdef SCRIPTAPI_LOCK_DEBUG

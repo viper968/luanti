@@ -127,6 +127,12 @@ ScriptApiBase::ScriptApiBase(ScriptingType type):
 	lua_pushcfunction(m_luastack, script_error_handler);
 	lua_rawseti(m_luastack, LUA_REGISTRYINDEX, CUSTOM_RIDX_ERROR_HANDLER);
 
+	// One-element table tracking the mod origin of the running callback,
+	// see CUSTOM_RIDX_LAST_RUN_MOD. Created here so that setOrigin*() is
+	// usable for every scripting type from this point on.
+	lua_createtable(m_luastack, 1, 0);
+	lua_rawseti(m_luastack, LUA_REGISTRYINDEX, CUSTOM_RIDX_LAST_RUN_MOD);
+
 	// Add a C++ wrapper function to catch exceptions thrown in Lua -> C++ calls
 #if USE_LUAJIT
 	lua_pushlightuserdata(m_luastack, (void*) script_exception_wrapper);
@@ -177,6 +183,13 @@ ScriptApiBase::ScriptApiBase(ScriptingType type):
 		return 0;
 	});
 	lua_setfield(m_luastack, -2, "set_push_moveresult1");
+	// Hands the mod origin cell to builtin so that core.run_callbacks() can
+	// record the running mod with a table store instead of a call into C++.
+	lua_pushcfunction(m_luastack, [](lua_State *L) -> int {
+		lua_rawgeti(L, LUA_REGISTRYINDEX, CUSTOM_RIDX_LAST_RUN_MOD);
+		return 1;
+	});
+	lua_setfield(m_luastack, -2, "get_last_run_mod_cell");
 	// Finally, put the table into the global environment:
 	lua_setglobal(m_luastack, "core");
 
@@ -402,7 +415,7 @@ void ScriptApiBase::realityCheck()
 
 void ScriptApiBase::scriptError(int result, const char *fxn)
 {
-	script_error(getStack(), result, m_last_run_mod.c_str(), fxn);
+	script_error(getStack(), result, getOrigin().c_str(), fxn);
 }
 
 void ScriptApiBase::stackDump(std::ostream &o)
@@ -433,16 +446,78 @@ void ScriptApiBase::stackDump(std::ostream &o)
 	o << std::endl;
 }
 
+/*
+ * The mod origin of the currently running callback lives in a one-element Lua
+ * table (CUSTOM_RIDX_LAST_RUN_MOD) rather than in a C++ member, so that the
+ * Lua-side dispatch loop in core.run_callbacks() can update it without calling
+ * across the C API boundary. That keeps this bookkeeping off the hot path at
+ * the cost of moving the work to getOrigin(), which only runs on cold paths
+ * (error reporting, core.get_last_run_mod(), core.emerge_area()).
+ */
+
+//! Pushes the origin cell. Never invokes metamethods or allocates.
+static inline bool push_origin_cell(lua_State *L)
+{
+	if (!L || !lua_checkstack(L, 2))
+		return false;
+	lua_rawgeti(L, LUA_REGISTRYINDEX, CUSTOM_RIDX_LAST_RUN_MOD);
+	if (lua_istable(L, -1))
+		return true;
+	lua_pop(L, 1);
+	return false;
+}
+
 void ScriptApiBase::setOriginDirect(const char *origin)
 {
-	m_last_run_mod = origin ? origin : "??";
+	lua_State *L = getStack();
+	if (!push_origin_cell(L))
+		return;
+	lua_pushstring(L, origin ? origin : "??");
+	lua_rawseti(L, -2, 1);
+	lua_pop(L, 1);
 }
 
 void ScriptApiBase::setOriginFromTableRaw(int index, const char *fxn)
 {
 	lua_State *L = getStack();
-	m_last_run_mod = lua_istable(L, index) ?
-		getstringfield_default(L, index, "mod_origin", "") : "";
+	// Resolve now, pushing the cell below would shift a relative index
+	if (index < 0 && index > LUA_REGISTRYINDEX)
+		index = lua_gettop(L) + 1 + index;
+
+	if (!push_origin_cell(L))
+		return;
+	if (lua_istable(L, index))
+		lua_getfield(L, index, "mod_origin");
+	else
+		lua_pushnil(L);
+	// Keep the Lua string as-is instead of copying it into a std::string;
+	// this runs for every active object every step.
+	if (lua_isstring(L, -1)) {
+		// Coerce a number in place, matching what getstringfield_default() did
+		lua_tostring(L, -1);
+	} else {
+		lua_pop(L, 1);
+		lua_pushliteral(L, "");
+	}
+	lua_rawseti(L, -2, 1);
+	lua_pop(L, 1);
+}
+
+const std::string &ScriptApiBase::getOrigin()
+{
+	m_last_run_mod.clear();
+	lua_State *L = getStack();
+	if (!push_origin_cell(L))
+		return m_last_run_mod;
+	lua_rawgeti(L, -1, 1);
+	if (lua_type(L, -1) == LUA_TSTRING) {
+		// Already a string, so this neither allocates nor converts in place
+		size_t len;
+		const char *s = lua_tolstring(L, -1, &len);
+		m_last_run_mod.assign(s, len);
+	}
+	lua_pop(L, 2);
+	return m_last_run_mod;
 }
 
 /*

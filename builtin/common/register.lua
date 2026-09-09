@@ -1,6 +1,17 @@
 local builtin_shared = ...
 local debug_getinfo = debug.getinfo
 
+-- One-element table shared with the C++ side, which reads the mod origin of the
+-- running callback back out of it on demand (see CUSTOM_RIDX_LAST_RUN_MOD).
+-- Storing into it directly is a plain table write, whereas core.set_last_run_mod()
+-- is a call across the C API boundary -- which run_callbacks() would otherwise
+-- pay for every single callback of every single event, and which also stops
+-- LuaJIT from compiling the dispatch loop below.
+-- The fallback only applies to pure-Lua test harnesses, where there is no
+-- C++ side to keep in sync in the first place.
+local last_run_mod_cell = core.get_last_run_mod_cell and core.get_last_run_mod_cell() or {}
+core.get_last_run_mod_cell = nil
+
 do
 	local default = {mod = "??", name = "??"}
 	core.callback_origins = setmetatable({}, {
@@ -23,7 +34,7 @@ function core.run_callbacks(callbacks, mode, ...)
 	local ret = nil
 	for i = 1, cb_len do
 		local origin = core.callback_origins[callbacks[i]]
-		core.set_last_run_mod(origin.mod)
+		last_run_mod_cell[1] = origin.mod
 		local cb_ret = callbacks[i](...)
 
 		if mode == 0 and i == 1 then

@@ -203,6 +203,12 @@ void ScriptApiEnv::readABMs()
 		lua_pop(L, 1);
 		throw LuaError("core.registered_abms was not a lua table, as expected.");
 	}
+
+	// Cache the table for triggerABM(), which runs once per matching node.
+	// The ids we hand out below are indices into this very table and builtin
+	// prevents it from changing after mod load, so this stays valid.
+	lua_pushvalue(L, registered_abms);
+	lua_rawseti(L, LUA_REGISTRYINDEX, CUSTOM_RIDX_REGISTERED_ABMS);
 	lua_pushnil(L);
 	while (lua_next(L, registered_abms)) {
 		// key at index -2 and value at index -1
@@ -423,15 +429,13 @@ void ScriptApiEnv::triggerABM(int id, v3s16 p, MapNode n,
 
 	int error_handler = PUSH_ERROR_HANDLER(L);
 
-	// Get registered_abms
-	lua_getglobal(L, "core");
-	lua_getfield(L, -1, "registered_abms");
+	// Get registered_abms[m_id] through the reference cached by readABMs().
+	// This runs for every node an ABM matches, so the string lookups that
+	// would be needed to walk `_G` -> `core` -> `registered_abms` are worth
+	// avoiding here.
+	lua_rawgeti(L, LUA_REGISTRYINDEX, CUSTOM_RIDX_REGISTERED_ABMS);
 	luaL_checktype(L, -1, LUA_TTABLE);
-	lua_remove(L, -2); // Remove core
-
-	// Get registered_abms[m_id]
-	lua_pushinteger(L, id);
-	lua_gettable(L, -2);
+	lua_rawgeti(L, -1, id);
 	FATAL_ERROR_IF(lua_isnil(L, -1), "Entry with given id not found in registered_abms table");
 	lua_remove(L, -2); // Remove registered_abms
 

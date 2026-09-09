@@ -55,6 +55,24 @@ enum {
 	CUSTOM_RIDX_PUSH_NODE,
 	CUSTOM_RIDX_PUSH_MOVERESULT1,
 
+	/* Cached references to hot engine-owned tables, so that per-node and
+	 * per-object callbacks don't have to walk `_G` -> `core` -> field on
+	 * every single invocation. See the note on lifetime below. */
+	// `core.luaentities`, created by ServerScripting::InitializeModApi()
+	CUSTOM_RIDX_LUAENTITIES,
+	// `core.registered_abms`, cached by ScriptApiEnv::readABMs().
+	// Safe to cache because the ABM ids held by the C++ side are indices into
+	// this exact table and builtin freezes it after mod load (see the comment
+	// above freeze_table() in builtin/game/register.lua).
+	CUSTOM_RIDX_REGISTERED_ABMS,
+	/* One-element table holding the mod origin of the currently running
+	 * callback. Written by both Lua (`core.run_callbacks`) and C++
+	 * (`ScriptApiBase::setOrigin*`), read back lazily by
+	 * `ScriptApiBase::getOrigin()`. Keeping it here rather than in a C++
+	 * member lets the Lua dispatch loop record the origin with a plain table
+	 * store instead of a call across the C API boundary. */
+	CUSTOM_RIDX_LAST_RUN_MOD,
+
 	CUSTOM_RIDX_LAST,
 };
 

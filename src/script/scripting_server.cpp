@@ -67,6 +67,9 @@ ServerScripting::ServerScripting(Server* server):
 	lua_setfield(L, -2, "objects_by_guid");
 
 	lua_newtable(L);
+	// Cache it for luaentity_get(), which runs for every active object every step
+	lua_pushvalue(L, -1);
+	lua_rawseti(L, LUA_REGISTRYINDEX, CUSTOM_RIDX_LUAENTITIES);
 	lua_setfield(L, -2, "luaentities");
 
 	// Initialize our lua_api modules
