@@ -199,6 +199,20 @@ private:
 	void updateResults(float g, float *gmap, const float *persistence_map,
 			size_t bufsize);
 
+	/* Whether the interpolation is eased is fixed for a whole map, so the
+	 * two variants are generated separately rather than re-testing the flag
+	 * for every interpolated point. Same trade-off as updateResults(). */
+	template <bool Eased>
+	void valueMap2DImpl(
+		float x, float y,
+		float step_x, float step_y,
+		s32 seed);
+	template <bool Eased>
+	void valueMap3DImpl(
+		float x, float y, float z,
+		float step_x, float step_y, float step_z,
+		s32 seed);
+
 };
 
 float NoiseFractal2D(const NoiseParams *np, float x, float y, s32 seed);

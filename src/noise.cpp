@@ -493,7 +493,8 @@ void Noise::resizeNoiseBuf(bool is3d)
  * next octave.
  */
 #define idx(x, y) ((y) * nlx + (x))
-void Noise::valueMap2D(
+template <bool Eased>
+void Noise::valueMap2DImpl(
 		float x, float y,
 		float step_x, float step_y,
 		s32 seed)
@@ -503,7 +504,6 @@ void Noise::valueMap2D(
 	u32 nlx, nly;
 	s32 x0, y0;
 
-	bool eased = np.flags & (NOISE_FLAG_DEFAULTS | NOISE_FLAG_EASED);
 	x0 = std::floor(x);
 	y0 = std::floor(y);
 	u = x - (float)x0;
@@ -531,7 +531,7 @@ void Noise::valueMap2D(
 		noisex = 0;
 		for (i = 0; i != sx; i++) {
 			value_buf[index++] =
-				biLinearInterpolation(v00, v10, v01, v11, u, v, eased);
+				biLinearInterpolation(v00, v10, v01, v11, u, v, Eased);
 
 			u += step_x;
 			if (u >= 1.0) {
@@ -553,9 +553,21 @@ void Noise::valueMap2D(
 }
 #undef idx
 
+void Noise::valueMap2D(
+		float x, float y,
+		float step_x, float step_y,
+		s32 seed)
+{
+	if (np.flags & (NOISE_FLAG_DEFAULTS | NOISE_FLAG_EASED))
+		valueMap2DImpl<true>(x, y, step_x, step_y, seed);
+	else
+		valueMap2DImpl<false>(x, y, step_x, step_y, seed);
+}
+
 
 #define idx(x, y, z) ((z) * nly * nlx + (y) * nlx + (x))
-void Noise::valueMap3D(
+template <bool Eased>
+void Noise::valueMap3DImpl(
 		float x, float y, float z,
 		float step_x, float step_y, float step_z,
 		s32 seed)
@@ -566,8 +578,6 @@ void Noise::valueMap3D(
 	u32 index, i, j, k, noisex, noisey, noisez;
 	u32 nlx, nly, nlz;
 	s32 x0, y0, z0;
-
-	bool eased = np.flags & NOISE_FLAG_EASED;
 
 	x0 = std::floor(x);
 	y0 = std::floor(y);
@@ -612,7 +622,7 @@ void Noise::valueMap3D(
 					v000, v100, v010, v110,
 					v001, v101, v011, v111,
 					u, v, w,
-					eased);
+					Eased);
 
 				u += step_x;
 				if (u >= 1.0) {
@@ -644,6 +654,17 @@ void Noise::valueMap3D(
 	}
 }
 #undef idx
+
+void Noise::valueMap3D(
+		float x, float y, float z,
+		float step_x, float step_y, float step_z,
+		s32 seed)
+{
+	if (np.flags & NOISE_FLAG_EASED)
+		valueMap3DImpl<true>(x, y, z, step_x, step_y, step_z, seed);
+	else
+		valueMap3DImpl<false>(x, y, z, step_x, step_y, step_z, seed);
+}
 
 
 float *Noise::noiseMap2D(float x, float y, float *persistence_map)
