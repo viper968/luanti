@@ -253,6 +253,16 @@ private:
 	void lightSpread(VoxelArea &a, std::queue<std::pair<v3s16, u8>> &queue,
 		const v3s16 &p, u8 light);
 
+	/**
+	 * As lightSpread(), for callers that already know the node's index and
+	 * have checked that the light is worth spreading and that `p` is inside
+	 * `a`. The scan in spreadLight() walks neighbours by index anyway, so
+	 * this saves recomputing one from the position for every neighbour.
+	 * @param vi Index of the node at `p` within vm->m_area
+	 */
+	void lightSpreadAt(std::queue<std::pair<v3s16, u8>> &queue,
+		const v3s16 &p, u32 vi, u8 light);
+
 	// isLiquidHorizontallyFlowable() is a helper function for updateLiquid()
 	// that checks whether there are floodable nodes without liquid beneath
 	// the node at index vi.

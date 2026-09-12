@@ -432,7 +432,12 @@ void Mapgen::lightSpread(VoxelArea &a, std::queue<std::pair<v3s16, u8>> &queue,
 	if (light <= 1 || !a.contains(p))
 		return;
 
-	u32 vi = vm->m_area.index(p);
+	lightSpreadAt(queue, p, vm->m_area.index(p), light);
+}
+
+void Mapgen::lightSpreadAt(std::queue<std::pair<v3s16, u8>> &queue,
+	const v3s16 &p, u32 vi, u8 light)
+{
 	MapNode &n = vm->m_data[vi];
 
 	// Decay light in each of the banks separately
@@ -515,6 +520,12 @@ void Mapgen::spreadLight(const v3s16 &nmin, const v3s16 &nmax)
 	std::queue<std::pair<v3s16, u8>> queue;
 	VoxelArea a(nmin, nmax);
 
+	// Index deltas within vm->m_area for each of g_6dirs, so the scan below
+	// can step to a neighbour instead of recomputing its index from scratch.
+	const v3s32 &em = vm->m_area.getExtent();
+	const s32 zs = (s32)em.X * em.Y, ys = (s32)em.X;
+	const s32 nb_offset[6] = { zs, ys, 1, -zs, -ys, -1 };
+
 	for (int z = a.MinEdge.Z; z <= a.MaxEdge.Z; z++) {
 		for (int y = a.MinEdge.Y; y <= a.MaxEdge.Y; y++) {
 			u32 i = vm->m_area.index(a.MinEdge.X, y, z);
@@ -534,12 +545,16 @@ void Mapgen::spreadLight(const v3s16 &nmin, const v3s16 &nmax)
 				if (light_produced)
 					n.param1 = light_produced | (light_produced << 4);
 
+				// `light <= 1` is what lightSpread() would bail on anyway
 				u8 light = n.param1;
-				if (light) {
+				if (light > 1) {
 					const v3s16 p(x, y, z);
 					// spread to all 6 neighbor nodes
-					for (const auto &dir : g_6dirs)
-						lightSpread(a, queue, p + dir, light);
+					for (int d = 0; d < 6; d++) {
+						const v3s16 q = p + g_6dirs[d];
+						if (a.contains(q))
+							lightSpreadAt(queue, q, i + nb_offset[d], light);
+					}
 				}
 			}
 		}
