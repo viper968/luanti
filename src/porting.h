@@ -15,6 +15,7 @@
 // Be mindful of what you include here!
 #include <csignal>
 #include <string>
+#include <thread>
 #include "config.h"
 #include "irrlichttypes.h" // u64
 #include "debug.h"
@@ -235,10 +236,15 @@ inline void preciseSleepUs(u64 sleep_time)
 		if (sleep_time > SLEEP_ACCURACY_US)
 			sleep_us(sleep_time - SLEEP_ACCURACY_US);
 
-		// Busy-wait the remaining time to adjust for sleep inaccuracies
+		// Wait out the remaining time to adjust for sleep inaccuracies.
+		// Yield instead of spinning: with a high fps_max the frame budget is
+		// only a few hundred microseconds, so this loop would otherwise pin
+		// a whole core and starve other threads (mesh workers, the server
+		// thread, and on hybrid-graphics laptops the desktop compositor).
 		// The target - now > 0 construct will handle overflow gracefully (even though it should
 		// never happen)
-		while ((s64)(target_time - porting::getTimeUs()) > 0) {}
+		while ((s64)(target_time - porting::getTimeUs()) > 0)
+			std::this_thread::yield();
 	}
 }
 
