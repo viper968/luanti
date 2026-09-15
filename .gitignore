@@ -70,6 +70,7 @@ AppDir
 /sounds
 /mods/*
 !/mods/mods_here.txt
+!/mods/ghostschem/
 /worlds/*
 !/worlds/worlds_here.txt
 /clientmods/*

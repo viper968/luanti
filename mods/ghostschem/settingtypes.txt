@@ -1,0 +1,15 @@
+#    Opacity of ghost blocks, 0 (invisible) to 255 (solid).
+ghostschem_opacity (Ghost opacity) int 110 0 255
+
+#    Above this many ghost entities, previews fall back to a bounding box.
+ghostschem_max_entities (Max ghost entities) int 3000 1 100000
+
+#    How many placements can be undone per player.
+ghostschem_undo_depth (Undo depth) int 10 0 100
+
+#    Enable /gs selftest. Registers a few marker nodes, so it is off by default.
+ghostschem_selftest (Enable self test) bool false
+
+#    Run the self test on server start and then shut down. Requires
+#    ghostschem_selftest. Intended for CI.
+ghostschem_selftest_on_start (Run self test on start) bool false
