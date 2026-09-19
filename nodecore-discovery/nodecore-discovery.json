@@ -1,0 +1,6781 @@
+{
+ "schema_version": 1,
+ "meta": {
+  "game": "NodeCore",
+  "source_repo": "https://gitlab.com/sztest/nodecore.git",
+  "source_commit": "9477a34cdec6dfde1f1bf18234ae2dd43afc6814",
+  "source_date": "2026-03-19",
+  "generated_by": "nodecore-discovery/extract_hints.py",
+  "generated_on": "2026-09-19",
+  "hint_count": 150,
+  "edge_count": 233,
+  "root_count": 10,
+  "max_tier": 19,
+  "mods_scanned": [
+   "nc_terrain",
+   "nc_fire",
+   "nc_igneous",
+   "nc_items",
+   "nc_tree",
+   "nc_woodwork",
+   "nc_stonework",
+   "nc_optics",
+   "nc_concrete",
+   "nc_lode",
+   "nc_doors",
+   "nc_flora",
+   "nc_player_model",
+   "nc_lux",
+   "nc_tote",
+   "nc_lantern",
+   "nc_player_hud",
+   "nc_player_pickup",
+   "nc_player_setup",
+   "nc_scaling",
+   "nc_sponge",
+   "nc_torch",
+   "nc_writing"
+  ],
+  "hints_per_mod": {
+   "nc_lode": 21,
+   "nc_woodwork": 14,
+   "nc_optics": 14,
+   "nc_doors": 12,
+   "nc_flora": 12,
+   "nc_concrete": 11,
+   "nc_tree": 10,
+   "nc_writing": 9,
+   "nc_terrain": 6,
+   "nc_stonework": 6,
+   "nc_fire": 5,
+   "nc_igneous": 5,
+   "nc_lux": 5,
+   "nc_sponge": 4,
+   "nc_lantern": 3,
+   "nc_scaling": 3,
+   "nc_tote": 2,
+   "nc_player_pickup": 2,
+   "nc_torch": 2,
+   "nc_items": 1,
+   "nc_player_model": 1,
+   "nc_player_hud": 1,
+   "nc_player_setup": 1
+  },
+  "craft_scan": {
+   "recipes_seen": 92,
+   "recipes_unreadable": 20
+  }
+ },
+ "key_kinds": {
+  "craft": "A recipe label from nc.register_craft; discovered by performing that craft (stored as craft:<label>).",
+  "item": "An item/node name; discovered by holding, seeing, digging or placing it.",
+  "event": "A player event key: dig:, place:, inv:, look:, punch:, hurt:, etc.",
+  "group": "An item group; granted by discovering any item in that group.",
+  "toolcap": "toolcap:<diggroup>:<level>; granted by holding a tool that digs that group at that level."
+ },
+ "groups": {
+  "activates_lens": "always activates optics lenses, regardless of light_source",
+  "adobe": "any node made of adobe (patterned, bricked, etc)",
+  "alpha_glyph": "(specific) nc_writing glyphs",
+  "always_scalable": "nodes that can always be scaled even if they define on_rightclick",
+  "amalgam": "(specific) nc_igneous amalgamation",
+  "attached_node": "built-in: drops as item if node below is removed",
+  "canopy": "leaves or equivalent",
+  "charcoal": "(specific) nc_fire coal nodes",
+  "cheat": "having posession of this item represents a form of cheat (e.g. admin tool)",
+  "chisel": "metal shaft that can be used as a chisel with a mallet",
+  "choppy": "dig group: hatchets and adzes",
+  "cloudstone": "(specific) concrete cloudstone",
+  "coalstone": "any node made of tarstone (patterned, bricked, etc)",
+  "cobble": "(specific) nc_terrain cobble",
+  "cobbley": "any \"cobble with filler\" type node (e.g. ores)",
+  "concrete_etchable": "(api-managed) concrete nodes that can be etched",
+  "concrete_flow": "(api-managed) concrete flowing liquids",
+  "concrete_powder": "(api-managed) concrete mix powders",
+  "concrete_source": "(api-managed) concrete liquid sources",
+  "concrete_wet": "(api-managed) concreted source or flowing liquid",
+  "container": "container grade; can only be placed inside containers of higher grade",
+  "coolant": "quenches nearby heated things",
+  "cracky": "dig group: picks and mattocks",
+  "crumbly": "dig group: spades, mattocks, and adzes",
+  "cuddly": "dig group: ONLY player hands",
+  "damage_pickup": "damage to deal player when trying to pick up",
+  "damage_radiant": "amount of radiant heat emitted that damages players slowly",
+  "damage_touch": "damage to deal player when punching or trying to pick up",
+  "dirt": "(specific) nc_terrain dirt and loose dirt",
+  "dirt_loose": "(specific) nc_terrain loose dirt",
+  "dirt_raked": "(specific) raked nc_terrain dirt",
+  "door": "door level of hinged panel",
+  "door_operate_sound_volume": "override door operate sound percentage",
+  "door_panel": "level of door that a panel would make if it were hinged",
+  "dungeon_mapgen": "dungeon nodes that are replaced with real ones after mapgen",
+  "dynamic_light": "light level of invisible dynamic lights from nc_api_active",
+  "ember": "(specific) fuel level of burning nc_fire embers",
+  "falling_mapgen_ignore": "falling nodes that are ignored by mapgen falling node removal",
+  "falling_node": "built-in: falls as a node if not supported below",
+  "falling_repose": "angle of repose for falling nodes, higher is steeper",
+  "fire_fuel": "for flammable nodes, convert into ember of this grade (1-8)",
+  "firestick": "can be rubbed against another firestick to make fire; success rate factor",
+  "flame": "(specific) open flame",
+  "flame_ambiance": "emits crackling fire ambiance (e.g. flames, torches)",
+  "flammable": "can catch fire; becomes ember if fire_fuel, or flame otherwise",
+  "float": "built-in: falling node lands on top of liquids",
+  "flora": "decorative plants (nc_flora) or equivalent",
+  "flora_dry": "decorative plants that are dry (dried rushes, wilted flowers, all sedges)",
+  "flora_sedges": "(specific) sedge grass height",
+  "flower_living": "flowers that are still alive",
+  "flower_mutant": "flowers that are not found in mapgen",
+  "flower_wilted": "flowers that have died",
+  "grass": "(specific) nc_terrain dirt_with_grass",
+  "grassable": "grass can spread onto this node (converting substrate to dirt)",
+  "gravel": "(specific) nc_terrain gravel",
+  "gravel_raked": "(specific) nc_writing raked gravel",
+  "green": "things containing significant amounts of living plant matter",
+  "hard_stone": "stratum of hard stone for stone, ores, and similar",
+  "humus": "(specific) nc_tree humus",
+  "humus_raked": "(specific) raked nc_tree humus",
+  "igniter": "causes nearby flammable things to ignite",
+  "is_stack_only": "(specific) a bare item stack as a node",
+  "lava": "(specific) source or flowing pumwater",
+  "leaf_decay": "decays into its leaf_decay_as items if not connected to tree trunk",
+  "leaf_decay_support": "nodes that stop leaves from decaying (tree trunks)",
+  "leaf_decay_transmit": "nodes that transmit leaf decay stoppage through them (leaves)",
+  "leafy": "(deprecated) loose leaves",
+  "lens_glow_start": "(specific) glowing lenses in warm-up state",
+  "lode_cobble": "(specific) lode cobble or loose lode cobble",
+  "lode_cube": "full cubes made of lode (lode cubes, crates)",
+  "lode_prill": "(specific) lode prills of various temper",
+  "lode_temper_annealed": "any lode thing in a slow-cooled and workable state",
+  "lode_temper_hot": "any lode thing in a heated and glowing",
+  "lode_temper_tempered": "any lode thing in a quenched and hardened state",
+  "lodey": "stone with lode in various states",
+  "log": "tree trunks and logs, can be split to planks",
+  "loose_repack": "loose nodes that self-repack over time",
+  "lux_absorb": "lux radiation absorption proportion in 64ths of total",
+  "lux_cobble": "lux cobble that reacts to nearby lux cobble",
+  "lux_cobble_max": "lux cobble that produces lux flows",
+  "lux_emit": "things that emit lux radiation that irradiates players over time",
+  "lux_fluid": "(specific) lux source and flowing liquids",
+  "lux_hot": "lux cobble in a moderately excited but still subcritical state",
+  "lux_rock": "lux rock in smooth-stone or cobble form (for ore hints)",
+  "lux_scatter": "lux radiation scattering probability in 64ths",
+  "lux_tool": "infused lode tools",
+  "metallic": "made of metal, efficiently absorbs lux radiation",
+  "moist": "water or other source of moisture esp. for plant cultivation",
+  "nc_api_rotate_above": "rotate when in pointed_thing above location",
+  "nc_api_rotate_under": "rotate when in pointed_thing under location",
+  "nc_concrete_etched": "(api-managed) any non-pliant concrete node with etched patterns",
+  "nc_concrete_pattern_bindy": "(api-managed) any type of concrete with a bindy pattern",
+  "nc_concrete_pattern_boxy": "(api-managed) any type of concrete with a boxy pattern",
+  "nc_concrete_pattern_bricky": "(api-managed) any type of concrete with a bricky pattern",
+  "nc_concrete_pattern_hashy": "(api-managed) any type of concrete with a hashy pattern",
+  "nc_concrete_pattern_horzy": "(api-managed) any type of concrete with a horzy pattern",
+  "nc_concrete_pattern_iceboxy": "(api-managed) any type of concrete with a iceboxy pattern",
+  "nc_concrete_pattern_vermy": "(api-managed) any type of concrete with a vermy pattern",
+  "nc_concrete_pattern_verty": "(api-managed) any type of concrete with a verty pattern",
+  "nc_concrete_pliant": "(api-managed) any type of concrete in a pliant state",
+  "nc_door_scuff_opacity": "override opacity of scuff texture when making door",
+  "nc_doors_pummel_first": "test for pummel recipes before dig when used by door",
+  "nc_lantern": "(specific) chargeable lux lantern",
+  "nc_lantern_charged": "(specific) lux lantern with significant charge level",
+  "nc_lantern_full": "(specific) lux lantern at full charge",
+  "nc_scaling": "(specific) player-created climbing and light spots",
+  "nc_scaling_fx": "display black dust mote particles like scaling spots",
+  "not_in_creative_inventory": "built-in: not meaningful in nodecore",
+  "optic_check": "automatically run optic check callbacks",
+  "optic_gluable": "any optic that can be glued in place with an eggcorn",
+  "optic_lens": "equivalent/replaceable by a lens when held in inventory",
+  "optic_lens_emit": "a lens emitting a full-intensity beam (firestart, ablate)",
+  "optic_opaque": "force node to be opaque to optic beams",
+  "optic_source": "produces optic beams",
+  "optic_transparent": "force node to be transparent to optic beams",
+  "peat_grindable_item": "stack of 8 can be ground into peat automatically",
+  "peat_grindable_node": "single one can be ground into peat automatically",
+  "pumice": "(specific) equivalent to nodecore pumice",
+  "pumice_no_support": "does not provide support to pumice structures",
+  "pumice_support": "provides support to pumice structures",
+  "radiant_opaque": "force radiant heat damage to be blocked",
+  "radiant_transparent": "force radiant heat damage to pass through",
+  "raked": "a node whose surface has been raked",
+  "rakey": "is a rake tool, can rake line patterns into sand/gravel",
+  "rock": "all non-glassy rocky/stony things, including stone, cobble, brick, etc",
+  "sand": "(specific) nc_terrain sand",
+  "sand_raked": "(specific) nc_writing raked sand",
+  "sandstone": "any node made of sandstone (patterned, bricked, etc)",
+  "scaling_time": "percentage time it takes to scale this node",
+  "silica": "any glass, can be ground back to sand",
+  "silica_clear": "any clear glass, grinds to crude, passes light",
+  "silica_lens": "equivalent to only half a node of sand by weight",
+  "silica_molten": "(specific) nc_optics molten glass",
+  "silica_prism": "glass prism in any state",
+  "smoothstone": "smooth stone that can be chiseled to bricks",
+  "snappy": "dig group: by hand",
+  "soil": "dirt that provides nutrients to plant growth",
+  "sponge": "(specific) nc_sponge sponges",
+  "stack_as_node": "single items landing on ground should be placed as node",
+  "stone": "variants of smooth stone, including ones with inclusions (ore)",
+  "stone_bricks": "smooth stone that's been chiseled into bricks",
+  "storebox": "storage containers (e.g. shelves, cases, crates)",
+  "storebox_sealed": "storage container that's airtight (sponges) if open sides covered",
+  "storebox_sealed_always": "storage container that's airtight (sponges) always",
+  "support_falling": "falling_nodes can rest on it even if not walkable",
+  "thumpy": "dig group: mallets and hand",
+  "tongs_pickup": "can be picked up and held using tongs",
+  "tongs_wear_add_percent": "adjust rate of wear on tongs",
+  "torch_lit": "(specific) lit torches, subject to various events/timers",
+  "totable": "nodes that can be packed up into a tote",
+  "tote": "totes and tote handles",
+  "visinv": "display nc.stack_get() stack as an entity in node",
+  "visinv_hidden": "hide visinv ent; it's baked into the node model already",
+  "water": "water, artificial water, or equivalent",
+  "witness_opaque": "force things to be treated as opaque for hint witnessing",
+  "witness_transparent": "force things to be treated as transparent for hint witnessing"
+ },
+ "curated_providers": {
+  "group:chisel": {
+   "provided_by": [
+    "anvil making lode bar",
+    "anvil making lode rod",
+    "anvil making lode ladder"
+   ],
+   "note": "Lode bars/rods/ladders are the metal shafts usable as chisels.",
+   "source": [
+    "mods/nc_lode/shafts.lua:21 (bar, chisel=1)",
+    "mods/nc_lode/shafts.lua:79 (rod, chisel=2)",
+    "mods/nc_lode/ladder.lua:31 (ladder, chisel=2)"
+   ]
+  },
+  "group:concrete_powder": {
+   "provided_by": [
+    "mix aggregate",
+    "mix render",
+    "mix mud",
+    "mix cloudmix"
+   ],
+   "note": "Applied by the concrete API to every dry mix powder.",
+   "source": [
+    "mods/nc_concrete/api.lua:14"
+   ]
+  },
+  "group:dirt_raked": {
+   "provided_by": [
+    "rake dirt"
+   ],
+   "source": [
+    "mods/nc_writing/leaching.lua:69-70"
+   ]
+  },
+  "group:humus_raked": {
+   "provided_by": [
+    "rake humus"
+   ],
+   "source": [
+    "mods/nc_writing/leaching.lua:74-75"
+   ]
+  },
+  "group:door": {
+   "provided_by": [
+    "door pin plank",
+    "door pin cobble"
+   ],
+   "note": "A panel only becomes a hinged door once pinned.",
+   "source": [
+    "mods/nc_doors/register.lua"
+   ]
+  },
+  "group:optic_gluable": {
+   "provided_by": [
+    "cleave lenses from glass",
+    "hammer prism from glass"
+   ],
+   "note": "Lenses and prisms are the gluable optics.",
+   "source": [
+    "mods/nc_optics/lens.lua:57",
+    "mods/nc_optics/glued.lua:12-13"
+   ]
+  },
+  "group:peat_grindable_item": {
+   "provided_by": [
+    "nc_tree:leaves_loose",
+    "nc_tree:eggcorn",
+    "nc_flora:rush",
+    "group:flora_sedges"
+   ],
+   "note": "Loose dead plant matter: dry leaves, eggcorns, rushes, sedges.",
+   "source": [
+    "mods/nc_tree/node.lua:117",
+    "mods/nc_tree/grow_node.lua:25",
+    "mods/nc_flora/rushes.lua:53",
+    "mods/nc_flora/sedges.lua:56"
+   ]
+  },
+  "group:peat_grindable_node": {
+   "provided_by": [
+    "pack thatch",
+    "pack wicker"
+   ],
+   "source": [
+    "mods/nc_flora/thatch.lua:15",
+    "mods/nc_flora/wicker.lua:16"
+   ]
+  },
+  "group:rakey": {
+   "provided_by": [
+    "assemble rake",
+    "assemble lode rake",
+    "pack thatch",
+    "pack wicker"
+   ],
+   "note": "Rakes proper, plus thatch/wicker which rake while wielded.",
+   "source": [
+    "mods/nc_woodwork/rake.lua:23",
+    "mods/nc_lode/rake.lua",
+    "mods/nc_flora/thatch.lua:36",
+    "mods/nc_flora/wicker.lua:38"
+   ]
+  },
+  "group:silica_lens": {
+   "provided_by": [
+    "cleave lenses from glass"
+   ],
+   "source": [
+    "mods/nc_optics/lens.lua:52"
+   ]
+  },
+  "group:smoothstone": {
+   "world": true,
+   "note": "Plain stone carries this group and is visible everywhere underground, so looking at it grants the key with no hint behind it.",
+   "source": [
+    "mods/nc_terrain/node.lua:68",
+    "mods/nc_lode/ore.lua:38"
+   ]
+  },
+  "group:totable": {
+   "provided_by": [
+    "assemble wood shelf",
+    "assemble lode shelf"
+   ],
+   "note": "Shelves/crates are what a tote can pick up.",
+   "source": [
+    "mods/nc_woodwork/shelf.lua:19",
+    "mods/nc_lode/shelf.lua:15"
+   ]
+  },
+  "toolcap:choppy:2": {
+   "provided_by": [
+    "assemble wood hatchet",
+    "assemble nc_stonework:tool_hatchet"
+   ],
+   "note": "Wooden hatchet (level 2) or better.",
+   "source": [
+    "mods/nc_woodwork/tools.lua:76",
+    "mods/nc_stonework/tools.lua:40"
+   ]
+  },
+  "toolcap:choppy:4": {
+   "provided_by": [
+    "forge lode toolhead_mallet",
+    "metallurgize nc_lode:block_annealed"
+   ],
+   "note": "Needs an assembled lode hatchet (annealed level 4). No hint covers the 'assemble lode hatchet' craft itself, so this points at the forging/annealing steps that lead to it.",
+   "source": [
+    "mods/nc_lode/tools.lua:40",
+    "mods/nc_lode/tools.lua:71"
+   ]
+  },
+  "toolcap:cracky:2": {
+   "provided_by": [
+    "assemble wood pick",
+    "assemble nc_stonework:tool_pick"
+   ],
+   "note": "Wooden pick (level 2) or better.",
+   "source": [
+    "mods/nc_woodwork/tools.lua:79",
+    "mods/nc_stonework/tools.lua:41"
+   ]
+  },
+  "toolcap:crumbly:2": {
+   "provided_by": [
+    "assemble wood spade",
+    "assemble nc_stonework:tool_spade"
+   ],
+   "note": "Wooden spade (level 2) or better.",
+   "source": [
+    "mods/nc_woodwork/tools.lua:72",
+    "mods/nc_stonework/tools.lua:39"
+   ]
+  },
+  "toolcap:thumpy:3": {
+   "provided_by": [
+    "assemble nc_stonework:tool_mallet"
+   ],
+   "note": "Wooden mallets are only level 2; a stone-tipped mallet (level 3) is the first tool that satisfies this.",
+   "source": [
+    "mods/nc_stonework/tools.lua:38",
+    "mods/nc_api/util_toolcaps.lua:19"
+   ]
+  },
+  "nc_woodwork:form": {
+   "provided_by": [
+    "wooden frame to form"
+   ],
+   "source": [
+    "mods/nc_woodwork/frame.lua"
+   ]
+  },
+  "nc_tree:humus": {
+   "provided_by": [
+    "peat compost"
+   ],
+   "note": "Humus is what fermenting a peat block yields.",
+   "source": [
+    "mods/nc_tree/compost.lua"
+   ]
+  },
+  "nc_fire:lump_coal": {
+   "provided_by": [
+    "chop nc_fire:coal1",
+    "chop nc_fire:coal2",
+    "chop nc_fire:coal3",
+    "chop nc_fire:coal4"
+   ],
+   "note": "Coal lumps come from chopping a charcoal node down.",
+   "source": [
+    "mods/nc_fire/charcoal.lua"
+   ]
+  },
+  "nc_concrete:aggregate": {
+   "provided_by": [
+    "mix aggregate"
+   ],
+   "note": "Concrete mix recipes are generated by the concrete API, so the recipe scan cannot read their outputs statically.",
+   "source": [
+    "mods/nc_concrete/api.lua"
+   ]
+  },
+  "nc_sponge:sponge_wet": {
+   "provided_by": [
+    "nc_sponge:sponge"
+   ],
+   "note": "A dry sponge becomes wet by absorbing water via ABM, not by a recipe, so the dry sponge is the real prerequisite.",
+   "source": [
+    "mods/nc_sponge/abm.lua:30"
+   ]
+  },
+  "lode anvil": {
+   "provided_by": [
+    "anvil:hot/annealed",
+    "anvil:hot/tempered"
+   ],
+   "note": "Discovered on completing any craft atop a lode anvil.",
+   "source": [
+    "mods/nc_lode/anvils.lua:120"
+   ]
+  },
+  "nc_lode:prill_hot": {
+   "provided_by": [
+    "lode cobble drain"
+   ],
+   "note": "Draining lode cobble is what yields glowing prills.",
+   "source": [
+    "mods/nc_lode/oresmelt.lua"
+   ]
+  },
+  "nc_lode:prill_annealed": {
+   "provided_by": [
+    "metallurgize nc_lode:block_annealed",
+    "lode cobble drain"
+   ],
+   "note": "Annealing applies to any lode item; the hints only name the cube, so this points at the same annealing step.",
+   "source": [
+    "mods/nc_lode/metallurgy.lua"
+   ]
+  },
+  "nc_lode:prill_tempered": {
+   "provided_by": [
+    "metallurgize nc_lode:block_tempered",
+    "lode cobble drain"
+   ],
+   "note": "As above, for tempering.",
+   "source": [
+    "mods/nc_lode/metallurgy.lua"
+   ]
+  },
+  "nc_lode:frame_annealed": {
+   "provided_by": [
+    "anvil making lode frame",
+    "metallurgize nc_lode:block_annealed"
+   ],
+   "source": [
+    "mods/nc_lode/shafts.lua",
+    "mods/nc_lode/metallurgy.lua"
+   ]
+  },
+  "nc_lode:form": {
+   "provided_by": [
+    "lode frame_annealed to form"
+   ],
+   "source": [
+    "mods/nc_lode/shelf.lua"
+   ]
+  },
+  "forge lode toolhead_pick": {
+   "provided_by": [
+    "forge lode toolhead_mallet"
+   ],
+   "note": "One 'forge lode <head>' recipe exists per tool head; the hints only name the mallet.",
+   "source": [
+    "mods/nc_lode/tools.lua:75-78"
+   ]
+  },
+  "nc_lode:tool_mallet_tempered": {
+   "provided_by": [
+    "metallurgize nc_lode:toolhead_mallet_tempered"
+   ],
+   "note": "Temper the head, then assemble it onto a staff.",
+   "source": [
+    "mods/nc_lode/tools.lua:34-52"
+   ]
+  },
+  "nc_lode:tool_hatchet_tempered": {
+   "provided_by": [
+    "metallurgize nc_lode:toolhead_hatchet_tempered",
+    "metallurgize nc_lode:toolhead_mallet_tempered"
+   ],
+   "note": "As above; the tempering hint only names the mallet head.",
+   "source": [
+    "mods/nc_lode/tools.lua:34-52"
+   ]
+  }
+ },
+ "craft_outputs": {
+  "compress ash block": [
+   "nc_fire:ash"
+  ],
+  "compress coal block": [
+   "nc_fire:coal8"
+  ],
+  "pack thatch": [
+   "nc_flora:thatch"
+  ],
+  "unpack thatch": [
+   "nc_flora:sedge_1 2"
+  ],
+  "pack wicker": [
+   "nc_flora:wicker"
+  ],
+  "unpack wicker": [
+   "nc_flora:rush_dry 2"
+  ],
+  "assemble lantern": [
+   "nc_lantern:lamp0"
+  ],
+  "break apart lantern": [
+   "nc_lode:bar_annealed 2",
+   "nc_optics:glass_crude"
+  ],
+  "anvil making lode adze": [
+   "nc_lode:adze_annealed"
+  ],
+  "recycle lode adze": [
+   "nc_lode:bar_hot",
+   "nc_lode:rod_hot"
+  ],
+  "recycle lode ladder": [
+   "nc_lode:bar_hot",
+   "nc_lode:rod_hot"
+  ],
+  "recycle lode frame": [
+   "nc_lode:rod_hot"
+  ],
+  "forge lode block": [
+   "nc_lode:block_hot"
+  ],
+  "break apart lode block": [
+   "nc_lode:prill_hot 2"
+  ],
+  "heat lode cobble": [
+   "nc_lode:cobble_hot"
+  ],
+  "lode ore cooling": [
+   "nc_lode:ore"
+  ],
+  "lode ore quenching": [
+   "nc_lode:cobble"
+  ],
+  "recycle lode rake": [
+   "nc_lode:bar_hot",
+   "nc_lode:rod_hot"
+  ],
+  "recycle lode rod": [
+   "nc_lode:bar_hot"
+  ],
+  "assemble lode shelf": [
+   "nc_lode:shelf"
+  ],
+  "break apart lode shelf": [
+   "nc_lode:bar_annealed",
+   "nc_lode:frame_annealed"
+  ],
+  "recycle lode tongs": [
+   "nc_lode:bar_hot",
+   "nc_lode:rod_hot"
+  ],
+  "assemble lode mattock head": [
+   "nc_lode:toolhead_mattock_hot"
+  ],
+  "lode renew": [
+   "nc_lode:cobble_hot"
+  ],
+  "melt sand to glass": [
+   "nc_optics:glass_hot_source"
+  ],
+  "cool clear glass": [
+   "nc_optics:glass"
+  ],
+  "cool float glass": [
+   "nc_optics:glass_float"
+  ],
+  "quench opaque glass": [
+   "nc_optics:glass_opaque"
+  ],
+  "quench crude glass": [
+   "nc_optics:glass_crude"
+  ],
+  "hammer prism from glass": [
+   "nc_optics:prism"
+  ],
+  "cleave lenses from glass": [
+   "nc_optics:lens"
+  ],
+  "hammer glass to crude": [
+   "nc_optics:glass_crude"
+  ],
+  "hammer case to crude": [
+   "nc_optics:glass_crude"
+  ],
+  "hammer glass back to sand": [
+   "nc_terrain:sand_loose"
+  ],
+  "hammer lenses back to sand": [
+   "nc_terrain:sand_loose"
+  ],
+  "assemble graveled adze": [
+   "nc_stonework:adze"
+  ],
+  "break cobble to chips": [
+   "nc_stonework:chip",
+   "nc_terrain:gravel"
+  ],
+  "break packed cobble to chips": [
+   "nc_stonework:chip",
+   "nc_terrain:gravel"
+  ],
+  "repack chips to cobble": [
+   "nc_terrain:cobble_loose"
+  ],
+  "assemble torch": [
+   "nc_torch:torch"
+  ],
+  "craft tote handle": [
+   "nc_tote:handle"
+  ],
+  "break apart tote": [
+   "nc_lode:bar_annealed 2"
+  ],
+  "compress peat block": [
+   "nc_tree:peat"
+  ],
+  "assemble wood adze": [
+   "nc_woodwork:adze"
+  ],
+  "assemble wood ladder": [
+   "nc_woodwork:ladder"
+  ],
+  "assemble wood frame": [
+   "nc_woodwork:frame"
+  ],
+  "bash planks to sticks": [
+   "nc_tree:stick 2"
+  ],
+  "assemble rake": [
+   "nc_woodwork:rake"
+  ],
+  "assemble braced wood form": [
+   "nc_woodwork:form_braced"
+  ],
+  "assemble wood shelf": [
+   "nc_woodwork:shelf"
+  ],
+  "assemble staff": [
+   "nc_woodwork:staff"
+  ]
+ },
+ "nodes": [
+  {
+   "id": "nc_terrain/dig-up-dirt",
+   "text": "dig up dirt",
+   "mod": "nc_terrain",
+   "source": "mods/nc_terrain/hints.lua:13",
+   "hidden": false,
+   "goal": {
+    "op": "or",
+    "keys": [
+     "dig:nc_terrain:dirt_loose",
+     "dig:nc_terrain:dirt"
+    ]
+   },
+   "reqs": {
+    "op": "and",
+    "keys": [
+     "toolcap:crumbly:2"
+    ]
+   },
+   "depends_on": [
+    "nc_woodwork/assemble-a-wooden-tool",
+    "nc_stonework/put-a-stone-tip-onto-a-wooden-tool"
+   ],
+   "unresolved_reqs": [],
+   "req_key_kinds": [
+    "toolcap"
+   ],
+   "tier": 6
+  },
+  {
+   "id": "nc_terrain/dig-up-gravel",
+   "text": "dig up gravel",
+   "mod": "nc_terrain",
+   "source": "mods/nc_terrain/hints.lua:18",
+   "hidden": false,
+   "goal": {
+    "op": "or",
+    "keys": [
+     "dig:nc_terrain:gravel_loose",
+     "dig:nc_terrain:gravel"
+    ]
+   },
+   "reqs": {
+    "op": "and",
+    "keys": [
+     "toolcap:crumbly:2"
+    ]
+   },
+   "depends_on": [
+    "nc_woodwork/assemble-a-wooden-tool",
+    "nc_stonework/put-a-stone-tip-onto-a-wooden-tool"
+   ],
+   "unresolved_reqs": [],
+   "req_key_kinds": [
+    "toolcap"
+   ],
+   "tier": 6
+  },
+  {
+   "id": "nc_terrain/dig-up-sand",
+   "text": "dig up sand",
+   "mod": "nc_terrain",
+   "source": "mods/nc_terrain/hints.lua:23",
+   "hidden": false,
+   "goal": {
+    "op": "or",
+    "keys": [
+     "dig:nc_terrain:sand_loose",
+     "dig:nc_terrain:sand"
+    ]
+   },
+   "reqs": {
+    "op": "always",
+    "keys": []
+   },
+   "depends_on": [],
+   "unresolved_reqs": [],
+   "req_key_kinds": [],
+   "tier": 0
+  },
+  {
+   "id": "nc_terrain/dig-up-cobble",
+   "text": "dig up cobble",
+   "mod": "nc_terrain",
+   "source": "mods/nc_terrain/hints.lua:27",
+   "hidden": false,
+   "goal": {
+    "op": "or",
+    "keys": [
+     "dig:nc_terrain:cobble_loose",
+     "dig:nc_terrain:cobble"
+    ]
+   },
+   "reqs": {
+    "op": "and",
+    "keys": [
+     "toolcap:cracky:2"
+    ]
+   },
+   "depends_on": [
+    "nc_woodwork/assemble-a-wooden-tool",
+    "nc_stonework/put-a-stone-tip-onto-a-wooden-tool"
+   ],
+   "unresolved_reqs": [],
+   "req_key_kinds": [
+    "toolcap"
+   ],
+   "tier": 0
+  },
+  {
+   "id": "nc_terrain/find-deep-stone-strata",
+   "text": "find deep stone strata",
+   "mod": "nc_terrain",
+   "source": "mods/nc_terrain/hints.lua:32",
+   "hidden": false,
+   "goal": {
+    "op": "and",
+    "keys": [
+     "group:hard_stone"
+    ]
+   },
+   "reqs": {
+    "op": "or",
+    "keys": [
+     "dig:nc_terrain:cobble_loose",
+     "dig:nc_terrain:cobble"
+    ]
+   },
+   "depends_on": [
+    "nc_terrain/dig-up-cobble"
+   ],
+   "unresolved_reqs": [],
+   "req_key_kinds": [
+    "event"
+   ],
+   "tier": 1
+  },
+  {
+   "id": "nc_terrain/find-pumwater",
+   "text": "find pumwater",
+   "mod": "nc_terrain",
+   "source": "mods/nc_terrain/hints.lua:37",
+   "hidden": false,
+   "goal": {
+    "op": "or",
+    "keys": [
+     "group:lava"
+    ]
+   },
+   "reqs": {
+    "op": "and",
+    "keys": [
+     "nc_terrain:cobble_loose"
+    ]
+   },
+   "depends_on": [
+    "nc_terrain/dig-up-cobble",
+    "nc_stonework/pack-stone-chips-back-into-cobble"
+   ],
+   "unresolved_reqs": [],
+   "req_key_kinds": [
+    "item"
+   ],
+   "tier": 3
+  },
+  {
+   "id": "nc_fire/make-fire-by-rubbing-sticks-together",
+   "text": "make fire by rubbing sticks together",
+   "mod": "nc_fire",
+   "source": "mods/nc_fire/hints.lua:6",
+   "hidden": false,
+   "goal": {
+    "op": "and",
+    "keys": [
+     "stick fire starting"
+    ]
+   },
+   "reqs": {
+    "op": "and",
+    "keys": [
+     "nc_tree:stick"
+    ]
+   },
+   "depends_on": [
+    "nc_tree/find-a-stick"
+   ],
+   "unresolved_reqs": [],
+   "req_key_kinds": [
+    "item"
+   ],
+   "tier": 2
+  },
+  {
+   "id": "nc_fire/find-ash",
+   "text": "find ash",
+   "mod": "nc_fire",
+   "source": "mods/nc_fire/hints.lua:11",
+   "hidden": false,
+   "goal": {
+    "op": "and",
+    "keys": [
+     "nc_fire:ash"
+    ]
+   },
+   "reqs": {
+    "op": "and",
+    "keys": [
+     "stick fire starting"
+    ]
+   },
+   "depends_on": [
+    "nc_fire/make-fire-by-rubbing-sticks-together"
+   ],
+   "unresolved_reqs": [],
+   "req_key_kinds": [
+    "craft"
+   ],
+   "tier": 3
+  },
+  {
+   "id": "nc_fire/find-charcoal",
+   "text": "find charcoal",
+   "mod": "nc_fire",
+   "source": "mods/nc_fire/hints.lua:16",
+   "hidden": false,
+   "goal": {
+    "op": "and",
+    "keys": [
+     "group:charcoal"
+    ]
+   },
+   "reqs": {
+    "op": "and",
+    "keys": [
+     "stick fire starting"
+    ]
+   },
+   "depends_on": [
+    "nc_fire/make-fire-by-rubbing-sticks-together"
+   ],
+   "unresolved_reqs": [],
+   "req_key_kinds": [
+    "craft"
+   ],
+   "tier": 3
+  },
+  {
+   "id": "nc_fire/chop-up-charcoal",
+   "text": "chop up charcoal",
+   "mod": "nc_fire",
+   "source": "mods/nc_fire/hints.lua:21",
+   "hidden": false,
+   "goal": {
+    "op": "or",
+    "keys": [
+     "chop nc_fire:coal1",
+     "chop nc_fire:coal2",
+     "chop nc_fire:coal3",
+     "chop nc_fire:coal4",
+     "chop nc_fire:coal5",
+     "chop nc_fire:coal6",
+     "chop nc_fire:coal7",
+     "chop nc_fire:coal8"
+    ]
+   },
+   "reqs": {
+    "op": "and",
+    "keys": [
+     "group:charcoal"
+    ]
+   },
+   "depends_on": [
+    "nc_fire/find-charcoal"
+   ],
+   "unresolved_reqs": [],
+   "req_key_kinds": [
+    "group"
+   ],
+   "tier": 4
+  },
+  {
+   "id": "nc_fire/pack-high-quality-charcoal",
+   "text": "pack high-quality charcoal",
+   "mod": "nc_fire",
+   "source": "mods/nc_fire/hints.lua:35",
+   "hidden": false,
+   "goal": {
+    "op": "and",
+    "keys": [
+     "compress coal block"
+    ]
+   },
+   "reqs": {
+    "op": "and",
+    "keys": [
+     "nc_fire:lump_coal"
+    ]
+   },
+   "depends_on": [
+    "nc_fire/chop-up-charcoal"
+   ],
+   "unresolved_reqs": [],
+   "req_key_kinds": [
+    "item"
+   ],
+   "tier": 5
+  },
+  {
+   "id": "nc_igneous/quench-pumwater-to-amalgamation",
+   "text": "quench pumwater to amalgamation",
+   "mod": "nc_igneous",
+   "source": "mods/nc_igneous/hints.lua:8",
+   "hidden": false,
+   "goal": {
+    "op": "and",
+    "keys": [
+     "group:amalgam"
+    ]
+   },
+   "reqs": {
+    "op": "or",
+    "keys": [
+     "group:amalgam",
+     "group:lava"
+    ]
+   },
+   "depends_on": [
+    "nc_terrain/find-pumwater"
+   ],
+   "unresolved_reqs": [],
+   "req_key_kinds": [
+    "group"
+   ],
+   "tier": 4
+  },
+  {
+   "id": "nc_igneous/find-pumice",
+   "text": "find pumice",
+   "mod": "nc_igneous",
+   "source": "mods/nc_igneous/hints.lua:13",
+   "hidden": false,
+   "goal": {
+    "op": "and",
+    "keys": [
+     "nc_igneous:pumice"
+    ]
+   },
+   "reqs": {
+    "op": "or",
+    "keys": [
+     "group:amalgam",
+     "group:lava"
+    ]
+   },
+   "depends_on": [
+    "nc_igneous/quench-pumwater-to-amalgamation",
+    "nc_terrain/find-pumwater"
+   ],
+   "unresolved_reqs": [],
+   "req_key_kinds": [
+    "group"
+   ],
+   "tier": 4
+  },
+  {
+   "id": "nc_igneous/harden-stone",
+   "text": "harden stone",
+   "mod": "nc_igneous",
+   "source": "mods/nc_igneous/hints.lua:18",
+   "hidden": false,
+   "goal": {
+    "op": "and",
+    "keys": [
+     "stone hardened"
+    ]
+   },
+   "reqs": {
+    "op": "and",
+    "keys": [
+     "group:lava"
+    ]
+   },
+   "depends_on": [
+    "nc_terrain/find-pumwater"
+   ],
+   "unresolved_reqs": [],
+   "req_key_kinds": [
+    "group"
+   ],
+   "tier": 4
+  },
+  {
+   "id": "nc_igneous/weaken-stone-by-soaking",
+   "text": "weaken stone by soaking",
+   "mod": "nc_igneous",
+   "source": "mods/nc_igneous/hints.lua:23",
+   "hidden": false,
+   "goal": {
+    "op": "and",
+    "keys": [
+     "stone softened"
+    ]
+   },
+   "reqs": {
+    "op": "and",
+    "keys": [
+     "group:lava"
+    ]
+   },
+   "depends_on": [
+    "nc_terrain/find-pumwater"
+   ],
+   "unresolved_reqs": [],
+   "req_key_kinds": [
+    "group"
+   ],
+   "tier": 4
+  },
+  {
+   "id": "nc_igneous/melt-stone-into-pumwater",
+   "text": "melt stone into pumwater",
+   "mod": "nc_igneous",
+   "source": "mods/nc_igneous/hints.lua:28",
+   "hidden": false,
+   "goal": {
+    "op": "and",
+    "keys": [
+     "stone melted"
+    ]
+   },
+   "reqs": {
+    "op": "and",
+    "keys": [
+     "group:lava"
+    ]
+   },
+   "depends_on": [
+    "nc_terrain/find-pumwater"
+   ],
+   "unresolved_reqs": [],
+   "req_key_kinds": [
+    "group"
+   ],
+   "tier": 4
+  },
+  {
+   "id": "nc_items/throw-an-item-really-fast",
+   "text": "throw an item really fast",
+   "mod": "nc_items",
+   "source": "mods/nc_items/hints.lua:6",
+   "hidden": false,
+   "goal": {
+    "op": "and",
+    "keys": [
+     "item_drop_speed_14"
+    ]
+   },
+   "reqs": {
+    "op": "and",
+    "keys": [
+     "item_drop"
+    ]
+   },
+   "depends_on": [
+    "nc_player_pickup/drop-an-item"
+   ],
+   "unresolved_reqs": [],
+   "req_key_kinds": [
+    "craft"
+   ],
+   "tier": 1
+  },
+  {
+   "id": "nc_tree/dig-leaves",
+   "text": "dig leaves",
+   "mod": "nc_tree",
+   "source": "mods/nc_tree/hints.lua:6",
+   "hidden": false,
+   "goal": {
+    "op": "and",
+    "keys": [
+     "dig:nc_tree:leaves"
+    ]
+   },
+   "reqs": {
+    "op": "always",
+    "keys": []
+   },
+   "depends_on": [],
+   "unresolved_reqs": [],
+   "req_key_kinds": [],
+   "tier": 0
+  },
+  {
+   "id": "nc_tree/find-dry-loose-leaves",
+   "text": "find dry (loose) leaves",
+   "mod": "nc_tree",
+   "source": "mods/nc_tree/hints.lua:10",
+   "hidden": false,
+   "goal": {
+    "op": "and",
+    "keys": [
+     "nc_tree:leaves_loose"
+    ]
+   },
+   "reqs": {
+    "op": "and",
+    "keys": [
+     "dig:nc_tree:leaves"
+    ]
+   },
+   "depends_on": [
+    "nc_tree/dig-leaves"
+   ],
+   "unresolved_reqs": [],
+   "req_key_kinds": [
+    "event"
+   ],
+   "tier": 1
+  },
+  {
+   "id": "nc_tree/find-an-eggcorn",
+   "text": "find an eggcorn",
+   "mod": "nc_tree",
+   "source": "mods/nc_tree/hints.lua:15",
+   "hidden": false,
+   "goal": {
+    "op": "and",
+    "keys": [
+     "nc_tree:eggcorn"
+    ]
+   },
+   "reqs": {
+    "op": "and",
+    "keys": [
+     "dig:nc_tree:leaves"
+    ]
+   },
+   "depends_on": [
+    "nc_tree/dig-leaves"
+   ],
+   "unresolved_reqs": [],
+   "req_key_kinds": [
+    "event"
+   ],
+   "tier": 1
+  },
+  {
+   "id": "nc_tree/plant-an-eggcorn",
+   "text": "plant an eggcorn",
+   "mod": "nc_tree",
+   "source": "mods/nc_tree/hints.lua:20",
+   "hidden": false,
+   "goal": {
+    "op": "and",
+    "keys": [
+     "eggcorn planting"
+    ]
+   },
+   "reqs": {
+    "op": "and",
+    "keys": [
+     "inv:nc_tree:eggcorn",
+     "inv:nc_terrain:dirt_loose"
+    ]
+   },
+   "depends_on": [
+    "nc_tree/find-an-eggcorn",
+    "nc_terrain/dig-up-dirt"
+   ],
+   "unresolved_reqs": [],
+   "req_key_kinds": [
+    "event"
+   ],
+   "tier": 7
+  },
+  {
+   "id": "nc_tree/see-a-tree-grow",
+   "text": "see a tree grow",
+   "mod": "nc_tree",
+   "source": "mods/nc_tree/hints.lua:25",
+   "hidden": false,
+   "goal": {
+    "op": "or",
+    "keys": [
+     "tree growth",
+     "nc_tree:tree_bud"
+    ]
+   },
+   "reqs": {
+    "op": "and",
+    "keys": [
+     "eggcorn planting"
+    ]
+   },
+   "depends_on": [
+    "nc_tree/plant-an-eggcorn"
+   ],
+   "unresolved_reqs": [],
+   "req_key_kinds": [
+    "craft"
+   ],
+   "tier": 8
+  },
+  {
+   "id": "nc_tree/find-a-stick",
+   "text": "find a stick",
+   "mod": "nc_tree",
+   "source": "mods/nc_tree/hints.lua:33",
+   "hidden": false,
+   "goal": {
+    "op": "and",
+    "keys": [
+     "nc_tree:stick"
+    ]
+   },
+   "reqs": {
+    "op": "and",
+    "keys": [
+     "dig:nc_tree:leaves"
+    ]
+   },
+   "depends_on": [
+    "nc_tree/dig-leaves"
+   ],
+   "unresolved_reqs": [],
+   "req_key_kinds": [
+    "event"
+   ],
+   "tier": 1
+  },
+  {
+   "id": "nc_tree/cut-down-a-tree",
+   "text": "cut down a tree",
+   "mod": "nc_tree",
+   "source": "mods/nc_tree/hints.lua:38",
+   "hidden": false,
+   "goal": {
+    "op": "and",
+    "keys": [
+     "dig:nc_tree:tree"
+    ]
+   },
+   "reqs": {
+    "op": "and",
+    "keys": [
+     "toolcap:choppy:2"
+    ]
+   },
+   "depends_on": [
+    "nc_woodwork/assemble-a-wooden-tool",
+    "nc_stonework/put-a-stone-tip-onto-a-wooden-tool"
+   ],
+   "unresolved_reqs": [],
+   "req_key_kinds": [
+    "toolcap"
+   ],
+   "tier": 6
+  },
+  {
+   "id": "nc_tree/dig-up-a-tree-stump",
+   "text": "dig up a tree stump",
+   "mod": "nc_tree",
+   "source": "mods/nc_tree/hints.lua:43",
+   "hidden": false,
+   "goal": {
+    "op": "and",
+    "keys": [
+     "dig:nc_tree:root"
+    ]
+   },
+   "reqs": {
+    "op": "and",
+    "keys": [
+     "toolcap:choppy:4"
+    ]
+   },
+   "depends_on": [
+    "nc_lode/forge-lode-prills-into-a-tool-head",
+    "nc_lode/anneal-a-lode-cube"
+   ],
+   "unresolved_reqs": [],
+   "req_key_kinds": [
+    "toolcap"
+   ],
+   "tier": 11
+  },
+  {
+   "id": "nc_tree/grind-dead-plants-into-peat",
+   "text": "grind dead plants into peat",
+   "mod": "nc_tree",
+   "source": "mods/nc_tree/hints.lua:48",
+   "hidden": false,
+   "goal": {
+    "op": "and",
+    "keys": [
+     "compress peat block"
+    ]
+   },
+   "reqs": {
+    "op": "or",
+    "keys": [
+     "group:peat_grindable_item",
+     "group:peat_grindable_node"
+    ]
+   },
+   "depends_on": [
+    "nc_tree/find-dry-loose-leaves",
+    "nc_tree/find-an-eggcorn",
+    "nc_flora/find-a-rush",
+    "nc_flora/find-a-sedge",
+    "nc_flora/pack-sedges-into-thatch",
+    "nc_flora/pack-dry-rushes-into-wicker"
+   ],
+   "unresolved_reqs": [],
+   "req_key_kinds": [
+    "group"
+   ],
+   "tier": 1
+  },
+  {
+   "id": "nc_tree/ferment-peat-into-humus",
+   "text": "ferment peat into humus",
+   "mod": "nc_tree",
+   "source": "mods/nc_tree/hints.lua:56",
+   "hidden": false,
+   "goal": {
+    "op": "and",
+    "keys": [
+     "peat compost"
+    ]
+   },
+   "reqs": {
+    "op": "and",
+    "keys": [
+     "nc_tree:peat"
+    ]
+   },
+   "depends_on": [
+    "nc_tree/grind-dead-plants-into-peat"
+   ],
+   "unresolved_reqs": [],
+   "req_key_kinds": [
+    "item"
+   ],
+   "tier": 2
+  },
+  {
+   "id": "nc_woodwork/assemble-a-staff-from-sticks",
+   "text": "assemble a staff from sticks",
+   "mod": "nc_woodwork",
+   "source": "mods/nc_woodwork/hints.lua:6",
+   "hidden": false,
+   "goal": {
+    "op": "and",
+    "keys": [
+     "assemble staff"
+    ]
+   },
+   "reqs": {
+    "op": "and",
+    "keys": [
+     "nc_tree:stick"
+    ]
+   },
+   "depends_on": [
+    "nc_tree/find-a-stick"
+   ],
+   "unresolved_reqs": [],
+   "req_key_kinds": [
+    "item"
+   ],
+   "tier": 2
+  },
+  {
+   "id": "nc_woodwork/assemble-an-adze-out-of-sticks",
+   "text": "assemble an adze out of sticks",
+   "mod": "nc_woodwork",
+   "source": "mods/nc_woodwork/hints.lua:11",
+   "hidden": false,
+   "goal": {
+    "op": "and",
+    "keys": [
+     "assemble wood adze"
+    ]
+   },
+   "reqs": {
+    "op": "or",
+    "keys": [
+     "nc_tree:stick",
+     "nc_woodwork:staff"
+    ]
+   },
+   "depends_on": [
+    "nc_tree/find-a-stick",
+    "nc_woodwork/assemble-a-staff-from-sticks"
+   ],
+   "unresolved_reqs": [],
+   "req_key_kinds": [
+    "item"
+   ],
+   "tier": 2
+  },
+  {
+   "id": "nc_woodwork/assemble-a-wooden-ladder-from-sticks",
+   "text": "assemble a wooden ladder from sticks",
+   "mod": "nc_woodwork",
+   "source": "mods/nc_woodwork/hints.lua:16",
+   "hidden": false,
+   "goal": {
+    "op": "and",
+    "keys": [
+     "assemble wood ladder"
+    ]
+   },
+   "reqs": {
+    "op": "or",
+    "keys": [
+     "nc_tree:stick",
+     "nc_woodwork:staff"
+    ]
+   },
+   "depends_on": [
+    "nc_tree/find-a-stick",
+    "nc_woodwork/assemble-a-staff-from-sticks"
+   ],
+   "unresolved_reqs": [],
+   "req_key_kinds": [
+    "item"
+   ],
+   "tier": 2
+  },
+  {
+   "id": "nc_woodwork/assemble-a-wooden-frame-from-staves",
+   "text": "assemble a wooden frame from staves",
+   "mod": "nc_woodwork",
+   "source": "mods/nc_woodwork/hints.lua:21",
+   "hidden": false,
+   "goal": {
+    "op": "and",
+    "keys": [
+     "assemble wood frame"
+    ]
+   },
+   "reqs": {
+    "op": "or",
+    "keys": [
+     "nc_tree:stick",
+     "nc_woodwork:staff"
+    ]
+   },
+   "depends_on": [
+    "nc_tree/find-a-stick",
+    "nc_woodwork/assemble-a-staff-from-sticks"
+   ],
+   "unresolved_reqs": [],
+   "req_key_kinds": [
+    "item"
+   ],
+   "tier": 2
+  },
+  {
+   "id": "nc_woodwork/convert-a-wooden-frame-to-a-form",
+   "text": "convert a wooden frame to a form",
+   "mod": "nc_woodwork",
+   "source": "mods/nc_woodwork/hints.lua:26",
+   "hidden": false,
+   "goal": {
+    "op": "and",
+    "keys": [
+     "wooden frame to form"
+    ]
+   },
+   "reqs": {
+    "op": "or",
+    "keys": [
+     "nc_woodwork:frame"
+    ]
+   },
+   "depends_on": [
+    "nc_woodwork/assemble-a-wooden-frame-from-staves"
+   ],
+   "unresolved_reqs": [],
+   "req_key_kinds": [
+    "item"
+   ],
+   "tier": 3
+  },
+  {
+   "id": "nc_woodwork/convert-a-wooden-form-to-a-frame",
+   "text": "convert a wooden form to a frame",
+   "mod": "nc_woodwork",
+   "source": "mods/nc_woodwork/hints.lua:31",
+   "hidden": false,
+   "goal": {
+    "op": "and",
+    "keys": [
+     "wooden form to frame"
+    ]
+   },
+   "reqs": {
+    "op": "or",
+    "keys": [
+     "nc_woodwork:form"
+    ]
+   },
+   "depends_on": [
+    "nc_woodwork/convert-a-wooden-frame-to-a-form"
+   ],
+   "unresolved_reqs": [],
+   "req_key_kinds": [
+    "item"
+   ],
+   "tier": 4
+  },
+  {
+   "id": "nc_woodwork/split-a-tree-trunk-into-planks",
+   "text": "split a tree trunk into planks",
+   "mod": "nc_woodwork",
+   "source": "mods/nc_woodwork/hints.lua:36",
+   "hidden": false,
+   "goal": {
+    "op": "and",
+    "keys": [
+     "split tree to planks"
+    ]
+   },
+   "reqs": {
+    "op": "or",
+    "keys": [
+     "nc_woodwork:adze",
+     "nc_woodwork:tool_hatchet"
+    ]
+   },
+   "depends_on": [
+    "nc_woodwork/assemble-an-adze-out-of-sticks",
+    "nc_stonework/put-a-stone-tip-onto-a-wooden-tool"
+   ],
+   "unresolved_reqs": [],
+   "req_key_kinds": [
+    "item"
+   ],
+   "tier": 3
+  },
+  {
+   "id": "nc_woodwork/carve-wooden-tool-heads-from-planks",
+   "text": "carve wooden tool heads from planks",
+   "mod": "nc_woodwork",
+   "source": "mods/nc_woodwork/hints.lua:41",
+   "hidden": false,
+   "goal": {
+    "op": "and",
+    "keys": [
+     "carve nc_woodwork:plank"
+    ]
+   },
+   "reqs": {
+    "op": "and",
+    "keys": [
+     "split tree to planks"
+    ]
+   },
+   "depends_on": [
+    "nc_woodwork/split-a-tree-trunk-into-planks"
+   ],
+   "unresolved_reqs": [],
+   "req_key_kinds": [
+    "craft"
+   ],
+   "tier": 4
+  },
+  {
+   "id": "nc_woodwork/assemble-a-wooden-tool",
+   "text": "assemble a wooden tool",
+   "mod": "nc_woodwork",
+   "source": "mods/nc_woodwork/hints.lua:46",
+   "hidden": false,
+   "goal": {
+    "op": "or",
+    "keys": [
+     "assemble wood mallet",
+     "assemble wood spade",
+     "assemble wood hatchet",
+     "assemble wood pick"
+    ]
+   },
+   "reqs": {
+    "op": "and",
+    "keys": [
+     "carve nc_woodwork:plank"
+    ]
+   },
+   "depends_on": [
+    "nc_woodwork/carve-wooden-tool-heads-from-planks"
+   ],
+   "unresolved_reqs": [],
+   "req_key_kinds": [
+    "item"
+   ],
+   "tier": 5
+  },
+  {
+   "id": "nc_woodwork/carve-a-wooden-plank-completely",
+   "text": "carve a wooden plank completely",
+   "mod": "nc_woodwork",
+   "source": "mods/nc_woodwork/hints.lua:56",
+   "hidden": false,
+   "goal": {
+    "op": "and",
+    "keys": [
+     "carve nc_woodwork:toolhead_pick"
+    ]
+   },
+   "reqs": {
+    "op": "and",
+    "keys": [
+     "carve nc_woodwork:plank"
+    ]
+   },
+   "depends_on": [
+    "nc_woodwork/carve-wooden-tool-heads-from-planks"
+   ],
+   "unresolved_reqs": [],
+   "req_key_kinds": [
+    "item"
+   ],
+   "tier": 5
+  },
+  {
+   "id": "nc_woodwork/bash-a-plank-into-sticks",
+   "text": "bash a plank into sticks",
+   "mod": "nc_woodwork",
+   "source": "mods/nc_woodwork/hints.lua:61",
+   "hidden": false,
+   "goal": {
+    "op": "and",
+    "keys": [
+     "bash planks to sticks"
+    ]
+   },
+   "reqs": {
+    "op": "and",
+    "keys": [
+     "nc_woodwork:plank",
+     "toolcap:thumpy:3"
+    ]
+   },
+   "depends_on": [
+    "nc_woodwork/carve-wooden-tool-heads-from-planks",
+    "nc_stonework/put-a-stone-tip-onto-a-wooden-tool"
+   ],
+   "unresolved_reqs": [],
+   "req_key_kinds": [
+    "item",
+    "toolcap"
+   ],
+   "tier": 5
+  },
+  {
+   "id": "nc_woodwork/brace-a-wooden-form-with-a-stick",
+   "text": "brace a wooden form with a stick",
+   "mod": "nc_woodwork",
+   "source": "mods/nc_woodwork/hints.lua:66",
+   "hidden": false,
+   "goal": {
+    "op": "and",
+    "keys": [
+     "assemble braced wood form"
+    ]
+   },
+   "reqs": {
+    "op": "and",
+    "keys": [
+     "nc_tree:stick",
+     "nc_woodwork:form"
+    ]
+   },
+   "depends_on": [
+    "nc_tree/find-a-stick",
+    "nc_woodwork/convert-a-wooden-frame-to-a-form"
+   ],
+   "unresolved_reqs": [],
+   "req_key_kinds": [
+    "item"
+   ],
+   "tier": 4
+  },
+  {
+   "id": "nc_woodwork/assemble-a-wooden-shelf-from-a-form-and-plank",
+   "text": "assemble a wooden shelf from a form and plank",
+   "mod": "nc_woodwork",
+   "source": "mods/nc_woodwork/hints.lua:71",
+   "hidden": false,
+   "goal": {
+    "op": "and",
+    "keys": [
+     "assemble wood shelf"
+    ]
+   },
+   "reqs": {
+    "op": "and",
+    "keys": [
+     "nc_woodwork:plank",
+     "nc_woodwork:form"
+    ]
+   },
+   "depends_on": [
+    "nc_woodwork/carve-wooden-tool-heads-from-planks",
+    "nc_woodwork/convert-a-wooden-frame-to-a-form"
+   ],
+   "unresolved_reqs": [],
+   "req_key_kinds": [
+    "item"
+   ],
+   "tier": 5
+  },
+  {
+   "id": "nc_woodwork/assemble-a-rake-from-adzes-and-a-staff",
+   "text": "assemble a rake from adzes and a staff",
+   "mod": "nc_woodwork",
+   "source": "mods/nc_woodwork/hints.lua:76",
+   "hidden": true,
+   "goal": {
+    "op": "and",
+    "keys": [
+     "assemble rake"
+    ]
+   },
+   "reqs": {
+    "op": "and",
+    "keys": [
+     "assemble wood adze"
+    ]
+   },
+   "depends_on": [
+    "nc_woodwork/assemble-an-adze-out-of-sticks"
+   ],
+   "unresolved_reqs": [],
+   "req_key_kinds": [
+    "craft"
+   ],
+   "tier": 3
+  },
+  {
+   "id": "nc_stonework/put-a-gravel-tip-on-a-wooden-adze",
+   "text": "put a gravel tip on a wooden adze",
+   "mod": "nc_stonework",
+   "source": "mods/nc_stonework/hints.lua:6",
+   "hidden": false,
+   "goal": {
+    "op": "and",
+    "keys": [
+     "assemble graveled adze"
+    ]
+   },
+   "reqs": {
+    "op": "and",
+    "keys": [
+     "inv:group:gravel",
+     "nc_woodwork:adze"
+    ]
+   },
+   "depends_on": [
+    "nc_terrain/dig-up-gravel",
+    "nc_stonework/break-cobble-into-chips",
+    "nc_woodwork/assemble-an-adze-out-of-sticks"
+   ],
+   "unresolved_reqs": [],
+   "req_key_kinds": [
+    "event",
+    "item"
+   ],
+   "tier": 7
+  },
+  {
+   "id": "nc_stonework/break-cobble-into-chips",
+   "text": "break cobble into chips",
+   "mod": "nc_stonework",
+   "source": "mods/nc_stonework/hints.lua:11",
+   "hidden": false,
+   "goal": {
+    "op": "and",
+    "keys": [
+     "break cobble to chips"
+    ]
+   },
+   "reqs": {
+    "op": "and",
+    "keys": [
+     "nc_terrain:cobble_loose"
+    ]
+   },
+   "depends_on": [
+    "nc_terrain/dig-up-cobble",
+    "nc_stonework/pack-stone-chips-back-into-cobble"
+   ],
+   "unresolved_reqs": [],
+   "req_key_kinds": [
+    "item"
+   ],
+   "tier": 1
+  },
+  {
+   "id": "nc_stonework/pack-stone-chips-back-into-cobble",
+   "text": "pack stone chips back into cobble",
+   "mod": "nc_stonework",
+   "source": "mods/nc_stonework/hints.lua:16",
+   "hidden": false,
+   "goal": {
+    "op": "and",
+    "keys": [
+     "repack chips to cobble"
+    ]
+   },
+   "reqs": {
+    "op": "and",
+    "keys": [
+     "nc_stonework:chip"
+    ]
+   },
+   "depends_on": [
+    "nc_stonework/break-cobble-into-chips"
+   ],
+   "unresolved_reqs": [],
+   "req_key_kinds": [
+    "item"
+   ],
+   "tier": 2
+  },
+  {
+   "id": "nc_stonework/put-a-stone-tip-onto-a-wooden-tool",
+   "text": "put a stone tip onto a wooden tool",
+   "mod": "nc_stonework",
+   "source": "mods/nc_stonework/hints.lua:21",
+   "hidden": false,
+   "goal": {
+    "op": "or",
+    "keys": [
+     "assemble nc_stonework:tool_mallet",
+     "assemble nc_stonework:tool_spade",
+     "assemble nc_stonework:tool_hatchet",
+     "assemble nc_stonework:tool_pick"
+    ]
+   },
+   "reqs": {
+    "op": "and",
+    "keys": [
+     "nc_stonework:chip"
+    ]
+   },
+   "depends_on": [
+    "nc_stonework/break-cobble-into-chips"
+   ],
+   "unresolved_reqs": [],
+   "req_key_kinds": [
+    "item"
+   ],
+   "tier": 2
+  },
+  {
+   "id": "nc_stonework/chisel-stone-bricks",
+   "text": "chisel stone bricks",
+   "mod": "nc_stonework",
+   "source": "mods/nc_stonework/hints.lua:31",
+   "hidden": false,
+   "goal": {
+    "op": "and",
+    "keys": [
+     "chisel bricks"
+    ]
+   },
+   "reqs": {
+    "op": "and",
+    "keys": [
+     "group:smoothstone",
+     "group:chisel"
+    ]
+   },
+   "depends_on": [
+    "nc_lode/forge-a-lode-prill-into-a-bar",
+    "nc_lode/forge-lode-bars-into-a-rod",
+    "nc_lode/forge-a-lode-rod-and-bar-into-a-ladder"
+   ],
+   "unresolved_reqs": [
+    "group:smoothstone"
+   ],
+   "req_key_kinds": [
+    "group"
+   ],
+   "tier": 15
+  },
+  {
+   "id": "nc_stonework/bond-stone-bricks",
+   "text": "bond stone bricks",
+   "mod": "nc_stonework",
+   "source": "mods/nc_stonework/hints.lua:36",
+   "hidden": false,
+   "goal": {
+    "op": "and",
+    "keys": [
+     "bond bricks"
+    ]
+   },
+   "reqs": {
+    "op": "and",
+    "keys": [
+     "chisel bricks"
+    ]
+   },
+   "depends_on": [
+    "nc_stonework/chisel-stone-bricks"
+   ],
+   "unresolved_reqs": [],
+   "req_key_kinds": [
+    "craft"
+   ],
+   "tier": 16
+  },
+  {
+   "id": "nc_optics/melt-sand-into-molten-glass",
+   "text": "melt sand into molten glass",
+   "mod": "nc_optics",
+   "source": "mods/nc_optics/hints.lua:6",
+   "hidden": false,
+   "goal": {
+    "op": "and",
+    "keys": [
+     "group:silica_molten"
+    ]
+   },
+   "reqs": {
+    "op": "and",
+    "keys": [
+     "nc_terrain:sand_loose"
+    ]
+   },
+   "depends_on": [
+    "nc_terrain/dig-up-sand"
+   ],
+   "unresolved_reqs": [],
+   "req_key_kinds": [
+    "item"
+   ],
+   "tier": 1
+  },
+  {
+   "id": "nc_optics/quench-molten-glass-into-chromatic-glass",
+   "text": "quench molten glass into chromatic glass",
+   "mod": "nc_optics",
+   "source": "mods/nc_optics/hints.lua:11",
+   "hidden": false,
+   "goal": {
+    "op": "and",
+    "keys": [
+     "quench opaque glass"
+    ]
+   },
+   "reqs": {
+    "op": "and",
+    "keys": [
+     "group:silica_molten"
+    ]
+   },
+   "depends_on": [
+    "nc_optics/melt-sand-into-molten-glass"
+   ],
+   "unresolved_reqs": [],
+   "req_key_kinds": [
+    "group"
+   ],
+   "tier": 2
+  },
+  {
+   "id": "nc_optics/mold-molten-glass-into-clear-glass",
+   "text": "mold molten glass into clear glass",
+   "mod": "nc_optics",
+   "source": "mods/nc_optics/hints.lua:16",
+   "hidden": false,
+   "goal": {
+    "op": "and",
+    "keys": [
+     "cool clear glass"
+    ]
+   },
+   "reqs": {
+    "op": "and",
+    "keys": [
+     "group:silica_molten"
+    ]
+   },
+   "depends_on": [
+    "nc_optics/melt-sand-into-molten-glass"
+   ],
+   "unresolved_reqs": [],
+   "req_key_kinds": [
+    "group"
+   ],
+   "tier": 2
+  },
+  {
+   "id": "nc_optics/mold-molten-glass-into-float-glass",
+   "text": "mold molten glass into float glass",
+   "mod": "nc_optics",
+   "source": "mods/nc_optics/hints.lua:21",
+   "hidden": false,
+   "goal": {
+    "op": "and",
+    "keys": [
+     "cool float glass"
+    ]
+   },
+   "reqs": {
+    "op": "and",
+    "keys": [
+     "cool clear glass",
+     "group:lava"
+    ]
+   },
+   "depends_on": [
+    "nc_optics/mold-molten-glass-into-clear-glass",
+    "nc_terrain/find-pumwater"
+   ],
+   "unresolved_reqs": [],
+   "req_key_kinds": [
+    "craft",
+    "group"
+   ],
+   "tier": 4
+  },
+  {
+   "id": "nc_optics/cool-molten-glass-into-crude-glass",
+   "text": "cool molten glass into crude glass",
+   "mod": "nc_optics",
+   "source": "mods/nc_optics/hints.lua:26",
+   "hidden": false,
+   "goal": {
+    "op": "and",
+    "keys": [
+     "nc_optics:glass_crude"
+    ]
+   },
+   "reqs": {
+    "op": "and",
+    "keys": [
+     "group:silica_molten"
+    ]
+   },
+   "depends_on": [
+    "nc_optics/melt-sand-into-molten-glass"
+   ],
+   "unresolved_reqs": [],
+   "req_key_kinds": [
+    "group"
+   ],
+   "tier": 2
+  },
+  {
+   "id": "nc_optics/chip-chromatic-glass-into-prisms",
+   "text": "chip chromatic glass into prisms",
+   "mod": "nc_optics",
+   "source": "mods/nc_optics/hints.lua:31",
+   "hidden": false,
+   "goal": {
+    "op": "and",
+    "keys": [
+     "hammer prism from glass"
+    ]
+   },
+   "reqs": {
+    "op": "and",
+    "keys": [
+     "nc_optics:glass_opaque",
+     "nc_lode:tool_mallet_tempered"
+    ]
+   },
+   "depends_on": [
+    "nc_optics/quench-molten-glass-into-chromatic-glass",
+    "nc_lode/temper-a-lode-tool-head"
+   ],
+   "unresolved_reqs": [],
+   "req_key_kinds": [
+    "item"
+   ],
+   "tier": 11
+  },
+  {
+   "id": "nc_optics/chop-chromatic-glass-into-lenses",
+   "text": "chop chromatic glass into lenses",
+   "mod": "nc_optics",
+   "source": "mods/nc_optics/hints.lua:36",
+   "hidden": false,
+   "goal": {
+    "op": "and",
+    "keys": [
+     "cleave lenses from glass"
+    ]
+   },
+   "reqs": {
+    "op": "and",
+    "keys": [
+     "nc_optics:glass_opaque",
+     "nc_lode:tool_hatchet_tempered"
+    ]
+   },
+   "depends_on": [
+    "nc_optics/quench-molten-glass-into-chromatic-glass",
+    "nc_lode/temper-a-lode-tool-head"
+   ],
+   "unresolved_reqs": [],
+   "req_key_kinds": [
+    "item"
+   ],
+   "tier": 11
+  },
+  {
+   "id": "nc_optics/activate-a-lens",
+   "text": "activate a lens",
+   "mod": "nc_optics",
+   "source": "mods/nc_optics/hints.lua:41",
+   "hidden": false,
+   "goal": {
+    "op": "or",
+    "keys": [
+     "group:optic_lens_emit"
+    ]
+   },
+   "reqs": {
+    "op": "and",
+    "keys": [
+     "group:silica_lens"
+    ]
+   },
+   "depends_on": [
+    "nc_optics/chop-chromatic-glass-into-lenses"
+   ],
+   "unresolved_reqs": [],
+   "req_key_kinds": [
+    "group"
+   ],
+   "tier": 12
+  },
+  {
+   "id": "nc_optics/produce-light-from-a-lens",
+   "text": "produce light from a lens",
+   "mod": "nc_optics",
+   "source": "mods/nc_optics/hints.lua:46",
+   "hidden": false,
+   "goal": {
+    "op": "or",
+    "keys": [
+     "nc_optics:lens_glow",
+     "nc_optics:lens_glow_glued"
+    ]
+   },
+   "reqs": {
+    "op": "and",
+    "keys": [
+     "group:silica_lens"
+    ]
+   },
+   "depends_on": [
+    "nc_optics/chop-chromatic-glass-into-lenses"
+   ],
+   "unresolved_reqs": [],
+   "req_key_kinds": [
+    "group"
+   ],
+   "tier": 12
+  },
+  {
+   "id": "nc_optics/activate-a-prism",
+   "text": "activate a prism",
+   "mod": "nc_optics",
+   "source": "mods/nc_optics/hints.lua:51",
+   "hidden": false,
+   "goal": {
+    "op": "or",
+    "keys": [
+     "nc_optics:prism_on",
+     "nc_optics:prism_on_glued"
+    ]
+   },
+   "reqs": {
+    "op": "and",
+    "keys": [
+     "group:optic_lens_emit"
+    ]
+   },
+   "depends_on": [
+    "nc_optics/activate-a-lens"
+   ],
+   "unresolved_reqs": [],
+   "req_key_kinds": [
+    "group"
+   ],
+   "tier": 13
+  },
+  {
+   "id": "nc_optics/gate-a-prism",
+   "text": "gate a prism",
+   "mod": "nc_optics",
+   "source": "mods/nc_optics/hints.lua:56",
+   "hidden": false,
+   "goal": {
+    "op": "or",
+    "keys": [
+     "nc_optics:prism_gated",
+     "nc_optics:prism_gated_glued"
+    ]
+   },
+   "reqs": {
+    "op": "and",
+    "keys": [
+     "group:optic_lens_emit"
+    ]
+   },
+   "depends_on": [
+    "nc_optics/activate-a-lens"
+   ],
+   "unresolved_reqs": [],
+   "req_key_kinds": [
+    "group"
+   ],
+   "tier": 13
+  },
+  {
+   "id": "nc_optics/stick-a-lens-prism-in-place",
+   "text": "stick a lens/prism in place",
+   "mod": "nc_optics",
+   "source": "mods/nc_optics/hints.lua:61",
+   "hidden": false,
+   "goal": {
+    "op": "and",
+    "keys": [
+     "glue optic"
+    ]
+   },
+   "reqs": {
+    "op": "and",
+    "keys": [
+     "nc_tree:eggcorn",
+     "group:optic_gluable"
+    ]
+   },
+   "depends_on": [
+    "nc_tree/find-an-eggcorn",
+    "nc_optics/chop-chromatic-glass-into-lenses",
+    "nc_optics/chip-chromatic-glass-into-prisms"
+   ],
+   "unresolved_reqs": [],
+   "req_key_kinds": [
+    "group",
+    "item"
+   ],
+   "tier": 12
+  },
+  {
+   "id": "nc_optics/assemble-a-clear-glass-case",
+   "text": "assemble a clear glass case",
+   "mod": "nc_optics",
+   "source": "mods/nc_optics/hints.lua:66",
+   "hidden": false,
+   "goal": {
+    "op": "and",
+    "keys": [
+     "assemble clear glass case"
+    ]
+   },
+   "reqs": {
+    "op": "and",
+    "keys": [
+     "nc_optics:glass",
+     "nc_woodwork:form"
+    ]
+   },
+   "depends_on": [
+    "nc_optics/mold-molten-glass-into-clear-glass",
+    "nc_woodwork/convert-a-wooden-frame-to-a-form"
+   ],
+   "unresolved_reqs": [],
+   "req_key_kinds": [
+    "item"
+   ],
+   "tier": 4
+  },
+  {
+   "id": "nc_optics/assemble-a-float-glass-case",
+   "text": "assemble a float glass case",
+   "mod": "nc_optics",
+   "source": "mods/nc_optics/hints.lua:70",
+   "hidden": false,
+   "goal": {
+    "op": "and",
+    "keys": [
+     "assemble float glass case"
+    ]
+   },
+   "reqs": {
+    "op": "and",
+    "keys": [
+     "nc_optics:glass_float",
+     "nc_woodwork:form"
+    ]
+   },
+   "depends_on": [
+    "nc_optics/mold-molten-glass-into-float-glass",
+    "nc_woodwork/convert-a-wooden-frame-to-a-form"
+   ],
+   "unresolved_reqs": [],
+   "req_key_kinds": [
+    "item"
+   ],
+   "tier": 5
+  },
+  {
+   "id": "nc_concrete/assemble-a-stone-tipped-stylus",
+   "text": "assemble a stone-tipped stylus",
+   "mod": "nc_concrete",
+   "source": "mods/nc_concrete/hints.lua:8",
+   "hidden": false,
+   "goal": {
+    "op": "and",
+    "keys": [
+     "assemble stylus"
+    ]
+   },
+   "reqs": {
+    "op": "and",
+    "keys": [
+     "nc_tree:stick",
+     "nc_stonework:chip",
+     "group:concrete_etchable"
+    ]
+   },
+   "depends_on": [
+    "nc_tree/find-a-stick",
+    "nc_stonework/break-cobble-into-chips",
+    "nc_concrete/set-concrete-to-pliant"
+   ],
+   "unresolved_reqs": [],
+   "req_key_kinds": [
+    "group",
+    "item"
+   ],
+   "tier": 10
+  },
+  {
+   "id": "nc_concrete/etch-pliant-concrete-with-a-stylus",
+   "text": "etch pliant concrete with a stylus",
+   "mod": "nc_concrete",
+   "source": "mods/nc_concrete/hints.lua:12",
+   "hidden": false,
+   "goal": {
+    "op": "and",
+    "keys": [
+     "stylus etch"
+    ]
+   },
+   "reqs": {
+    "op": "and",
+    "keys": [
+     "assemble stylus"
+    ]
+   },
+   "depends_on": [
+    "nc_concrete/assemble-a-stone-tipped-stylus"
+   ],
+   "unresolved_reqs": [],
+   "req_key_kinds": [
+    "craft"
+   ],
+   "tier": 11
+  },
+  {
+   "id": "nc_concrete/change-a-stylus-pattern",
+   "text": "change a stylus pattern",
+   "mod": "nc_concrete",
+   "source": "mods/nc_concrete/hints.lua:16",
+   "hidden": false,
+   "goal": {
+    "op": "and",
+    "keys": [
+     "stylus train"
+    ]
+   },
+   "reqs": {
+    "op": "and",
+    "keys": [
+     "stylus etch"
+    ]
+   },
+   "depends_on": [
+    "nc_concrete/etch-pliant-concrete-with-a-stylus"
+   ],
+   "unresolved_reqs": [],
+   "req_key_kinds": [
+    "craft"
+   ],
+   "tier": 12
+  },
+  {
+   "id": "nc_concrete/mix-gravel-into-ash-to-make-aggregate",
+   "text": "mix gravel into ash to make aggregate",
+   "mod": "nc_concrete",
+   "source": "mods/nc_concrete/hints.lua:21",
+   "hidden": false,
+   "goal": {
+    "op": "and",
+    "keys": [
+     "mix aggregate"
+    ]
+   },
+   "reqs": {
+    "op": "and",
+    "keys": [
+     "nc_terrain:gravel_loose",
+     "nc_fire:ash"
+    ]
+   },
+   "depends_on": [
+    "nc_terrain/dig-up-gravel",
+    "nc_fire/find-ash"
+   ],
+   "unresolved_reqs": [],
+   "req_key_kinds": [
+    "item"
+   ],
+   "tier": 7
+  },
+  {
+   "id": "nc_concrete/mix-sand-into-ash-to-make-render",
+   "text": "mix sand into ash to make render",
+   "mod": "nc_concrete",
+   "source": "mods/nc_concrete/hints.lua:25",
+   "hidden": false,
+   "goal": {
+    "op": "and",
+    "keys": [
+     "mix render"
+    ]
+   },
+   "reqs": {
+    "op": "and",
+    "keys": [
+     "nc_terrain:sand_loose",
+     "nc_fire:ash"
+    ]
+   },
+   "depends_on": [
+    "nc_terrain/dig-up-sand",
+    "nc_fire/find-ash"
+   ],
+   "unresolved_reqs": [],
+   "req_key_kinds": [
+    "item"
+   ],
+   "tier": 4
+  },
+  {
+   "id": "nc_concrete/mix-dirt-into-ash-to-make-adobe-mix",
+   "text": "mix dirt into ash to make adobe mix",
+   "mod": "nc_concrete",
+   "source": "mods/nc_concrete/hints.lua:29",
+   "hidden": false,
+   "goal": {
+    "op": "and",
+    "keys": [
+     "mix mud"
+    ]
+   },
+   "reqs": {
+    "op": "and",
+    "keys": [
+     "nc_terrain:dirt_loose",
+     "nc_fire:ash"
+    ]
+   },
+   "depends_on": [
+    "nc_terrain/dig-up-dirt",
+    "nc_fire/find-ash"
+   ],
+   "unresolved_reqs": [],
+   "req_key_kinds": [
+    "item"
+   ],
+   "tier": 7
+  },
+  {
+   "id": "nc_concrete/add-coal-to-aggregate-to-make-tarstone",
+   "text": "add coal to aggregate to make tarstone",
+   "mod": "nc_concrete",
+   "source": "mods/nc_concrete/hints.lua:33",
+   "hidden": false,
+   "goal": {
+    "op": "and",
+    "keys": [
+     "craft:nc_concrete:coalaggregate"
+    ]
+   },
+   "reqs": {
+    "op": "and",
+    "keys": [
+     "nc_fire:lump_coal",
+     "nc_concrete:aggregate"
+    ]
+   },
+   "depends_on": [
+    "nc_fire/chop-up-charcoal",
+    "nc_concrete/mix-gravel-into-ash-to-make-aggregate"
+   ],
+   "unresolved_reqs": [],
+   "req_key_kinds": [
+    "item"
+   ],
+   "tier": 8
+  },
+  {
+   "id": "nc_concrete/mix-crude-glass-into-ash-to-make-spackling",
+   "text": "mix crude glass into ash to make spackling",
+   "mod": "nc_concrete",
+   "source": "mods/nc_concrete/hints.lua:37",
+   "hidden": false,
+   "goal": {
+    "op": "and",
+    "keys": [
+     "mix cloudmix"
+    ]
+   },
+   "reqs": {
+    "op": "and",
+    "keys": [
+     "nc_optics:glass_crude",
+     "nc_fire:ash"
+    ]
+   },
+   "depends_on": [
+    "nc_optics/cool-molten-glass-into-crude-glass",
+    "nc_fire/find-ash"
+   ],
+   "unresolved_reqs": [],
+   "req_key_kinds": [
+    "item"
+   ],
+   "tier": 4
+  },
+  {
+   "id": "nc_concrete/wet-a-concrete-mix",
+   "text": "wet a concrete mix",
+   "mod": "nc_concrete",
+   "source": "mods/nc_concrete/hints.lua:41",
+   "hidden": false,
+   "goal": {
+    "op": "and",
+    "keys": [
+     "group:concrete_wet"
+    ]
+   },
+   "reqs": {
+    "op": "and",
+    "keys": [
+     "group:concrete_powder"
+    ]
+   },
+   "depends_on": [
+    "nc_concrete/mix-gravel-into-ash-to-make-aggregate",
+    "nc_concrete/mix-sand-into-ash-to-make-render",
+    "nc_concrete/mix-dirt-into-ash-to-make-adobe-mix",
+    "nc_concrete/mix-crude-glass-into-ash-to-make-spackling"
+   ],
+   "unresolved_reqs": [],
+   "req_key_kinds": [
+    "group"
+   ],
+   "tier": 8
+  },
+  {
+   "id": "nc_concrete/set-concrete-to-pliant",
+   "text": "set concrete to pliant",
+   "mod": "nc_concrete",
+   "source": "mods/nc_concrete/hints.lua:45",
+   "hidden": false,
+   "goal": {
+    "op": "and",
+    "keys": [
+     "group:concrete_etchable"
+    ]
+   },
+   "reqs": {
+    "op": "and",
+    "keys": [
+     "group:concrete_wet"
+    ]
+   },
+   "depends_on": [
+    "nc_concrete/wet-a-concrete-mix"
+   ],
+   "unresolved_reqs": [],
+   "req_key_kinds": [
+    "group"
+   ],
+   "tier": 9
+  },
+  {
+   "id": "nc_concrete/cure-pliant-concrete-fully",
+   "text": "cure pliant concrete fully",
+   "mod": "nc_concrete",
+   "source": "mods/nc_concrete/hints.lua:49",
+   "hidden": false,
+   "goal": {
+    "op": "and",
+    "keys": [
+     "cure pliant concrete"
+    ]
+   },
+   "reqs": {
+    "op": "and",
+    "keys": [
+     "group:concrete_etchable"
+    ]
+   },
+   "depends_on": [
+    "nc_concrete/set-concrete-to-pliant"
+   ],
+   "unresolved_reqs": [],
+   "req_key_kinds": [
+    "group"
+   ],
+   "tier": 10
+  },
+  {
+   "id": "nc_lode/find-lode-ore",
+   "text": "find lode ore",
+   "mod": "nc_lode",
+   "source": "mods/nc_lode/hints.lua:6",
+   "hidden": false,
+   "goal": {
+    "op": "and",
+    "keys": [
+     "nc_lode:ore"
+    ]
+   },
+   "reqs": {
+    "op": "and",
+    "keys": [
+     "toolcap:cracky:2"
+    ]
+   },
+   "depends_on": [
+    "nc_woodwork/assemble-a-wooden-tool",
+    "nc_stonework/put-a-stone-tip-onto-a-wooden-tool"
+   ],
+   "unresolved_reqs": [],
+   "req_key_kinds": [
+    "toolcap"
+   ],
+   "tier": 6
+  },
+  {
+   "id": "nc_lode/dig-up-lode-ore",
+   "text": "dig up lode ore",
+   "mod": "nc_lode",
+   "source": "mods/nc_lode/hints.lua:11",
+   "hidden": false,
+   "goal": {
+    "op": "and",
+    "keys": [
+     "inv:nc_lode:cobble_loose"
+    ]
+   },
+   "reqs": {
+    "op": "and",
+    "keys": [
+     "nc_lode:ore",
+     "toolcap:cracky:2"
+    ]
+   },
+   "depends_on": [
+    "nc_lode/find-lode-ore",
+    "nc_woodwork/assemble-a-wooden-tool",
+    "nc_stonework/put-a-stone-tip-onto-a-wooden-tool"
+   ],
+   "unresolved_reqs": [],
+   "req_key_kinds": [
+    "item",
+    "toolcap"
+   ],
+   "tier": 7
+  },
+  {
+   "id": "nc_lode/melt-down-lode-metal-from-lode-cobble",
+   "text": "melt down lode metal from lode cobble",
+   "mod": "nc_lode",
+   "source": "mods/nc_lode/hints.lua:16",
+   "hidden": false,
+   "goal": {
+    "op": "and",
+    "keys": [
+     "lode cobble drain"
+    ]
+   },
+   "reqs": {
+    "op": "and",
+    "keys": [
+     "inv:nc_lode:cobble_loose"
+    ]
+   },
+   "depends_on": [
+    "nc_lode/dig-up-lode-ore"
+   ],
+   "unresolved_reqs": [],
+   "req_key_kinds": [
+    "event"
+   ],
+   "tier": 8
+  },
+  {
+   "id": "nc_lode/sinter-glowing-lode-prills-into-a-cube",
+   "text": "sinter glowing lode prills into a cube",
+   "mod": "nc_lode",
+   "source": "mods/nc_lode/hints.lua:21",
+   "hidden": false,
+   "goal": {
+    "op": "and",
+    "keys": [
+     "forge lode block"
+    ]
+   },
+   "reqs": {
+    "op": "and",
+    "keys": [
+     "nc_lode:prill_hot"
+    ]
+   },
+   "depends_on": [
+    "nc_lode/melt-down-lode-metal-from-lode-cobble"
+   ],
+   "unresolved_reqs": [],
+   "req_key_kinds": [
+    "item"
+   ],
+   "tier": 9
+  },
+  {
+   "id": "nc_lode/anneal-a-lode-cube",
+   "text": "anneal a lode cube",
+   "mod": "nc_lode",
+   "source": "mods/nc_lode/hints.lua:26",
+   "hidden": false,
+   "goal": {
+    "op": "and",
+    "keys": [
+     "metallurgize nc_lode:block_annealed"
+    ]
+   },
+   "reqs": {
+    "op": "and",
+    "keys": [
+     "forge lode block"
+    ]
+   },
+   "depends_on": [
+    "nc_lode/sinter-glowing-lode-prills-into-a-cube"
+   ],
+   "unresolved_reqs": [],
+   "req_key_kinds": [
+    "craft"
+   ],
+   "tier": 10
+  },
+  {
+   "id": "nc_lode/temper-a-lode-cube",
+   "text": "temper a lode cube",
+   "mod": "nc_lode",
+   "source": "mods/nc_lode/hints.lua:31",
+   "hidden": false,
+   "goal": {
+    "op": "and",
+    "keys": [
+     "metallurgize nc_lode:block_tempered"
+    ]
+   },
+   "reqs": {
+    "op": "and",
+    "keys": [
+     "forge lode block"
+    ]
+   },
+   "depends_on": [
+    "nc_lode/sinter-glowing-lode-prills-into-a-cube"
+   ],
+   "unresolved_reqs": [],
+   "req_key_kinds": [
+    "craft"
+   ],
+   "tier": 10
+  },
+  {
+   "id": "nc_lode/work-glowing-lode-on-a-stone-anvil",
+   "text": "work glowing lode on a stone anvil",
+   "mod": "nc_lode",
+   "source": "mods/nc_lode/hints.lua:36",
+   "hidden": false,
+   "goal": {
+    "op": "and",
+    "keys": [
+     "anvil:hot/stone"
+    ]
+   },
+   "reqs": {
+    "op": "and",
+    "keys": [
+     "nc_lode:prill_hot"
+    ]
+   },
+   "depends_on": [
+    "nc_lode/melt-down-lode-metal-from-lode-cobble"
+   ],
+   "unresolved_reqs": [],
+   "req_key_kinds": [
+    "item"
+   ],
+   "tier": 9
+  },
+  {
+   "id": "nc_lode/work-glowing-lode-on-a-lode-anvil",
+   "text": "work glowing lode on a lode anvil",
+   "mod": "nc_lode",
+   "source": "mods/nc_lode/hints.lua:41",
+   "hidden": false,
+   "goal": {
+    "op": "or",
+    "keys": [
+     "anvil:hot/annealed",
+     "anvil:hot/tempered"
+    ]
+   },
+   "reqs": {
+    "op": "and",
+    "keys": [
+     "nc_lode:block_annealed"
+    ]
+   },
+   "depends_on": [
+    "nc_lode/anneal-a-lode-cube"
+   ],
+   "unresolved_reqs": [],
+   "req_key_kinds": [
+    "item"
+   ],
+   "tier": 11
+  },
+  {
+   "id": "nc_lode/work-annealed-lode-on-a-tempered-lode-anvil",
+   "text": "work annealed lode on a tempered lode anvil",
+   "mod": "nc_lode",
+   "source": "mods/nc_lode/hints.lua:49",
+   "hidden": false,
+   "goal": {
+    "op": "and",
+    "keys": [
+     "anvil:cold/tempered"
+    ]
+   },
+   "reqs": {
+    "op": "and",
+    "keys": [
+     "nc_lode:block_tempered"
+    ]
+   },
+   "depends_on": [
+    "nc_lode/temper-a-lode-cube"
+   ],
+   "unresolved_reqs": [],
+   "req_key_kinds": [
+    "item"
+   ],
+   "tier": 11
+  },
+  {
+   "id": "nc_lode/forge-lode-prills-into-a-tool-head",
+   "text": "forge lode prills into a tool head",
+   "mod": "nc_lode",
+   "source": "mods/nc_lode/hints.lua:54",
+   "hidden": false,
+   "goal": {
+    "op": "and",
+    "keys": [
+     "forge lode toolhead_mallet"
+    ]
+   },
+   "reqs": {
+    "op": "or",
+    "keys": [
+     "nc_lode:prill_hot",
+     "nc_lode:prill_annealed",
+     "nc_lode:prill_tempered"
+    ]
+   },
+   "depends_on": [
+    "nc_lode/melt-down-lode-metal-from-lode-cobble",
+    "nc_lode/anneal-a-lode-cube",
+    "nc_lode/temper-a-lode-cube"
+   ],
+   "unresolved_reqs": [],
+   "req_key_kinds": [
+    "item"
+   ],
+   "tier": 9
+  },
+  {
+   "id": "nc_lode/temper-a-lode-tool-head",
+   "text": "temper a lode tool head",
+   "mod": "nc_lode",
+   "source": "mods/nc_lode/hints.lua:63",
+   "hidden": false,
+   "goal": {
+    "op": "or",
+    "keys": [
+     "metallurgize nc_lode:toolhead_mallet_tempered",
+     "metallurgize nc_lode:toolhead_spade_tempered",
+     "metallurgize nc_lode:toolhead_hatchet_tempered",
+     "metallurgize nc_lode:toolhead_pick_tempered",
+     "metallurgize nc_lode:toolhead_mattock_tempered"
+    ]
+   },
+   "reqs": {
+    "op": "and",
+    "keys": [
+     "forge lode toolhead_mallet"
+    ]
+   },
+   "depends_on": [
+    "nc_lode/forge-lode-prills-into-a-tool-head"
+   ],
+   "unresolved_reqs": [],
+   "req_key_kinds": [
+    "craft"
+   ],
+   "tier": 10
+  },
+  {
+   "id": "nc_lode/weld-glowing-lode-pick-and-spade-heads-together",
+   "text": "weld glowing lode pick and spade heads together",
+   "mod": "nc_lode",
+   "source": "mods/nc_lode/hints.lua:74",
+   "hidden": false,
+   "goal": {
+    "op": "and",
+    "keys": [
+     "assemble lode mattock head"
+    ]
+   },
+   "reqs": {
+    "op": "and",
+    "keys": [
+     "forge lode toolhead_pick"
+    ]
+   },
+   "depends_on": [
+    "nc_lode/forge-lode-prills-into-a-tool-head"
+   ],
+   "unresolved_reqs": [],
+   "req_key_kinds": [
+    "craft"
+   ],
+   "tier": 10
+  },
+  {
+   "id": "nc_lode/forge-a-lode-prill-into-a-bar",
+   "text": "forge a lode prill into a bar",
+   "mod": "nc_lode",
+   "source": "mods/nc_lode/hints.lua:79",
+   "hidden": false,
+   "goal": {
+    "op": "and",
+    "keys": [
+     "anvil making lode bar"
+    ]
+   },
+   "reqs": {
+    "op": "and",
+    "keys": [
+     "lode anvil"
+    ]
+   },
+   "depends_on": [
+    "nc_lode/work-glowing-lode-on-a-lode-anvil"
+   ],
+   "unresolved_reqs": [],
+   "req_key_kinds": [
+    "craft"
+   ],
+   "tier": 12
+  },
+  {
+   "id": "nc_lode/forge-lode-bars-into-a-rod",
+   "text": "forge lode bars into a rod",
+   "mod": "nc_lode",
+   "source": "mods/nc_lode/hints.lua:84",
+   "hidden": false,
+   "goal": {
+    "op": "and",
+    "keys": [
+     "anvil making lode rod"
+    ]
+   },
+   "reqs": {
+    "op": "and",
+    "keys": [
+     "anvil making lode bar"
+    ]
+   },
+   "depends_on": [
+    "nc_lode/forge-a-lode-prill-into-a-bar"
+   ],
+   "unresolved_reqs": [],
+   "req_key_kinds": [
+    "craft"
+   ],
+   "tier": 13
+  },
+  {
+   "id": "nc_lode/forge-a-lode-rod-and-bar-into-a-ladder",
+   "text": "forge a lode rod and bar into a ladder",
+   "mod": "nc_lode",
+   "source": "mods/nc_lode/hints.lua:89",
+   "hidden": false,
+   "goal": {
+    "op": "and",
+    "keys": [
+     "anvil making lode ladder"
+    ]
+   },
+   "reqs": {
+    "op": "and",
+    "keys": [
+     "anvil making lode rod"
+    ]
+   },
+   "depends_on": [
+    "nc_lode/forge-lode-bars-into-a-rod"
+   ],
+   "unresolved_reqs": [],
+   "req_key_kinds": [
+    "craft"
+   ],
+   "tier": 14
+  },
+  {
+   "id": "nc_lode/forge-lode-rods-into-a-frame",
+   "text": "forge lode rods into a frame",
+   "mod": "nc_lode",
+   "source": "mods/nc_lode/hints.lua:94",
+   "hidden": false,
+   "goal": {
+    "op": "and",
+    "keys": [
+     "anvil making lode frame"
+    ]
+   },
+   "reqs": {
+    "op": "and",
+    "keys": [
+     "anvil making lode rod"
+    ]
+   },
+   "depends_on": [
+    "nc_lode/forge-lode-bars-into-a-rod"
+   ],
+   "unresolved_reqs": [],
+   "req_key_kinds": [
+    "craft"
+   ],
+   "tier": 14
+  },
+  {
+   "id": "nc_lode/forge-an-annealed-lode-frame-into-a-form",
+   "text": "forge an annealed lode frame into a form",
+   "mod": "nc_lode",
+   "source": "mods/nc_lode/hints.lua:99",
+   "hidden": false,
+   "goal": {
+    "op": "and",
+    "keys": [
+     "lode frame_annealed to form"
+    ]
+   },
+   "reqs": {
+    "op": "and",
+    "keys": [
+     "anvil making lode frame"
+    ]
+   },
+   "depends_on": [
+    "nc_lode/forge-lode-rods-into-a-frame"
+   ],
+   "unresolved_reqs": [],
+   "req_key_kinds": [
+    "craft"
+   ],
+   "tier": 15
+  },
+  {
+   "id": "nc_lode/assemble-a-lode-crate-from-form-and-bar",
+   "text": "assemble a lode crate from form and bar",
+   "mod": "nc_lode",
+   "source": "mods/nc_lode/hints.lua:104",
+   "hidden": false,
+   "goal": {
+    "op": "and",
+    "keys": [
+     "assemble lode shelf"
+    ]
+   },
+   "reqs": {
+    "op": "and",
+    "keys": [
+     "lode frame_annealed to form"
+    ]
+   },
+   "depends_on": [
+    "nc_lode/forge-an-annealed-lode-frame-into-a-form"
+   ],
+   "unresolved_reqs": [],
+   "req_key_kinds": [
+    "craft"
+   ],
+   "tier": 16
+  },
+  {
+   "id": "nc_lode/assemble-a-lode-adze",
+   "text": "assemble a lode adze",
+   "mod": "nc_lode",
+   "source": "mods/nc_lode/hints.lua:109",
+   "hidden": false,
+   "goal": {
+    "op": "and",
+    "keys": [
+     "anvil making lode adze"
+    ]
+   },
+   "reqs": {
+    "op": "and",
+    "keys": [
+     "anvil making lode rod"
+    ]
+   },
+   "depends_on": [
+    "nc_lode/forge-lode-bars-into-a-rod"
+   ],
+   "unresolved_reqs": [],
+   "req_key_kinds": [
+    "craft"
+   ],
+   "tier": 14
+  },
+  {
+   "id": "nc_lode/assemble-a-lode-rake",
+   "text": "assemble a lode rake",
+   "mod": "nc_lode",
+   "source": "mods/nc_lode/hints.lua:114",
+   "hidden": true,
+   "goal": {
+    "op": "and",
+    "keys": [
+     "assemble lode rake"
+    ]
+   },
+   "reqs": {
+    "op": "and",
+    "keys": [
+     "anvil making lode adze"
+    ]
+   },
+   "depends_on": [
+    "nc_lode/assemble-a-lode-adze"
+   ],
+   "unresolved_reqs": [],
+   "req_key_kinds": [
+    "craft"
+   ],
+   "tier": 15
+  },
+  {
+   "id": "nc_lode/assemble-lode-tongs",
+   "text": "assemble lode tongs",
+   "mod": "nc_lode",
+   "source": "mods/nc_lode/hints.lua:119",
+   "hidden": false,
+   "goal": {
+    "op": "and",
+    "keys": [
+     "anvil making lode tongs"
+    ]
+   },
+   "reqs": {
+    "op": "and",
+    "keys": [
+     "anvil making lode adze"
+    ]
+   },
+   "depends_on": [
+    "nc_lode/assemble-a-lode-adze"
+   ],
+   "unresolved_reqs": [],
+   "req_key_kinds": [
+    "craft"
+   ],
+   "tier": 15
+  },
+  {
+   "id": "nc_doors/chisel-a-hinge-groove-into-a-wooden-plank",
+   "text": "chisel a hinge groove into a wooden plank",
+   "mod": "nc_doors",
+   "source": "mods/nc_doors/hints.lua:6",
+   "hidden": false,
+   "goal": {
+    "op": "and",
+    "keys": [
+     "drill door plank"
+    ]
+   },
+   "reqs": {
+    "op": "and",
+    "keys": [
+     "anvil making lode rod",
+     "split tree to planks"
+    ]
+   },
+   "depends_on": [
+    "nc_lode/forge-lode-bars-into-a-rod",
+    "nc_woodwork/split-a-tree-trunk-into-planks"
+   ],
+   "unresolved_reqs": [],
+   "req_key_kinds": [
+    "craft"
+   ],
+   "tier": 14
+  },
+  {
+   "id": "nc_doors/insert-wooden-pin-into-wooden-panel",
+   "text": "insert wooden pin into wooden panel",
+   "mod": "nc_doors",
+   "source": "mods/nc_doors/hints.lua:11",
+   "hidden": false,
+   "goal": {
+    "op": "and",
+    "keys": [
+     "door pin plank"
+    ]
+   },
+   "reqs": {
+    "op": "and",
+    "keys": [
+     "drill door plank"
+    ]
+   },
+   "depends_on": [
+    "nc_doors/chisel-a-hinge-groove-into-a-wooden-plank"
+   ],
+   "unresolved_reqs": [],
+   "req_key_kinds": [
+    "craft"
+   ],
+   "tier": 15
+  },
+  {
+   "id": "nc_doors/chisel-a-hinge-groove-into-cobble",
+   "text": "chisel a hinge groove into cobble",
+   "mod": "nc_doors",
+   "source": "mods/nc_doors/hints.lua:16",
+   "hidden": false,
+   "goal": {
+    "op": "and",
+    "keys": [
+     "drill door cobble"
+    ]
+   },
+   "reqs": {
+    "op": "and",
+    "keys": [
+     "anvil making lode rod",
+     "nc_terrain:cobble"
+    ]
+   },
+   "depends_on": [
+    "nc_lode/forge-lode-bars-into-a-rod",
+    "nc_terrain/dig-up-cobble"
+   ],
+   "unresolved_reqs": [],
+   "req_key_kinds": [
+    "craft",
+    "item"
+   ],
+   "tier": 14
+  },
+  {
+   "id": "nc_doors/insert-metal-rod-into-a-cobble-panel",
+   "text": "insert metal rod into a cobble panel",
+   "mod": "nc_doors",
+   "source": "mods/nc_doors/hints.lua:21",
+   "hidden": false,
+   "goal": {
+    "op": "and",
+    "keys": [
+     "door pin cobble"
+    ]
+   },
+   "reqs": {
+    "op": "and",
+    "keys": [
+     "drill door cobble"
+    ]
+   },
+   "depends_on": [
+    "nc_doors/chisel-a-hinge-groove-into-cobble"
+   ],
+   "unresolved_reqs": [],
+   "req_key_kinds": [
+    "craft"
+   ],
+   "tier": 15
+  },
+  {
+   "id": "nc_doors/compress-something-with-a-hinged-panel",
+   "text": "compress something with a hinged panel",
+   "mod": "nc_doors",
+   "source": "mods/nc_doors/hints.lua:26",
+   "hidden": false,
+   "goal": {
+    "op": "and",
+    "keys": [
+     "witness:press"
+    ]
+   },
+   "reqs": {
+    "op": "and",
+    "keys": [
+     "group:door"
+    ]
+   },
+   "depends_on": [
+    "nc_doors/insert-wooden-pin-into-wooden-panel",
+    "nc_doors/insert-metal-rod-into-a-cobble-panel"
+   ],
+   "unresolved_reqs": [],
+   "req_key_kinds": [
+    "group"
+   ],
+   "tier": 16
+  },
+  {
+   "id": "nc_doors/catapult-an-item-with-a-hinged-panel",
+   "text": "catapult an item with a hinged panel",
+   "mod": "nc_doors",
+   "source": "mods/nc_doors/hints.lua:31",
+   "hidden": false,
+   "goal": {
+    "op": "and",
+    "keys": [
+     "door catapult"
+    ]
+   },
+   "reqs": {
+    "op": "and",
+    "keys": [
+     "group:door"
+    ]
+   },
+   "depends_on": [
+    "nc_doors/insert-wooden-pin-into-wooden-panel",
+    "nc_doors/insert-metal-rod-into-a-cobble-panel"
+   ],
+   "unresolved_reqs": [],
+   "req_key_kinds": [
+    "group"
+   ],
+   "tier": 16
+  },
+  {
+   "id": "nc_doors/propel-hinged-panel-with-focused-light",
+   "text": "propel hinged panel with focused light",
+   "mod": "nc_doors",
+   "source": "mods/nc_doors/hints.lua:36",
+   "hidden": false,
+   "goal": {
+    "op": "and",
+    "keys": [
+     "door ablation"
+    ]
+   },
+   "reqs": {
+    "op": "and",
+    "keys": [
+     "group:optic_lens_emit",
+     "group:door"
+    ]
+   },
+   "depends_on": [
+    "nc_optics/activate-a-lens",
+    "nc_doors/insert-wooden-pin-into-wooden-panel",
+    "nc_doors/insert-metal-rod-into-a-cobble-panel"
+   ],
+   "unresolved_reqs": [],
+   "req_key_kinds": [
+    "group"
+   ],
+   "tier": 16
+  },
+  {
+   "id": "nc_doors/place-a-node-with-a-hinged-panel",
+   "text": "place a node with a hinged panel",
+   "mod": "nc_doors",
+   "source": "mods/nc_doors/hints.lua:41",
+   "hidden": false,
+   "goal": {
+    "op": "and",
+    "keys": [
+     "witness:door placement"
+    ]
+   },
+   "reqs": {
+    "op": "and",
+    "keys": [
+     "group:door"
+    ]
+   },
+   "depends_on": [
+    "nc_doors/insert-wooden-pin-into-wooden-panel",
+    "nc_doors/insert-metal-rod-into-a-cobble-panel"
+   ],
+   "unresolved_reqs": [],
+   "req_key_kinds": [
+    "group"
+   ],
+   "tier": 16
+  },
+  {
+   "id": "nc_doors/complete-an-assembly-recipe-with-a-hinged-panel",
+   "text": "complete an assembly recipe with a hinged panel",
+   "mod": "nc_doors",
+   "source": "mods/nc_doors/hints.lua:46",
+   "hidden": false,
+   "goal": {
+    "op": "and",
+    "keys": [
+     "witness:door place-craft"
+    ]
+   },
+   "reqs": {
+    "op": "and",
+    "keys": [
+     "group:door"
+    ]
+   },
+   "depends_on": [
+    "nc_doors/insert-wooden-pin-into-wooden-panel",
+    "nc_doors/insert-metal-rod-into-a-cobble-panel"
+   ],
+   "unresolved_reqs": [],
+   "req_key_kinds": [
+    "group"
+   ],
+   "tier": 16
+  },
+  {
+   "id": "nc_doors/complete-a-pummel-with-a-hinged-panel-and-tool-head",
+   "text": "complete a pummel with a hinged panel and tool head",
+   "mod": "nc_doors",
+   "source": "mods/nc_doors/hints.lua:51",
+   "hidden": false,
+   "goal": {
+    "op": "and",
+    "keys": [
+     "witness:door pummel"
+    ]
+   },
+   "reqs": {
+    "op": "and",
+    "keys": [
+     "group:door"
+    ]
+   },
+   "depends_on": [
+    "nc_doors/insert-wooden-pin-into-wooden-panel",
+    "nc_doors/insert-metal-rod-into-a-cobble-panel"
+   ],
+   "unresolved_reqs": [],
+   "req_key_kinds": [
+    "group"
+   ],
+   "tier": 16
+  },
+  {
+   "id": "nc_doors/dig-a-node-with-a-hinged-panel-and-tool",
+   "text": "dig a node with a hinged panel and tool",
+   "mod": "nc_doors",
+   "source": "mods/nc_doors/hints.lua:56",
+   "hidden": false,
+   "goal": {
+    "op": "and",
+    "keys": [
+     "witness:door dig"
+    ]
+   },
+   "reqs": {
+    "op": "and",
+    "keys": [
+     "group:door"
+    ]
+   },
+   "depends_on": [
+    "nc_doors/insert-wooden-pin-into-wooden-panel",
+    "nc_doors/insert-metal-rod-into-a-cobble-panel"
+   ],
+   "unresolved_reqs": [],
+   "req_key_kinds": [
+    "group"
+   ],
+   "tier": 16
+  },
+  {
+   "id": "nc_doors/push-an-item-into-a-storage-box-with-a-hinged-panel",
+   "text": "push an item into a storage box with a hinged panel",
+   "mod": "nc_doors",
+   "source": "mods/nc_doors/hints.lua:61",
+   "hidden": false,
+   "goal": {
+    "op": "and",
+    "keys": [
+     "witness:door store"
+    ]
+   },
+   "reqs": {
+    "op": "and",
+    "keys": [
+     "group:door"
+    ]
+   },
+   "depends_on": [
+    "nc_doors/insert-wooden-pin-into-wooden-panel",
+    "nc_doors/insert-metal-rod-into-a-cobble-panel"
+   ],
+   "unresolved_reqs": [],
+   "req_key_kinds": [
+    "group"
+   ],
+   "tier": 16
+  },
+  {
+   "id": "nc_flora/find-a-rush",
+   "text": "find a rush",
+   "mod": "nc_flora",
+   "source": "mods/nc_flora/hints.lua:6",
+   "hidden": false,
+   "goal": {
+    "op": "and",
+    "keys": [
+     "nc_flora:rush"
+    ]
+   },
+   "reqs": {
+    "op": "always",
+    "keys": []
+   },
+   "depends_on": [],
+   "unresolved_reqs": [],
+   "req_key_kinds": [],
+   "tier": 0
+  },
+  {
+   "id": "nc_flora/dry-out-a-rush",
+   "text": "dry out a rush",
+   "mod": "nc_flora",
+   "source": "mods/nc_flora/hints.lua:10",
+   "hidden": false,
+   "goal": {
+    "op": "and",
+    "keys": [
+     "nc_flora:rush_dry"
+    ]
+   },
+   "reqs": {
+    "op": "and",
+    "keys": [
+     "nc_flora:rush"
+    ]
+   },
+   "depends_on": [
+    "nc_flora/find-a-rush"
+   ],
+   "unresolved_reqs": [],
+   "req_key_kinds": [
+    "item"
+   ],
+   "tier": 1
+  },
+  {
+   "id": "nc_flora/grow-a-rush-on-soil-near-moisture",
+   "text": "grow a rush on soil near moisture",
+   "mod": "nc_flora",
+   "source": "mods/nc_flora/hints.lua:15",
+   "hidden": false,
+   "goal": {
+    "op": "and",
+    "keys": [
+     "rush spread"
+    ]
+   },
+   "reqs": {
+    "op": "and",
+    "keys": [
+     "nc_flora:rush"
+    ]
+   },
+   "depends_on": [
+    "nc_flora/find-a-rush"
+   ],
+   "unresolved_reqs": [],
+   "req_key_kinds": [
+    "item"
+   ],
+   "tier": 1
+  },
+  {
+   "id": "nc_flora/find-a-sedge",
+   "text": "find a sedge",
+   "mod": "nc_flora",
+   "source": "mods/nc_flora/hints.lua:20",
+   "hidden": false,
+   "goal": {
+    "op": "and",
+    "keys": [
+     "group:flora_sedges"
+    ]
+   },
+   "reqs": {
+    "op": "always",
+    "keys": []
+   },
+   "depends_on": [],
+   "unresolved_reqs": [],
+   "req_key_kinds": [],
+   "tier": 0
+  },
+  {
+   "id": "nc_flora/pick-a-sedge",
+   "text": "pick a sedge",
+   "mod": "nc_flora",
+   "source": "mods/nc_flora/hints.lua:24",
+   "hidden": false,
+   "goal": {
+    "op": "and",
+    "keys": [
+     "inv:nc_flora:sedge_1"
+    ]
+   },
+   "reqs": {
+    "op": "and",
+    "keys": [
+     "group:flora_sedges"
+    ]
+   },
+   "depends_on": [
+    "nc_flora/find-a-sedge"
+   ],
+   "unresolved_reqs": [],
+   "req_key_kinds": [
+    "group"
+   ],
+   "tier": 1
+  },
+  {
+   "id": "nc_flora/grow-a-sedge-on-grass-near-moisture",
+   "text": "grow a sedge on grass near moisture",
+   "mod": "nc_flora",
+   "source": "mods/nc_flora/hints.lua:29",
+   "hidden": false,
+   "goal": {
+    "op": "and",
+    "keys": [
+     "sedge growth"
+    ]
+   },
+   "reqs": {
+    "op": "and",
+    "keys": [
+     "group:flora_sedges"
+    ]
+   },
+   "depends_on": [
+    "nc_flora/find-a-sedge"
+   ],
+   "unresolved_reqs": [],
+   "req_key_kinds": [
+    "group"
+   ],
+   "tier": 1
+  },
+  {
+   "id": "nc_flora/find-a-flower",
+   "text": "find a flower",
+   "mod": "nc_flora",
+   "source": "mods/nc_flora/hints.lua:34",
+   "hidden": false,
+   "goal": {
+    "op": "and",
+    "keys": [
+     "group:flower_living"
+    ]
+   },
+   "reqs": {
+    "op": "and",
+    "keys": [
+     "group:flora_sedges"
+    ]
+   },
+   "depends_on": [
+    "nc_flora/find-a-sedge"
+   ],
+   "unresolved_reqs": [],
+   "req_key_kinds": [
+    "group"
+   ],
+   "tier": 1
+  },
+  {
+   "id": "nc_flora/wilt-a-flower",
+   "text": "wilt a flower",
+   "mod": "nc_flora",
+   "source": "mods/nc_flora/hints.lua:39",
+   "hidden": false,
+   "goal": {
+    "op": "and",
+    "keys": [
+     "group:flower_wilted"
+    ]
+   },
+   "reqs": {
+    "op": "and",
+    "keys": [
+     "group:flower_living"
+    ]
+   },
+   "depends_on": [
+    "nc_flora/find-a-flower"
+   ],
+   "unresolved_reqs": [],
+   "req_key_kinds": [
+    "group"
+   ],
+   "tier": 2
+  },
+  {
+   "id": "nc_flora/grow-a-flower-on-soil-near-moisture",
+   "text": "grow a flower on soil near moisture",
+   "mod": "nc_flora",
+   "source": "mods/nc_flora/hints.lua:44",
+   "hidden": false,
+   "goal": {
+    "op": "and",
+    "keys": [
+     "flower spread"
+    ]
+   },
+   "reqs": {
+    "op": "and",
+    "keys": [
+     "group:flower_living"
+    ]
+   },
+   "depends_on": [
+    "nc_flora/find-a-flower"
+   ],
+   "unresolved_reqs": [],
+   "req_key_kinds": [
+    "group"
+   ],
+   "tier": 2
+  },
+  {
+   "id": "nc_flora/breed-a-new-flower-variety",
+   "text": "breed a new flower variety",
+   "mod": "nc_flora",
+   "source": "mods/nc_flora/hints.lua:49",
+   "hidden": false,
+   "goal": {
+    "op": "and",
+    "keys": [
+     "group:flower_mutant"
+    ]
+   },
+   "reqs": {
+    "op": "and",
+    "keys": [
+     "group:flower_living",
+     "flower spread"
+    ]
+   },
+   "depends_on": [
+    "nc_flora/find-a-flower",
+    "nc_flora/grow-a-flower-on-soil-near-moisture"
+   ],
+   "unresolved_reqs": [],
+   "req_key_kinds": [
+    "craft",
+    "group"
+   ],
+   "tier": 3
+  },
+  {
+   "id": "nc_flora/pack-sedges-into-thatch",
+   "text": "pack sedges into thatch",
+   "mod": "nc_flora",
+   "source": "mods/nc_flora/hints.lua:54",
+   "hidden": false,
+   "goal": {
+    "op": "and",
+    "keys": [
+     "pack thatch"
+    ]
+   },
+   "reqs": {
+    "op": "and",
+    "keys": [
+     "inv:nc_flora:sedge_1"
+    ]
+   },
+   "depends_on": [
+    "nc_flora/pick-a-sedge"
+   ],
+   "unresolved_reqs": [],
+   "req_key_kinds": [
+    "event"
+   ],
+   "tier": 2
+  },
+  {
+   "id": "nc_flora/pack-dry-rushes-into-wicker",
+   "text": "pack dry rushes into wicker",
+   "mod": "nc_flora",
+   "source": "mods/nc_flora/hints.lua:59",
+   "hidden": false,
+   "goal": {
+    "op": "and",
+    "keys": [
+     "pack wicker"
+    ]
+   },
+   "reqs": {
+    "op": "and",
+    "keys": [
+     "nc_flora:rush_dry"
+    ]
+   },
+   "depends_on": [
+    "nc_flora/dry-out-a-rush"
+   ],
+   "unresolved_reqs": [],
+   "req_key_kinds": [
+    "item"
+   ],
+   "tier": 2
+  },
+  {
+   "id": "nc_player_model/go-for-a-swim",
+   "text": "go for a swim",
+   "mod": "nc_player_model",
+   "source": "mods/nc_player_model/hints.lua:6",
+   "hidden": false,
+   "goal": {
+    "op": "or",
+    "keys": [
+     "anim_swim_up",
+     "anim_swim_down",
+     "anim_swim_mine"
+    ]
+   },
+   "reqs": {
+    "op": "always",
+    "keys": []
+   },
+   "depends_on": [],
+   "unresolved_reqs": [],
+   "req_key_kinds": [],
+   "tier": 0
+  },
+  {
+   "id": "nc_lux/find-lux",
+   "text": "find lux",
+   "mod": "nc_lux",
+   "source": "mods/nc_lux/hints.lua:6",
+   "hidden": false,
+   "goal": {
+    "op": "and",
+    "keys": [
+     "group:lux_rock"
+    ]
+   },
+   "reqs": {
+    "op": "and",
+    "keys": [
+     "toolcap:cracky:2"
+    ]
+   },
+   "depends_on": [
+    "nc_woodwork/assemble-a-wooden-tool",
+    "nc_stonework/put-a-stone-tip-onto-a-wooden-tool"
+   ],
+   "unresolved_reqs": [],
+   "req_key_kinds": [
+    "toolcap"
+   ],
+   "tier": 6
+  },
+  {
+   "id": "nc_lux/dig-up-lux-cobble",
+   "text": "dig up lux cobble",
+   "mod": "nc_lux",
+   "source": "mods/nc_lux/hints.lua:11",
+   "hidden": false,
+   "goal": {
+    "op": "and",
+    "keys": [
+     "inv:group:lux_cobble"
+    ]
+   },
+   "reqs": {
+    "op": "and",
+    "keys": [
+     "group:lux_rock",
+     "toolcap:cracky:2"
+    ]
+   },
+   "depends_on": [
+    "nc_lux/find-lux",
+    "nc_woodwork/assemble-a-wooden-tool",
+    "nc_stonework/put-a-stone-tip-onto-a-wooden-tool"
+   ],
+   "unresolved_reqs": [],
+   "req_key_kinds": [
+    "group",
+    "toolcap"
+   ],
+   "tier": 7
+  },
+  {
+   "id": "nc_lux/observe-a-lux-reaction",
+   "text": "observe a lux reaction",
+   "mod": "nc_lux",
+   "source": "mods/nc_lux/hints.lua:16",
+   "hidden": false,
+   "goal": {
+    "op": "and",
+    "keys": [
+     "group:lux_hot"
+    ]
+   },
+   "reqs": {
+    "op": "and",
+    "keys": [
+     "inv:group:lux_cobble"
+    ]
+   },
+   "depends_on": [
+    "nc_lux/dig-up-lux-cobble"
+   ],
+   "unresolved_reqs": [],
+   "req_key_kinds": [
+    "event"
+   ],
+   "tier": 8
+  },
+  {
+   "id": "nc_lux/observe-lux-criticality",
+   "text": "observe lux criticality",
+   "mod": "nc_lux",
+   "source": "mods/nc_lux/hints.lua:21",
+   "hidden": false,
+   "goal": {
+    "op": "and",
+    "keys": [
+     "group:lux_cobble_max"
+    ]
+   },
+   "reqs": {
+    "op": "and",
+    "keys": [
+     "group:lux_hot"
+    ]
+   },
+   "depends_on": [
+    "nc_lux/observe-a-lux-reaction"
+   ],
+   "unresolved_reqs": [],
+   "req_key_kinds": [
+    "group"
+   ],
+   "tier": 9
+  },
+  {
+   "id": "nc_lux/lux-infuse-a-lode-tool",
+   "text": "lux-infuse a lode tool",
+   "mod": "nc_lux",
+   "source": "mods/nc_lux/hints.lua:26",
+   "hidden": false,
+   "goal": {
+    "op": "and",
+    "keys": [
+     "group:lux_tool"
+    ]
+   },
+   "reqs": {
+    "op": "and",
+    "keys": [
+     "group:lux_cobble_max"
+    ]
+   },
+   "depends_on": [
+    "nc_lux/observe-lux-criticality"
+   ],
+   "unresolved_reqs": [],
+   "req_key_kinds": [
+    "group"
+   ],
+   "tier": 10
+  },
+  {
+   "id": "nc_tote/assemble-a-lode-tote-handle",
+   "text": "assemble a lode tote handle",
+   "mod": "nc_tote",
+   "source": "mods/nc_tote/hints.lua:8",
+   "hidden": false,
+   "goal": {
+    "op": "and",
+    "keys": [
+     "craft tote handle"
+    ]
+   },
+   "reqs": {
+    "op": "and",
+    "keys": [
+     "nc_lode:form",
+     "nc_lode:frame_annealed",
+     "group:totable"
+    ]
+   },
+   "depends_on": [
+    "nc_lode/forge-an-annealed-lode-frame-into-a-form",
+    "nc_lode/forge-lode-rods-into-a-frame",
+    "nc_lode/anneal-a-lode-cube",
+    "nc_woodwork/assemble-a-wooden-shelf-from-a-form-and-plank",
+    "nc_lode/assemble-a-lode-crate-from-form-and-bar"
+   ],
+   "unresolved_reqs": [],
+   "req_key_kinds": [
+    "group",
+    "item"
+   ],
+   "tier": 17
+  },
+  {
+   "id": "nc_tote/pack-up-a-complete-tote",
+   "text": "pack up a complete tote",
+   "mod": "nc_tote",
+   "source": "mods/nc_tote/hints.lua:13",
+   "hidden": false,
+   "goal": {
+    "op": "and",
+    "keys": [
+     "inv:nc_tote:handle_full"
+    ]
+   },
+   "reqs": {
+    "op": "and",
+    "keys": [
+     "craft tote handle"
+    ]
+   },
+   "depends_on": [
+    "nc_tote/assemble-a-lode-tote-handle"
+   ],
+   "unresolved_reqs": [],
+   "req_key_kinds": [
+    "craft"
+   ],
+   "tier": 18
+  },
+  {
+   "id": "nc_lantern/assemble-a-lantern-from-a-tote-handle",
+   "text": "assemble a lantern from a tote handle",
+   "mod": "nc_lantern",
+   "source": "mods/nc_lantern/hints.lua:8",
+   "hidden": false,
+   "goal": {
+    "op": "and",
+    "keys": [
+     "assemble lantern"
+    ]
+   },
+   "reqs": {
+    "op": "and",
+    "keys": [
+     "nc_tote:handle",
+     "nc_optics:glass_opaque"
+    ]
+   },
+   "depends_on": [
+    "nc_tote/assemble-a-lode-tote-handle",
+    "nc_optics/quench-molten-glass-into-chromatic-glass"
+   ],
+   "unresolved_reqs": [],
+   "req_key_kinds": [
+    "item"
+   ],
+   "tier": 18
+  },
+  {
+   "id": "nc_lantern/charge-a-lantern",
+   "text": "charge a lantern",
+   "mod": "nc_lantern",
+   "source": "mods/nc_lantern/hints.lua:13",
+   "hidden": false,
+   "goal": {
+    "op": "and",
+    "keys": [
+     "group:nc_lantern_charged"
+    ]
+   },
+   "reqs": {
+    "op": "and",
+    "keys": [
+     "assemble lantern"
+    ]
+   },
+   "depends_on": [
+    "nc_lantern/assemble-a-lantern-from-a-tote-handle"
+   ],
+   "unresolved_reqs": [],
+   "req_key_kinds": [
+    "craft"
+   ],
+   "tier": 19
+  },
+  {
+   "id": "nc_lantern/fully-charge-a-lantern",
+   "text": "fully charge a lantern",
+   "mod": "nc_lantern",
+   "source": "mods/nc_lantern/hints.lua:18",
+   "hidden": false,
+   "goal": {
+    "op": "and",
+    "keys": [
+     "group:nc_lantern_full"
+    ]
+   },
+   "reqs": {
+    "op": "and",
+    "keys": [
+     "assemble lantern"
+    ]
+   },
+   "depends_on": [
+    "nc_lantern/assemble-a-lantern-from-a-tote-handle"
+   ],
+   "unresolved_reqs": [],
+   "req_key_kinds": [
+    "craft"
+   ],
+   "tier": 19
+  },
+  {
+   "id": "nc_player_hud/hold-your-breath",
+   "text": "hold your breath",
+   "mod": "nc_player_hud",
+   "source": "mods/nc_player_hud/hints.lua:6",
+   "hidden": false,
+   "goal": {
+    "op": "and",
+    "keys": [
+     "breath_3"
+    ]
+   },
+   "reqs": {
+    "op": "always",
+    "keys": []
+   },
+   "depends_on": [],
+   "unresolved_reqs": [],
+   "req_key_kinds": [],
+   "tier": 0
+  },
+  {
+   "id": "nc_player_pickup/drop-an-item",
+   "text": "drop an item",
+   "mod": "nc_player_pickup",
+   "source": "mods/nc_player_pickup/hints.lua:6",
+   "hidden": false,
+   "goal": {
+    "op": "and",
+    "keys": [
+     "item_drop"
+    ]
+   },
+   "reqs": {
+    "op": "always",
+    "keys": []
+   },
+   "depends_on": [],
+   "unresolved_reqs": [],
+   "req_key_kinds": [],
+   "tier": 0
+  },
+  {
+   "id": "nc_player_pickup/drop-all-your-items-at-once",
+   "text": "drop all your items at once",
+   "mod": "nc_player_pickup",
+   "source": "mods/nc_player_pickup/hints.lua:11",
+   "hidden": false,
+   "goal": {
+    "op": "and",
+    "keys": [
+     "aux_item_drop"
+    ]
+   },
+   "reqs": {
+    "op": "and",
+    "keys": [
+     "item_drop"
+    ]
+   },
+   "depends_on": [
+    "nc_player_pickup/drop-an-item"
+   ],
+   "unresolved_reqs": [],
+   "req_key_kinds": [
+    "craft"
+   ],
+   "tier": 1
+  },
+  {
+   "id": "nc_player_setup/run-at-full-speed",
+   "text": "run at full speed",
+   "mod": "nc_player_setup",
+   "source": "mods/nc_player_setup/hints.lua:6",
+   "hidden": false,
+   "goal": {
+    "op": "and",
+    "keys": [
+     "autorun"
+    ]
+   },
+   "reqs": {
+    "op": "always",
+    "keys": []
+   },
+   "depends_on": [],
+   "unresolved_reqs": [],
+   "req_key_kinds": [],
+   "tier": 0
+  },
+  {
+   "id": "nc_scaling/navigate-by-touch-in-darkness",
+   "text": "navigate by touch in darkness",
+   "mod": "nc_scaling",
+   "source": "mods/nc_scaling/hints.lua:6",
+   "hidden": false,
+   "goal": {
+    "op": "and",
+    "keys": [
+     "craft:scaling light"
+    ]
+   },
+   "reqs": {
+    "op": "always",
+    "keys": []
+   },
+   "depends_on": [],
+   "unresolved_reqs": [],
+   "req_key_kinds": [],
+   "tier": 0
+  },
+  {
+   "id": "nc_scaling/scale-a-wall",
+   "text": "scale a wall",
+   "mod": "nc_scaling",
+   "source": "mods/nc_scaling/hints.lua:7",
+   "hidden": false,
+   "goal": {
+    "op": "and",
+    "keys": [
+     "scaling dy=0"
+    ]
+   },
+   "reqs": {
+    "op": "always",
+    "keys": []
+   },
+   "depends_on": [],
+   "unresolved_reqs": [],
+   "req_key_kinds": [],
+   "tier": 0
+  },
+  {
+   "id": "nc_scaling/scale-an-overhang",
+   "text": "scale an overhang",
+   "mod": "nc_scaling",
+   "source": "mods/nc_scaling/hints.lua:8",
+   "hidden": false,
+   "goal": {
+    "op": "and",
+    "keys": [
+     "scaling dy=1"
+    ]
+   },
+   "reqs": {
+    "op": "and",
+    "keys": [
+     "scaling dy=0"
+    ]
+   },
+   "depends_on": [
+    "nc_scaling/scale-a-wall"
+   ],
+   "unresolved_reqs": [],
+   "req_key_kinds": [
+    "craft"
+   ],
+   "tier": 1
+  },
+  {
+   "id": "nc_sponge/find-a-sponge",
+   "text": "find a sponge",
+   "mod": "nc_sponge",
+   "source": "mods/nc_sponge/hints.lua:6",
+   "hidden": false,
+   "goal": {
+    "op": "and",
+    "keys": [
+     "group:sponge"
+    ]
+   },
+   "reqs": {
+    "op": "or",
+    "keys": [
+     "anim_swim_up",
+     "anim_swim_down",
+     "anim_swim_mine"
+    ]
+   },
+   "depends_on": [
+    "nc_player_model/go-for-a-swim"
+   ],
+   "unresolved_reqs": [],
+   "req_key_kinds": [
+    "craft"
+   ],
+   "tier": 1
+  },
+  {
+   "id": "nc_sponge/harvest-a-sponge",
+   "text": "harvest a sponge",
+   "mod": "nc_sponge",
+   "source": "mods/nc_sponge/hints.lua:15",
+   "hidden": false,
+   "goal": {
+    "op": "and",
+    "keys": [
+     "inv:nc_sponge:sponge_living"
+    ]
+   },
+   "reqs": {
+    "op": "and",
+    "keys": [
+     "group:sponge"
+    ]
+   },
+   "depends_on": [
+    "nc_sponge/find-a-sponge"
+   ],
+   "unresolved_reqs": [],
+   "req_key_kinds": [
+    "group"
+   ],
+   "tier": 2
+  },
+  {
+   "id": "nc_sponge/dry-out-a-sponge",
+   "text": "dry out a sponge",
+   "mod": "nc_sponge",
+   "source": "mods/nc_sponge/hints.lua:20",
+   "hidden": false,
+   "goal": {
+    "op": "and",
+    "keys": [
+     "nc_sponge:sponge"
+    ]
+   },
+   "reqs": {
+    "op": "and",
+    "keys": [
+     "group:sponge"
+    ]
+   },
+   "depends_on": [
+    "nc_sponge/find-a-sponge"
+   ],
+   "unresolved_reqs": [],
+   "req_key_kinds": [
+    "group"
+   ],
+   "tier": 2
+  },
+  {
+   "id": "nc_sponge/squeeze-out-a-sponge",
+   "text": "squeeze out a sponge",
+   "mod": "nc_sponge",
+   "source": "mods/nc_sponge/hints.lua:25",
+   "hidden": false,
+   "goal": {
+    "op": "and",
+    "keys": [
+     "squeeze sponge"
+    ]
+   },
+   "reqs": {
+    "op": "or",
+    "keys": [
+     "nc_sponge:sponge",
+     "nc_sponge:sponge_wet",
+     "nc_sponge:sponge_living"
+    ]
+   },
+   "depends_on": [
+    "nc_sponge/dry-out-a-sponge",
+    "nc_sponge/find-a-sponge",
+    "nc_sponge/harvest-a-sponge"
+   ],
+   "unresolved_reqs": [],
+   "req_key_kinds": [
+    "item"
+   ],
+   "tier": 2
+  },
+  {
+   "id": "nc_torch/craft-a-torch-from-staff-and-coal-lump",
+   "text": "craft a torch from staff and coal lump",
+   "mod": "nc_torch",
+   "source": "mods/nc_torch/hints.lua:6",
+   "hidden": false,
+   "goal": {
+    "op": "and",
+    "keys": [
+     "assemble torch"
+    ]
+   },
+   "reqs": {
+    "op": "and",
+    "keys": [
+     "nc_woodwork:staff",
+     "nc_fire:lump_coal"
+    ]
+   },
+   "depends_on": [
+    "nc_woodwork/assemble-a-staff-from-sticks",
+    "nc_fire/chop-up-charcoal"
+   ],
+   "unresolved_reqs": [],
+   "req_key_kinds": [
+    "item"
+   ],
+   "tier": 5
+  },
+  {
+   "id": "nc_torch/light-a-torch",
+   "text": "light a torch",
+   "mod": "nc_torch",
+   "source": "mods/nc_torch/hints.lua:11",
+   "hidden": false,
+   "goal": {
+    "op": "and",
+    "keys": [
+     "group:torch_lit"
+    ]
+   },
+   "reqs": {
+    "op": "and",
+    "keys": [
+     "assemble torch"
+    ]
+   },
+   "depends_on": [
+    "nc_torch/craft-a-torch-from-staff-and-coal-lump"
+   ],
+   "unresolved_reqs": [],
+   "req_key_kinds": [
+    "craft"
+   ],
+   "tier": 6
+  },
+  {
+   "id": "nc_writing/write-on-a-surface-with-a-charcoal-lump",
+   "text": "write on a surface with a charcoal lump",
+   "mod": "nc_writing",
+   "source": "mods/nc_writing/hints.lua:8",
+   "hidden": false,
+   "goal": {
+    "op": "and",
+    "keys": [
+     "charcoal writing"
+    ]
+   },
+   "reqs": {
+    "op": "and",
+    "keys": [
+     "nc_fire:lump_coal"
+    ]
+   },
+   "depends_on": [
+    "nc_fire/chop-up-charcoal"
+   ],
+   "unresolved_reqs": [],
+   "req_key_kinds": [
+    "item"
+   ],
+   "tier": 5
+  },
+  {
+   "id": "nc_writing/rotate-a-charcoal-glyph",
+   "text": "rotate a charcoal glyph",
+   "mod": "nc_writing",
+   "source": "mods/nc_writing/hints.lua:13",
+   "hidden": false,
+   "goal": {
+    "op": "and",
+    "keys": [
+     "charcoal writing rotate"
+    ]
+   },
+   "reqs": {
+    "op": "and",
+    "keys": [
+     "charcoal writing"
+    ]
+   },
+   "depends_on": [
+    "nc_writing/write-on-a-surface-with-a-charcoal-lump"
+   ],
+   "unresolved_reqs": [],
+   "req_key_kinds": [
+    "craft"
+   ],
+   "tier": 6
+  },
+  {
+   "id": "nc_writing/cycle-through-all-charcoal-glyphs",
+   "text": "cycle through all charcoal glyphs",
+   "mod": "nc_writing",
+   "source": "mods/nc_writing/hints.lua:23",
+   "hidden": false,
+   "goal": {
+    "op": "and",
+    "keys": [
+     "place:nc_writing:glyph1",
+     "place:nc_writing:glyph2",
+     "place:nc_writing:glyph3",
+     "place:nc_writing:glyph4",
+     "place:nc_writing:glyph5",
+     "place:nc_writing:glyph6",
+     "place:nc_writing:glyph7",
+     "place:nc_writing:glyph8",
+     "place:nc_writing:glyph9",
+     "place:nc_writing:glyph10",
+     "place:nc_writing:glyph11",
+     "place:nc_writing:glyph12"
+    ]
+   },
+   "reqs": {
+    "op": "and",
+    "keys": [
+     "charcoal writing"
+    ]
+   },
+   "depends_on": [
+    "nc_writing/write-on-a-surface-with-a-charcoal-lump"
+   ],
+   "unresolved_reqs": [],
+   "req_key_kinds": [
+    "craft"
+   ],
+   "tier": 6
+  },
+  {
+   "id": "nc_writing/rake-sand",
+   "text": "rake sand",
+   "mod": "nc_writing",
+   "source": "mods/nc_writing/hints.lua:29",
+   "hidden": false,
+   "goal": {
+    "op": "and",
+    "keys": [
+     "rake sand"
+    ]
+   },
+   "reqs": {
+    "op": "and",
+    "keys": [
+     "group:rakey",
+     "nc_terrain:sand"
+    ]
+   },
+   "depends_on": [
+    "nc_woodwork/assemble-a-rake-from-adzes-and-a-staff",
+    "nc_lode/assemble-a-lode-rake",
+    "nc_flora/pack-sedges-into-thatch",
+    "nc_flora/pack-dry-rushes-into-wicker",
+    "nc_terrain/dig-up-sand"
+   ],
+   "unresolved_reqs": [],
+   "req_key_kinds": [
+    "group",
+    "item"
+   ],
+   "tier": 16
+  },
+  {
+   "id": "nc_writing/rake-gravel",
+   "text": "rake gravel",
+   "mod": "nc_writing",
+   "source": "mods/nc_writing/hints.lua:29",
+   "hidden": false,
+   "goal": {
+    "op": "and",
+    "keys": [
+     "rake gravel"
+    ]
+   },
+   "reqs": {
+    "op": "and",
+    "keys": [
+     "group:rakey",
+     "nc_terrain:gravel"
+    ]
+   },
+   "depends_on": [
+    "nc_woodwork/assemble-a-rake-from-adzes-and-a-staff",
+    "nc_lode/assemble-a-lode-rake",
+    "nc_flora/pack-sedges-into-thatch",
+    "nc_flora/pack-dry-rushes-into-wicker",
+    "nc_terrain/dig-up-gravel",
+    "nc_stonework/break-cobble-into-chips"
+   ],
+   "unresolved_reqs": [],
+   "req_key_kinds": [
+    "group",
+    "item"
+   ],
+   "tier": 16
+  },
+  {
+   "id": "nc_writing/rake-dirt",
+   "text": "rake dirt",
+   "mod": "nc_writing",
+   "source": "mods/nc_writing/hints.lua:29",
+   "hidden": false,
+   "goal": {
+    "op": "and",
+    "keys": [
+     "rake dirt"
+    ]
+   },
+   "reqs": {
+    "op": "and",
+    "keys": [
+     "group:rakey",
+     "nc_terrain:dirt"
+    ]
+   },
+   "depends_on": [
+    "nc_woodwork/assemble-a-rake-from-adzes-and-a-staff",
+    "nc_lode/assemble-a-lode-rake",
+    "nc_flora/pack-sedges-into-thatch",
+    "nc_flora/pack-dry-rushes-into-wicker",
+    "nc_terrain/dig-up-dirt"
+   ],
+   "unresolved_reqs": [],
+   "req_key_kinds": [
+    "group",
+    "item"
+   ],
+   "tier": 16
+  },
+  {
+   "id": "nc_writing/rake-humus",
+   "text": "rake humus",
+   "mod": "nc_writing",
+   "source": "mods/nc_writing/hints.lua:34",
+   "hidden": false,
+   "goal": {
+    "op": "and",
+    "keys": [
+     "rake humus"
+    ]
+   },
+   "reqs": {
+    "op": "and",
+    "keys": [
+     "group:rakey",
+     "nc_tree:humus"
+    ]
+   },
+   "depends_on": [
+    "nc_woodwork/assemble-a-rake-from-adzes-and-a-staff",
+    "nc_lode/assemble-a-lode-rake",
+    "nc_flora/pack-sedges-into-thatch",
+    "nc_flora/pack-dry-rushes-into-wicker",
+    "nc_tree/ferment-peat-into-humus"
+   ],
+   "unresolved_reqs": [],
+   "req_key_kinds": [
+    "group",
+    "item"
+   ],
+   "tier": 16
+  },
+  {
+   "id": "nc_writing/leach-raked-humus-to-dirt",
+   "text": "leach raked humus to dirt",
+   "mod": "nc_writing",
+   "source": "mods/nc_writing/hints.lua:39",
+   "hidden": false,
+   "goal": {
+    "op": "and",
+    "keys": [
+     "leach group:humus_raked"
+    ]
+   },
+   "reqs": {
+    "op": "and",
+    "keys": [
+     "group:humus_raked"
+    ]
+   },
+   "depends_on": [
+    "nc_writing/rake-humus"
+   ],
+   "unresolved_reqs": [],
+   "req_key_kinds": [
+    "group"
+   ],
+   "tier": 17
+  },
+  {
+   "id": "nc_writing/leach-raked-dirt-to-sand",
+   "text": "leach raked dirt to sand",
+   "mod": "nc_writing",
+   "source": "mods/nc_writing/hints.lua:43",
+   "hidden": false,
+   "goal": {
+    "op": "and",
+    "keys": [
+     "leach group:dirt_raked"
+    ]
+   },
+   "reqs": {
+    "op": "and",
+    "keys": [
+     "group:dirt_raked"
+    ]
+   },
+   "depends_on": [
+    "nc_writing/rake-dirt"
+   ],
+   "unresolved_reqs": [],
+   "req_key_kinds": [
+    "group"
+   ],
+   "tier": 17
+  }
+ ],
+ "edges": [
+  {
+   "from": "nc_woodwork/assemble-a-wooden-tool",
+   "to": "nc_terrain/dig-up-dirt",
+   "via": "toolcap:crumbly:2",
+   "req_op": "and",
+   "resolved_by": "curated",
+   "closes_cycle": false
+  },
+  {
+   "from": "nc_stonework/put-a-stone-tip-onto-a-wooden-tool",
+   "to": "nc_terrain/dig-up-dirt",
+   "via": "toolcap:crumbly:2",
+   "req_op": "and",
+   "resolved_by": "curated",
+   "closes_cycle": false
+  },
+  {
+   "from": "nc_woodwork/assemble-a-wooden-tool",
+   "to": "nc_terrain/dig-up-gravel",
+   "via": "toolcap:crumbly:2",
+   "req_op": "and",
+   "resolved_by": "curated",
+   "closes_cycle": false
+  },
+  {
+   "from": "nc_stonework/put-a-stone-tip-onto-a-wooden-tool",
+   "to": "nc_terrain/dig-up-gravel",
+   "via": "toolcap:crumbly:2",
+   "req_op": "and",
+   "resolved_by": "curated",
+   "closes_cycle": false
+  },
+  {
+   "from": "nc_woodwork/assemble-a-wooden-tool",
+   "to": "nc_terrain/dig-up-cobble",
+   "via": "toolcap:cracky:2",
+   "req_op": "and",
+   "resolved_by": "curated",
+   "closes_cycle": true
+  },
+  {
+   "from": "nc_stonework/put-a-stone-tip-onto-a-wooden-tool",
+   "to": "nc_terrain/dig-up-cobble",
+   "via": "toolcap:cracky:2",
+   "req_op": "and",
+   "resolved_by": "curated",
+   "closes_cycle": true
+  },
+  {
+   "from": "nc_terrain/dig-up-cobble",
+   "to": "nc_terrain/find-deep-stone-strata",
+   "via": "dig:nc_terrain:cobble_loose",
+   "req_op": "or",
+   "resolved_by": "direct",
+   "closes_cycle": false
+  },
+  {
+   "from": "nc_terrain/dig-up-cobble",
+   "to": "nc_terrain/find-deep-stone-strata",
+   "via": "dig:nc_terrain:cobble",
+   "req_op": "or",
+   "resolved_by": "direct",
+   "closes_cycle": false
+  },
+  {
+   "from": "nc_terrain/dig-up-cobble",
+   "to": "nc_terrain/find-pumwater",
+   "via": "nc_terrain:cobble_loose",
+   "req_op": "and",
+   "resolved_by": "direct",
+   "closes_cycle": false
+  },
+  {
+   "from": "nc_stonework/pack-stone-chips-back-into-cobble",
+   "to": "nc_terrain/find-pumwater",
+   "via": "nc_terrain:cobble_loose",
+   "req_op": "and",
+   "resolved_by": "direct",
+   "closes_cycle": false
+  },
+  {
+   "from": "nc_tree/find-a-stick",
+   "to": "nc_fire/make-fire-by-rubbing-sticks-together",
+   "via": "nc_tree:stick",
+   "req_op": "and",
+   "resolved_by": "direct",
+   "closes_cycle": false
+  },
+  {
+   "from": "nc_fire/make-fire-by-rubbing-sticks-together",
+   "to": "nc_fire/find-ash",
+   "via": "stick fire starting",
+   "req_op": "and",
+   "resolved_by": "direct",
+   "closes_cycle": false
+  },
+  {
+   "from": "nc_fire/make-fire-by-rubbing-sticks-together",
+   "to": "nc_fire/find-charcoal",
+   "via": "stick fire starting",
+   "req_op": "and",
+   "resolved_by": "direct",
+   "closes_cycle": false
+  },
+  {
+   "from": "nc_fire/find-charcoal",
+   "to": "nc_fire/chop-up-charcoal",
+   "via": "group:charcoal",
+   "req_op": "and",
+   "resolved_by": "direct",
+   "closes_cycle": false
+  },
+  {
+   "from": "nc_fire/chop-up-charcoal",
+   "to": "nc_fire/pack-high-quality-charcoal",
+   "via": "nc_fire:lump_coal",
+   "req_op": "and",
+   "resolved_by": "curated",
+   "closes_cycle": false
+  },
+  {
+   "from": "nc_terrain/find-pumwater",
+   "to": "nc_igneous/quench-pumwater-to-amalgamation",
+   "via": "group:lava",
+   "req_op": "or",
+   "resolved_by": "direct",
+   "closes_cycle": false
+  },
+  {
+   "from": "nc_igneous/quench-pumwater-to-amalgamation",
+   "to": "nc_igneous/find-pumice",
+   "via": "group:amalgam",
+   "req_op": "or",
+   "resolved_by": "direct",
+   "closes_cycle": false
+  },
+  {
+   "from": "nc_terrain/find-pumwater",
+   "to": "nc_igneous/find-pumice",
+   "via": "group:lava",
+   "req_op": "or",
+   "resolved_by": "direct",
+   "closes_cycle": false
+  },
+  {
+   "from": "nc_terrain/find-pumwater",
+   "to": "nc_igneous/harden-stone",
+   "via": "group:lava",
+   "req_op": "and",
+   "resolved_by": "direct",
+   "closes_cycle": false
+  },
+  {
+   "from": "nc_terrain/find-pumwater",
+   "to": "nc_igneous/weaken-stone-by-soaking",
+   "via": "group:lava",
+   "req_op": "and",
+   "resolved_by": "direct",
+   "closes_cycle": false
+  },
+  {
+   "from": "nc_terrain/find-pumwater",
+   "to": "nc_igneous/melt-stone-into-pumwater",
+   "via": "group:lava",
+   "req_op": "and",
+   "resolved_by": "direct",
+   "closes_cycle": false
+  },
+  {
+   "from": "nc_player_pickup/drop-an-item",
+   "to": "nc_items/throw-an-item-really-fast",
+   "via": "item_drop",
+   "req_op": "and",
+   "resolved_by": "direct",
+   "closes_cycle": false
+  },
+  {
+   "from": "nc_tree/dig-leaves",
+   "to": "nc_tree/find-dry-loose-leaves",
+   "via": "dig:nc_tree:leaves",
+   "req_op": "and",
+   "resolved_by": "direct",
+   "closes_cycle": false
+  },
+  {
+   "from": "nc_tree/dig-leaves",
+   "to": "nc_tree/find-an-eggcorn",
+   "via": "dig:nc_tree:leaves",
+   "req_op": "and",
+   "resolved_by": "direct",
+   "closes_cycle": false
+  },
+  {
+   "from": "nc_tree/find-an-eggcorn",
+   "to": "nc_tree/plant-an-eggcorn",
+   "via": "inv:nc_tree:eggcorn",
+   "req_op": "and",
+   "resolved_by": "implied",
+   "closes_cycle": false
+  },
+  {
+   "from": "nc_terrain/dig-up-dirt",
+   "to": "nc_tree/plant-an-eggcorn",
+   "via": "inv:nc_terrain:dirt_loose",
+   "req_op": "and",
+   "resolved_by": "implied",
+   "closes_cycle": false
+  },
+  {
+   "from": "nc_tree/plant-an-eggcorn",
+   "to": "nc_tree/see-a-tree-grow",
+   "via": "eggcorn planting",
+   "req_op": "and",
+   "resolved_by": "direct",
+   "closes_cycle": false
+  },
+  {
+   "from": "nc_tree/dig-leaves",
+   "to": "nc_tree/find-a-stick",
+   "via": "dig:nc_tree:leaves",
+   "req_op": "and",
+   "resolved_by": "direct",
+   "closes_cycle": false
+  },
+  {
+   "from": "nc_woodwork/assemble-a-wooden-tool",
+   "to": "nc_tree/cut-down-a-tree",
+   "via": "toolcap:choppy:2",
+   "req_op": "and",
+   "resolved_by": "curated",
+   "closes_cycle": false
+  },
+  {
+   "from": "nc_stonework/put-a-stone-tip-onto-a-wooden-tool",
+   "to": "nc_tree/cut-down-a-tree",
+   "via": "toolcap:choppy:2",
+   "req_op": "and",
+   "resolved_by": "curated",
+   "closes_cycle": false
+  },
+  {
+   "from": "nc_lode/forge-lode-prills-into-a-tool-head",
+   "to": "nc_tree/dig-up-a-tree-stump",
+   "via": "toolcap:choppy:4",
+   "req_op": "and",
+   "resolved_by": "curated",
+   "closes_cycle": false
+  },
+  {
+   "from": "nc_lode/anneal-a-lode-cube",
+   "to": "nc_tree/dig-up-a-tree-stump",
+   "via": "toolcap:choppy:4",
+   "req_op": "and",
+   "resolved_by": "curated",
+   "closes_cycle": false
+  },
+  {
+   "from": "nc_tree/find-dry-loose-leaves",
+   "to": "nc_tree/grind-dead-plants-into-peat",
+   "via": "group:peat_grindable_item",
+   "req_op": "or",
+   "resolved_by": "curated",
+   "closes_cycle": false
+  },
+  {
+   "from": "nc_tree/find-an-eggcorn",
+   "to": "nc_tree/grind-dead-plants-into-peat",
+   "via": "group:peat_grindable_item",
+   "req_op": "or",
+   "resolved_by": "curated",
+   "closes_cycle": false
+  },
+  {
+   "from": "nc_flora/find-a-rush",
+   "to": "nc_tree/grind-dead-plants-into-peat",
+   "via": "group:peat_grindable_item",
+   "req_op": "or",
+   "resolved_by": "curated",
+   "closes_cycle": false
+  },
+  {
+   "from": "nc_flora/find-a-sedge",
+   "to": "nc_tree/grind-dead-plants-into-peat",
+   "via": "group:peat_grindable_item",
+   "req_op": "or",
+   "resolved_by": "curated",
+   "closes_cycle": false
+  },
+  {
+   "from": "nc_flora/pack-sedges-into-thatch",
+   "to": "nc_tree/grind-dead-plants-into-peat",
+   "via": "group:peat_grindable_node",
+   "req_op": "or",
+   "resolved_by": "curated",
+   "closes_cycle": false
+  },
+  {
+   "from": "nc_flora/pack-dry-rushes-into-wicker",
+   "to": "nc_tree/grind-dead-plants-into-peat",
+   "via": "group:peat_grindable_node",
+   "req_op": "or",
+   "resolved_by": "curated",
+   "closes_cycle": false
+  },
+  {
+   "from": "nc_tree/grind-dead-plants-into-peat",
+   "to": "nc_tree/ferment-peat-into-humus",
+   "via": "nc_tree:peat",
+   "req_op": "and",
+   "resolved_by": "direct",
+   "closes_cycle": false
+  },
+  {
+   "from": "nc_tree/find-a-stick",
+   "to": "nc_woodwork/assemble-a-staff-from-sticks",
+   "via": "nc_tree:stick",
+   "req_op": "and",
+   "resolved_by": "direct",
+   "closes_cycle": false
+  },
+  {
+   "from": "nc_tree/find-a-stick",
+   "to": "nc_woodwork/assemble-an-adze-out-of-sticks",
+   "via": "nc_tree:stick",
+   "req_op": "or",
+   "resolved_by": "direct",
+   "closes_cycle": false
+  },
+  {
+   "from": "nc_woodwork/assemble-a-staff-from-sticks",
+   "to": "nc_woodwork/assemble-an-adze-out-of-sticks",
+   "via": "nc_woodwork:staff",
+   "req_op": "or",
+   "resolved_by": "direct",
+   "closes_cycle": false
+  },
+  {
+   "from": "nc_tree/find-a-stick",
+   "to": "nc_woodwork/assemble-a-wooden-ladder-from-sticks",
+   "via": "nc_tree:stick",
+   "req_op": "or",
+   "resolved_by": "direct",
+   "closes_cycle": false
+  },
+  {
+   "from": "nc_woodwork/assemble-a-staff-from-sticks",
+   "to": "nc_woodwork/assemble-a-wooden-ladder-from-sticks",
+   "via": "nc_woodwork:staff",
+   "req_op": "or",
+   "resolved_by": "direct",
+   "closes_cycle": false
+  },
+  {
+   "from": "nc_tree/find-a-stick",
+   "to": "nc_woodwork/assemble-a-wooden-frame-from-staves",
+   "via": "nc_tree:stick",
+   "req_op": "or",
+   "resolved_by": "direct",
+   "closes_cycle": false
+  },
+  {
+   "from": "nc_woodwork/assemble-a-staff-from-sticks",
+   "to": "nc_woodwork/assemble-a-wooden-frame-from-staves",
+   "via": "nc_woodwork:staff",
+   "req_op": "or",
+   "resolved_by": "direct",
+   "closes_cycle": false
+  },
+  {
+   "from": "nc_woodwork/assemble-a-wooden-frame-from-staves",
+   "to": "nc_woodwork/convert-a-wooden-frame-to-a-form",
+   "via": "nc_woodwork:frame",
+   "req_op": "or",
+   "resolved_by": "direct",
+   "closes_cycle": false
+  },
+  {
+   "from": "nc_woodwork/convert-a-wooden-frame-to-a-form",
+   "to": "nc_woodwork/convert-a-wooden-form-to-a-frame",
+   "via": "nc_woodwork:form",
+   "req_op": "or",
+   "resolved_by": "curated",
+   "closes_cycle": false
+  },
+  {
+   "from": "nc_woodwork/assemble-an-adze-out-of-sticks",
+   "to": "nc_woodwork/split-a-tree-trunk-into-planks",
+   "via": "nc_woodwork:adze",
+   "req_op": "or",
+   "resolved_by": "direct",
+   "closes_cycle": false
+  },
+  {
+   "from": "nc_stonework/put-a-stone-tip-onto-a-wooden-tool",
+   "to": "nc_woodwork/split-a-tree-trunk-into-planks",
+   "via": "nc_woodwork:tool_hatchet",
+   "req_op": "or",
+   "resolved_by": "implied",
+   "closes_cycle": false
+  },
+  {
+   "from": "nc_woodwork/split-a-tree-trunk-into-planks",
+   "to": "nc_woodwork/carve-wooden-tool-heads-from-planks",
+   "via": "split tree to planks",
+   "req_op": "and",
+   "resolved_by": "direct",
+   "closes_cycle": false
+  },
+  {
+   "from": "nc_woodwork/carve-wooden-tool-heads-from-planks",
+   "to": "nc_woodwork/assemble-a-wooden-tool",
+   "via": "carve nc_woodwork:plank",
+   "req_op": "and",
+   "resolved_by": "direct",
+   "closes_cycle": false
+  },
+  {
+   "from": "nc_woodwork/carve-wooden-tool-heads-from-planks",
+   "to": "nc_woodwork/carve-a-wooden-plank-completely",
+   "via": "carve nc_woodwork:plank",
+   "req_op": "and",
+   "resolved_by": "direct",
+   "closes_cycle": false
+  },
+  {
+   "from": "nc_woodwork/carve-wooden-tool-heads-from-planks",
+   "to": "nc_woodwork/bash-a-plank-into-sticks",
+   "via": "nc_woodwork:plank",
+   "req_op": "and",
+   "resolved_by": "implied",
+   "closes_cycle": false
+  },
+  {
+   "from": "nc_stonework/put-a-stone-tip-onto-a-wooden-tool",
+   "to": "nc_woodwork/bash-a-plank-into-sticks",
+   "via": "toolcap:thumpy:3",
+   "req_op": "and",
+   "resolved_by": "curated",
+   "closes_cycle": false
+  },
+  {
+   "from": "nc_tree/find-a-stick",
+   "to": "nc_woodwork/brace-a-wooden-form-with-a-stick",
+   "via": "nc_tree:stick",
+   "req_op": "and",
+   "resolved_by": "direct",
+   "closes_cycle": false
+  },
+  {
+   "from": "nc_woodwork/convert-a-wooden-frame-to-a-form",
+   "to": "nc_woodwork/brace-a-wooden-form-with-a-stick",
+   "via": "nc_woodwork:form",
+   "req_op": "and",
+   "resolved_by": "curated",
+   "closes_cycle": false
+  },
+  {
+   "from": "nc_woodwork/carve-wooden-tool-heads-from-planks",
+   "to": "nc_woodwork/assemble-a-wooden-shelf-from-a-form-and-plank",
+   "via": "nc_woodwork:plank",
+   "req_op": "and",
+   "resolved_by": "implied",
+   "closes_cycle": false
+  },
+  {
+   "from": "nc_woodwork/convert-a-wooden-frame-to-a-form",
+   "to": "nc_woodwork/assemble-a-wooden-shelf-from-a-form-and-plank",
+   "via": "nc_woodwork:form",
+   "req_op": "and",
+   "resolved_by": "curated",
+   "closes_cycle": false
+  },
+  {
+   "from": "nc_woodwork/assemble-an-adze-out-of-sticks",
+   "to": "nc_woodwork/assemble-a-rake-from-adzes-and-a-staff",
+   "via": "assemble wood adze",
+   "req_op": "and",
+   "resolved_by": "direct",
+   "closes_cycle": false
+  },
+  {
+   "from": "nc_terrain/dig-up-gravel",
+   "to": "nc_stonework/put-a-gravel-tip-on-a-wooden-adze",
+   "via": "inv:group:gravel",
+   "req_op": "and",
+   "resolved_by": "implied",
+   "closes_cycle": false
+  },
+  {
+   "from": "nc_stonework/break-cobble-into-chips",
+   "to": "nc_stonework/put-a-gravel-tip-on-a-wooden-adze",
+   "via": "inv:group:gravel",
+   "req_op": "and",
+   "resolved_by": "implied",
+   "closes_cycle": false
+  },
+  {
+   "from": "nc_woodwork/assemble-an-adze-out-of-sticks",
+   "to": "nc_stonework/put-a-gravel-tip-on-a-wooden-adze",
+   "via": "nc_woodwork:adze",
+   "req_op": "and",
+   "resolved_by": "direct",
+   "closes_cycle": false
+  },
+  {
+   "from": "nc_terrain/dig-up-cobble",
+   "to": "nc_stonework/break-cobble-into-chips",
+   "via": "nc_terrain:cobble_loose",
+   "req_op": "and",
+   "resolved_by": "direct",
+   "closes_cycle": false
+  },
+  {
+   "from": "nc_stonework/pack-stone-chips-back-into-cobble",
+   "to": "nc_stonework/break-cobble-into-chips",
+   "via": "nc_terrain:cobble_loose",
+   "req_op": "and",
+   "resolved_by": "direct",
+   "closes_cycle": true
+  },
+  {
+   "from": "nc_stonework/break-cobble-into-chips",
+   "to": "nc_stonework/pack-stone-chips-back-into-cobble",
+   "via": "nc_stonework:chip",
+   "req_op": "and",
+   "resolved_by": "direct",
+   "closes_cycle": false
+  },
+  {
+   "from": "nc_stonework/break-cobble-into-chips",
+   "to": "nc_stonework/put-a-stone-tip-onto-a-wooden-tool",
+   "via": "nc_stonework:chip",
+   "req_op": "and",
+   "resolved_by": "direct",
+   "closes_cycle": false
+  },
+  {
+   "from": "nc_lode/forge-a-lode-prill-into-a-bar",
+   "to": "nc_stonework/chisel-stone-bricks",
+   "via": "group:chisel",
+   "req_op": "and",
+   "resolved_by": "curated",
+   "closes_cycle": false
+  },
+  {
+   "from": "nc_lode/forge-lode-bars-into-a-rod",
+   "to": "nc_stonework/chisel-stone-bricks",
+   "via": "group:chisel",
+   "req_op": "and",
+   "resolved_by": "curated",
+   "closes_cycle": false
+  },
+  {
+   "from": "nc_lode/forge-a-lode-rod-and-bar-into-a-ladder",
+   "to": "nc_stonework/chisel-stone-bricks",
+   "via": "group:chisel",
+   "req_op": "and",
+   "resolved_by": "curated",
+   "closes_cycle": false
+  },
+  {
+   "from": "nc_stonework/chisel-stone-bricks",
+   "to": "nc_stonework/bond-stone-bricks",
+   "via": "chisel bricks",
+   "req_op": "and",
+   "resolved_by": "direct",
+   "closes_cycle": false
+  },
+  {
+   "from": "nc_terrain/dig-up-sand",
+   "to": "nc_optics/melt-sand-into-molten-glass",
+   "via": "nc_terrain:sand_loose",
+   "req_op": "and",
+   "resolved_by": "direct",
+   "closes_cycle": false
+  },
+  {
+   "from": "nc_optics/melt-sand-into-molten-glass",
+   "to": "nc_optics/quench-molten-glass-into-chromatic-glass",
+   "via": "group:silica_molten",
+   "req_op": "and",
+   "resolved_by": "direct",
+   "closes_cycle": false
+  },
+  {
+   "from": "nc_optics/melt-sand-into-molten-glass",
+   "to": "nc_optics/mold-molten-glass-into-clear-glass",
+   "via": "group:silica_molten",
+   "req_op": "and",
+   "resolved_by": "direct",
+   "closes_cycle": false
+  },
+  {
+   "from": "nc_optics/mold-molten-glass-into-clear-glass",
+   "to": "nc_optics/mold-molten-glass-into-float-glass",
+   "via": "cool clear glass",
+   "req_op": "and",
+   "resolved_by": "direct",
+   "closes_cycle": false
+  },
+  {
+   "from": "nc_terrain/find-pumwater",
+   "to": "nc_optics/mold-molten-glass-into-float-glass",
+   "via": "group:lava",
+   "req_op": "and",
+   "resolved_by": "direct",
+   "closes_cycle": false
+  },
+  {
+   "from": "nc_optics/melt-sand-into-molten-glass",
+   "to": "nc_optics/cool-molten-glass-into-crude-glass",
+   "via": "group:silica_molten",
+   "req_op": "and",
+   "resolved_by": "direct",
+   "closes_cycle": false
+  },
+  {
+   "from": "nc_optics/quench-molten-glass-into-chromatic-glass",
+   "to": "nc_optics/chip-chromatic-glass-into-prisms",
+   "via": "nc_optics:glass_opaque",
+   "req_op": "and",
+   "resolved_by": "direct",
+   "closes_cycle": false
+  },
+  {
+   "from": "nc_lode/temper-a-lode-tool-head",
+   "to": "nc_optics/chip-chromatic-glass-into-prisms",
+   "via": "nc_lode:tool_mallet_tempered",
+   "req_op": "and",
+   "resolved_by": "curated",
+   "closes_cycle": false
+  },
+  {
+   "from": "nc_optics/quench-molten-glass-into-chromatic-glass",
+   "to": "nc_optics/chop-chromatic-glass-into-lenses",
+   "via": "nc_optics:glass_opaque",
+   "req_op": "and",
+   "resolved_by": "direct",
+   "closes_cycle": false
+  },
+  {
+   "from": "nc_lode/temper-a-lode-tool-head",
+   "to": "nc_optics/chop-chromatic-glass-into-lenses",
+   "via": "nc_lode:tool_hatchet_tempered",
+   "req_op": "and",
+   "resolved_by": "curated",
+   "closes_cycle": false
+  },
+  {
+   "from": "nc_optics/chop-chromatic-glass-into-lenses",
+   "to": "nc_optics/activate-a-lens",
+   "via": "group:silica_lens",
+   "req_op": "and",
+   "resolved_by": "curated",
+   "closes_cycle": false
+  },
+  {
+   "from": "nc_optics/chop-chromatic-glass-into-lenses",
+   "to": "nc_optics/produce-light-from-a-lens",
+   "via": "group:silica_lens",
+   "req_op": "and",
+   "resolved_by": "curated",
+   "closes_cycle": false
+  },
+  {
+   "from": "nc_optics/activate-a-lens",
+   "to": "nc_optics/activate-a-prism",
+   "via": "group:optic_lens_emit",
+   "req_op": "and",
+   "resolved_by": "direct",
+   "closes_cycle": false
+  },
+  {
+   "from": "nc_optics/activate-a-lens",
+   "to": "nc_optics/gate-a-prism",
+   "via": "group:optic_lens_emit",
+   "req_op": "and",
+   "resolved_by": "direct",
+   "closes_cycle": false
+  },
+  {
+   "from": "nc_tree/find-an-eggcorn",
+   "to": "nc_optics/stick-a-lens-prism-in-place",
+   "via": "nc_tree:eggcorn",
+   "req_op": "and",
+   "resolved_by": "direct",
+   "closes_cycle": false
+  },
+  {
+   "from": "nc_optics/chop-chromatic-glass-into-lenses",
+   "to": "nc_optics/stick-a-lens-prism-in-place",
+   "via": "group:optic_gluable",
+   "req_op": "and",
+   "resolved_by": "curated",
+   "closes_cycle": false
+  },
+  {
+   "from": "nc_optics/chip-chromatic-glass-into-prisms",
+   "to": "nc_optics/stick-a-lens-prism-in-place",
+   "via": "group:optic_gluable",
+   "req_op": "and",
+   "resolved_by": "curated",
+   "closes_cycle": false
+  },
+  {
+   "from": "nc_optics/mold-molten-glass-into-clear-glass",
+   "to": "nc_optics/assemble-a-clear-glass-case",
+   "via": "nc_optics:glass",
+   "req_op": "and",
+   "resolved_by": "direct",
+   "closes_cycle": false
+  },
+  {
+   "from": "nc_woodwork/convert-a-wooden-frame-to-a-form",
+   "to": "nc_optics/assemble-a-clear-glass-case",
+   "via": "nc_woodwork:form",
+   "req_op": "and",
+   "resolved_by": "curated",
+   "closes_cycle": false
+  },
+  {
+   "from": "nc_optics/mold-molten-glass-into-float-glass",
+   "to": "nc_optics/assemble-a-float-glass-case",
+   "via": "nc_optics:glass_float",
+   "req_op": "and",
+   "resolved_by": "direct",
+   "closes_cycle": false
+  },
+  {
+   "from": "nc_woodwork/convert-a-wooden-frame-to-a-form",
+   "to": "nc_optics/assemble-a-float-glass-case",
+   "via": "nc_woodwork:form",
+   "req_op": "and",
+   "resolved_by": "curated",
+   "closes_cycle": false
+  },
+  {
+   "from": "nc_tree/find-a-stick",
+   "to": "nc_concrete/assemble-a-stone-tipped-stylus",
+   "via": "nc_tree:stick",
+   "req_op": "and",
+   "resolved_by": "direct",
+   "closes_cycle": false
+  },
+  {
+   "from": "nc_stonework/break-cobble-into-chips",
+   "to": "nc_concrete/assemble-a-stone-tipped-stylus",
+   "via": "nc_stonework:chip",
+   "req_op": "and",
+   "resolved_by": "direct",
+   "closes_cycle": false
+  },
+  {
+   "from": "nc_concrete/set-concrete-to-pliant",
+   "to": "nc_concrete/assemble-a-stone-tipped-stylus",
+   "via": "group:concrete_etchable",
+   "req_op": "and",
+   "resolved_by": "direct",
+   "closes_cycle": false
+  },
+  {
+   "from": "nc_concrete/assemble-a-stone-tipped-stylus",
+   "to": "nc_concrete/etch-pliant-concrete-with-a-stylus",
+   "via": "assemble stylus",
+   "req_op": "and",
+   "resolved_by": "direct",
+   "closes_cycle": false
+  },
+  {
+   "from": "nc_concrete/etch-pliant-concrete-with-a-stylus",
+   "to": "nc_concrete/change-a-stylus-pattern",
+   "via": "stylus etch",
+   "req_op": "and",
+   "resolved_by": "direct",
+   "closes_cycle": false
+  },
+  {
+   "from": "nc_terrain/dig-up-gravel",
+   "to": "nc_concrete/mix-gravel-into-ash-to-make-aggregate",
+   "via": "nc_terrain:gravel_loose",
+   "req_op": "and",
+   "resolved_by": "direct",
+   "closes_cycle": false
+  },
+  {
+   "from": "nc_fire/find-ash",
+   "to": "nc_concrete/mix-gravel-into-ash-to-make-aggregate",
+   "via": "nc_fire:ash",
+   "req_op": "and",
+   "resolved_by": "direct",
+   "closes_cycle": false
+  },
+  {
+   "from": "nc_terrain/dig-up-sand",
+   "to": "nc_concrete/mix-sand-into-ash-to-make-render",
+   "via": "nc_terrain:sand_loose",
+   "req_op": "and",
+   "resolved_by": "direct",
+   "closes_cycle": false
+  },
+  {
+   "from": "nc_fire/find-ash",
+   "to": "nc_concrete/mix-sand-into-ash-to-make-render",
+   "via": "nc_fire:ash",
+   "req_op": "and",
+   "resolved_by": "direct",
+   "closes_cycle": false
+  },
+  {
+   "from": "nc_terrain/dig-up-dirt",
+   "to": "nc_concrete/mix-dirt-into-ash-to-make-adobe-mix",
+   "via": "nc_terrain:dirt_loose",
+   "req_op": "and",
+   "resolved_by": "direct",
+   "closes_cycle": false
+  },
+  {
+   "from": "nc_fire/find-ash",
+   "to": "nc_concrete/mix-dirt-into-ash-to-make-adobe-mix",
+   "via": "nc_fire:ash",
+   "req_op": "and",
+   "resolved_by": "direct",
+   "closes_cycle": false
+  },
+  {
+   "from": "nc_fire/chop-up-charcoal",
+   "to": "nc_concrete/add-coal-to-aggregate-to-make-tarstone",
+   "via": "nc_fire:lump_coal",
+   "req_op": "and",
+   "resolved_by": "curated",
+   "closes_cycle": false
+  },
+  {
+   "from": "nc_concrete/mix-gravel-into-ash-to-make-aggregate",
+   "to": "nc_concrete/add-coal-to-aggregate-to-make-tarstone",
+   "via": "nc_concrete:aggregate",
+   "req_op": "and",
+   "resolved_by": "curated",
+   "closes_cycle": false
+  },
+  {
+   "from": "nc_optics/cool-molten-glass-into-crude-glass",
+   "to": "nc_concrete/mix-crude-glass-into-ash-to-make-spackling",
+   "via": "nc_optics:glass_crude",
+   "req_op": "and",
+   "resolved_by": "direct",
+   "closes_cycle": false
+  },
+  {
+   "from": "nc_fire/find-ash",
+   "to": "nc_concrete/mix-crude-glass-into-ash-to-make-spackling",
+   "via": "nc_fire:ash",
+   "req_op": "and",
+   "resolved_by": "direct",
+   "closes_cycle": false
+  },
+  {
+   "from": "nc_concrete/mix-gravel-into-ash-to-make-aggregate",
+   "to": "nc_concrete/wet-a-concrete-mix",
+   "via": "group:concrete_powder",
+   "req_op": "and",
+   "resolved_by": "curated",
+   "closes_cycle": false
+  },
+  {
+   "from": "nc_concrete/mix-sand-into-ash-to-make-render",
+   "to": "nc_concrete/wet-a-concrete-mix",
+   "via": "group:concrete_powder",
+   "req_op": "and",
+   "resolved_by": "curated",
+   "closes_cycle": false
+  },
+  {
+   "from": "nc_concrete/mix-dirt-into-ash-to-make-adobe-mix",
+   "to": "nc_concrete/wet-a-concrete-mix",
+   "via": "group:concrete_powder",
+   "req_op": "and",
+   "resolved_by": "curated",
+   "closes_cycle": false
+  },
+  {
+   "from": "nc_concrete/mix-crude-glass-into-ash-to-make-spackling",
+   "to": "nc_concrete/wet-a-concrete-mix",
+   "via": "group:concrete_powder",
+   "req_op": "and",
+   "resolved_by": "curated",
+   "closes_cycle": false
+  },
+  {
+   "from": "nc_concrete/wet-a-concrete-mix",
+   "to": "nc_concrete/set-concrete-to-pliant",
+   "via": "group:concrete_wet",
+   "req_op": "and",
+   "resolved_by": "direct",
+   "closes_cycle": false
+  },
+  {
+   "from": "nc_concrete/set-concrete-to-pliant",
+   "to": "nc_concrete/cure-pliant-concrete-fully",
+   "via": "group:concrete_etchable",
+   "req_op": "and",
+   "resolved_by": "direct",
+   "closes_cycle": false
+  },
+  {
+   "from": "nc_woodwork/assemble-a-wooden-tool",
+   "to": "nc_lode/find-lode-ore",
+   "via": "toolcap:cracky:2",
+   "req_op": "and",
+   "resolved_by": "curated",
+   "closes_cycle": false
+  },
+  {
+   "from": "nc_stonework/put-a-stone-tip-onto-a-wooden-tool",
+   "to": "nc_lode/find-lode-ore",
+   "via": "toolcap:cracky:2",
+   "req_op": "and",
+   "resolved_by": "curated",
+   "closes_cycle": false
+  },
+  {
+   "from": "nc_lode/find-lode-ore",
+   "to": "nc_lode/dig-up-lode-ore",
+   "via": "nc_lode:ore",
+   "req_op": "and",
+   "resolved_by": "direct",
+   "closes_cycle": false
+  },
+  {
+   "from": "nc_woodwork/assemble-a-wooden-tool",
+   "to": "nc_lode/dig-up-lode-ore",
+   "via": "toolcap:cracky:2",
+   "req_op": "and",
+   "resolved_by": "curated",
+   "closes_cycle": false
+  },
+  {
+   "from": "nc_stonework/put-a-stone-tip-onto-a-wooden-tool",
+   "to": "nc_lode/dig-up-lode-ore",
+   "via": "toolcap:cracky:2",
+   "req_op": "and",
+   "resolved_by": "curated",
+   "closes_cycle": false
+  },
+  {
+   "from": "nc_lode/dig-up-lode-ore",
+   "to": "nc_lode/melt-down-lode-metal-from-lode-cobble",
+   "via": "inv:nc_lode:cobble_loose",
+   "req_op": "and",
+   "resolved_by": "direct",
+   "closes_cycle": false
+  },
+  {
+   "from": "nc_lode/melt-down-lode-metal-from-lode-cobble",
+   "to": "nc_lode/sinter-glowing-lode-prills-into-a-cube",
+   "via": "nc_lode:prill_hot",
+   "req_op": "and",
+   "resolved_by": "curated",
+   "closes_cycle": false
+  },
+  {
+   "from": "nc_lode/sinter-glowing-lode-prills-into-a-cube",
+   "to": "nc_lode/anneal-a-lode-cube",
+   "via": "forge lode block",
+   "req_op": "and",
+   "resolved_by": "direct",
+   "closes_cycle": false
+  },
+  {
+   "from": "nc_lode/sinter-glowing-lode-prills-into-a-cube",
+   "to": "nc_lode/temper-a-lode-cube",
+   "via": "forge lode block",
+   "req_op": "and",
+   "resolved_by": "direct",
+   "closes_cycle": false
+  },
+  {
+   "from": "nc_lode/melt-down-lode-metal-from-lode-cobble",
+   "to": "nc_lode/work-glowing-lode-on-a-stone-anvil",
+   "via": "nc_lode:prill_hot",
+   "req_op": "and",
+   "resolved_by": "curated",
+   "closes_cycle": false
+  },
+  {
+   "from": "nc_lode/anneal-a-lode-cube",
+   "to": "nc_lode/work-glowing-lode-on-a-lode-anvil",
+   "via": "nc_lode:block_annealed",
+   "req_op": "and",
+   "resolved_by": "implied",
+   "closes_cycle": false
+  },
+  {
+   "from": "nc_lode/temper-a-lode-cube",
+   "to": "nc_lode/work-annealed-lode-on-a-tempered-lode-anvil",
+   "via": "nc_lode:block_tempered",
+   "req_op": "and",
+   "resolved_by": "implied",
+   "closes_cycle": false
+  },
+  {
+   "from": "nc_lode/melt-down-lode-metal-from-lode-cobble",
+   "to": "nc_lode/forge-lode-prills-into-a-tool-head",
+   "via": "nc_lode:prill_hot",
+   "req_op": "or",
+   "resolved_by": "curated",
+   "closes_cycle": false
+  },
+  {
+   "from": "nc_lode/anneal-a-lode-cube",
+   "to": "nc_lode/forge-lode-prills-into-a-tool-head",
+   "via": "nc_lode:prill_annealed",
+   "req_op": "or",
+   "resolved_by": "curated",
+   "closes_cycle": false
+  },
+  {
+   "from": "nc_lode/melt-down-lode-metal-from-lode-cobble",
+   "to": "nc_lode/forge-lode-prills-into-a-tool-head",
+   "via": "nc_lode:prill_annealed",
+   "req_op": "or",
+   "resolved_by": "curated",
+   "closes_cycle": false
+  },
+  {
+   "from": "nc_lode/temper-a-lode-cube",
+   "to": "nc_lode/forge-lode-prills-into-a-tool-head",
+   "via": "nc_lode:prill_tempered",
+   "req_op": "or",
+   "resolved_by": "curated",
+   "closes_cycle": false
+  },
+  {
+   "from": "nc_lode/melt-down-lode-metal-from-lode-cobble",
+   "to": "nc_lode/forge-lode-prills-into-a-tool-head",
+   "via": "nc_lode:prill_tempered",
+   "req_op": "or",
+   "resolved_by": "curated",
+   "closes_cycle": false
+  },
+  {
+   "from": "nc_lode/forge-lode-prills-into-a-tool-head",
+   "to": "nc_lode/temper-a-lode-tool-head",
+   "via": "forge lode toolhead_mallet",
+   "req_op": "and",
+   "resolved_by": "direct",
+   "closes_cycle": false
+  },
+  {
+   "from": "nc_lode/forge-lode-prills-into-a-tool-head",
+   "to": "nc_lode/weld-glowing-lode-pick-and-spade-heads-together",
+   "via": "forge lode toolhead_pick",
+   "req_op": "and",
+   "resolved_by": "curated",
+   "closes_cycle": false
+  },
+  {
+   "from": "nc_lode/work-glowing-lode-on-a-lode-anvil",
+   "to": "nc_lode/forge-a-lode-prill-into-a-bar",
+   "via": "lode anvil",
+   "req_op": "and",
+   "resolved_by": "curated",
+   "closes_cycle": false
+  },
+  {
+   "from": "nc_lode/forge-a-lode-prill-into-a-bar",
+   "to": "nc_lode/forge-lode-bars-into-a-rod",
+   "via": "anvil making lode bar",
+   "req_op": "and",
+   "resolved_by": "direct",
+   "closes_cycle": false
+  },
+  {
+   "from": "nc_lode/forge-lode-bars-into-a-rod",
+   "to": "nc_lode/forge-a-lode-rod-and-bar-into-a-ladder",
+   "via": "anvil making lode rod",
+   "req_op": "and",
+   "resolved_by": "direct",
+   "closes_cycle": false
+  },
+  {
+   "from": "nc_lode/forge-lode-bars-into-a-rod",
+   "to": "nc_lode/forge-lode-rods-into-a-frame",
+   "via": "anvil making lode rod",
+   "req_op": "and",
+   "resolved_by": "direct",
+   "closes_cycle": false
+  },
+  {
+   "from": "nc_lode/forge-lode-rods-into-a-frame",
+   "to": "nc_lode/forge-an-annealed-lode-frame-into-a-form",
+   "via": "anvil making lode frame",
+   "req_op": "and",
+   "resolved_by": "direct",
+   "closes_cycle": false
+  },
+  {
+   "from": "nc_lode/forge-an-annealed-lode-frame-into-a-form",
+   "to": "nc_lode/assemble-a-lode-crate-from-form-and-bar",
+   "via": "lode frame_annealed to form",
+   "req_op": "and",
+   "resolved_by": "direct",
+   "closes_cycle": false
+  },
+  {
+   "from": "nc_lode/forge-lode-bars-into-a-rod",
+   "to": "nc_lode/assemble-a-lode-adze",
+   "via": "anvil making lode rod",
+   "req_op": "and",
+   "resolved_by": "direct",
+   "closes_cycle": false
+  },
+  {
+   "from": "nc_lode/assemble-a-lode-adze",
+   "to": "nc_lode/assemble-a-lode-rake",
+   "via": "anvil making lode adze",
+   "req_op": "and",
+   "resolved_by": "direct",
+   "closes_cycle": false
+  },
+  {
+   "from": "nc_lode/assemble-a-lode-adze",
+   "to": "nc_lode/assemble-lode-tongs",
+   "via": "anvil making lode adze",
+   "req_op": "and",
+   "resolved_by": "direct",
+   "closes_cycle": false
+  },
+  {
+   "from": "nc_lode/forge-lode-bars-into-a-rod",
+   "to": "nc_doors/chisel-a-hinge-groove-into-a-wooden-plank",
+   "via": "anvil making lode rod",
+   "req_op": "and",
+   "resolved_by": "direct",
+   "closes_cycle": false
+  },
+  {
+   "from": "nc_woodwork/split-a-tree-trunk-into-planks",
+   "to": "nc_doors/chisel-a-hinge-groove-into-a-wooden-plank",
+   "via": "split tree to planks",
+   "req_op": "and",
+   "resolved_by": "direct",
+   "closes_cycle": false
+  },
+  {
+   "from": "nc_doors/chisel-a-hinge-groove-into-a-wooden-plank",
+   "to": "nc_doors/insert-wooden-pin-into-wooden-panel",
+   "via": "drill door plank",
+   "req_op": "and",
+   "resolved_by": "direct",
+   "closes_cycle": false
+  },
+  {
+   "from": "nc_lode/forge-lode-bars-into-a-rod",
+   "to": "nc_doors/chisel-a-hinge-groove-into-cobble",
+   "via": "anvil making lode rod",
+   "req_op": "and",
+   "resolved_by": "direct",
+   "closes_cycle": false
+  },
+  {
+   "from": "nc_terrain/dig-up-cobble",
+   "to": "nc_doors/chisel-a-hinge-groove-into-cobble",
+   "via": "nc_terrain:cobble",
+   "req_op": "and",
+   "resolved_by": "direct",
+   "closes_cycle": false
+  },
+  {
+   "from": "nc_doors/chisel-a-hinge-groove-into-cobble",
+   "to": "nc_doors/insert-metal-rod-into-a-cobble-panel",
+   "via": "drill door cobble",
+   "req_op": "and",
+   "resolved_by": "direct",
+   "closes_cycle": false
+  },
+  {
+   "from": "nc_doors/insert-wooden-pin-into-wooden-panel",
+   "to": "nc_doors/compress-something-with-a-hinged-panel",
+   "via": "group:door",
+   "req_op": "and",
+   "resolved_by": "curated",
+   "closes_cycle": false
+  },
+  {
+   "from": "nc_doors/insert-metal-rod-into-a-cobble-panel",
+   "to": "nc_doors/compress-something-with-a-hinged-panel",
+   "via": "group:door",
+   "req_op": "and",
+   "resolved_by": "curated",
+   "closes_cycle": false
+  },
+  {
+   "from": "nc_doors/insert-wooden-pin-into-wooden-panel",
+   "to": "nc_doors/catapult-an-item-with-a-hinged-panel",
+   "via": "group:door",
+   "req_op": "and",
+   "resolved_by": "curated",
+   "closes_cycle": false
+  },
+  {
+   "from": "nc_doors/insert-metal-rod-into-a-cobble-panel",
+   "to": "nc_doors/catapult-an-item-with-a-hinged-panel",
+   "via": "group:door",
+   "req_op": "and",
+   "resolved_by": "curated",
+   "closes_cycle": false
+  },
+  {
+   "from": "nc_optics/activate-a-lens",
+   "to": "nc_doors/propel-hinged-panel-with-focused-light",
+   "via": "group:optic_lens_emit",
+   "req_op": "and",
+   "resolved_by": "direct",
+   "closes_cycle": false
+  },
+  {
+   "from": "nc_doors/insert-wooden-pin-into-wooden-panel",
+   "to": "nc_doors/propel-hinged-panel-with-focused-light",
+   "via": "group:door",
+   "req_op": "and",
+   "resolved_by": "curated",
+   "closes_cycle": false
+  },
+  {
+   "from": "nc_doors/insert-metal-rod-into-a-cobble-panel",
+   "to": "nc_doors/propel-hinged-panel-with-focused-light",
+   "via": "group:door",
+   "req_op": "and",
+   "resolved_by": "curated",
+   "closes_cycle": false
+  },
+  {
+   "from": "nc_doors/insert-wooden-pin-into-wooden-panel",
+   "to": "nc_doors/place-a-node-with-a-hinged-panel",
+   "via": "group:door",
+   "req_op": "and",
+   "resolved_by": "curated",
+   "closes_cycle": false
+  },
+  {
+   "from": "nc_doors/insert-metal-rod-into-a-cobble-panel",
+   "to": "nc_doors/place-a-node-with-a-hinged-panel",
+   "via": "group:door",
+   "req_op": "and",
+   "resolved_by": "curated",
+   "closes_cycle": false
+  },
+  {
+   "from": "nc_doors/insert-wooden-pin-into-wooden-panel",
+   "to": "nc_doors/complete-an-assembly-recipe-with-a-hinged-panel",
+   "via": "group:door",
+   "req_op": "and",
+   "resolved_by": "curated",
+   "closes_cycle": false
+  },
+  {
+   "from": "nc_doors/insert-metal-rod-into-a-cobble-panel",
+   "to": "nc_doors/complete-an-assembly-recipe-with-a-hinged-panel",
+   "via": "group:door",
+   "req_op": "and",
+   "resolved_by": "curated",
+   "closes_cycle": false
+  },
+  {
+   "from": "nc_doors/insert-wooden-pin-into-wooden-panel",
+   "to": "nc_doors/complete-a-pummel-with-a-hinged-panel-and-tool-head",
+   "via": "group:door",
+   "req_op": "and",
+   "resolved_by": "curated",
+   "closes_cycle": false
+  },
+  {
+   "from": "nc_doors/insert-metal-rod-into-a-cobble-panel",
+   "to": "nc_doors/complete-a-pummel-with-a-hinged-panel-and-tool-head",
+   "via": "group:door",
+   "req_op": "and",
+   "resolved_by": "curated",
+   "closes_cycle": false
+  },
+  {
+   "from": "nc_doors/insert-wooden-pin-into-wooden-panel",
+   "to": "nc_doors/dig-a-node-with-a-hinged-panel-and-tool",
+   "via": "group:door",
+   "req_op": "and",
+   "resolved_by": "curated",
+   "closes_cycle": false
+  },
+  {
+   "from": "nc_doors/insert-metal-rod-into-a-cobble-panel",
+   "to": "nc_doors/dig-a-node-with-a-hinged-panel-and-tool",
+   "via": "group:door",
+   "req_op": "and",
+   "resolved_by": "curated",
+   "closes_cycle": false
+  },
+  {
+   "from": "nc_doors/insert-wooden-pin-into-wooden-panel",
+   "to": "nc_doors/push-an-item-into-a-storage-box-with-a-hinged-panel",
+   "via": "group:door",
+   "req_op": "and",
+   "resolved_by": "curated",
+   "closes_cycle": false
+  },
+  {
+   "from": "nc_doors/insert-metal-rod-into-a-cobble-panel",
+   "to": "nc_doors/push-an-item-into-a-storage-box-with-a-hinged-panel",
+   "via": "group:door",
+   "req_op": "and",
+   "resolved_by": "curated",
+   "closes_cycle": false
+  },
+  {
+   "from": "nc_flora/find-a-rush",
+   "to": "nc_flora/dry-out-a-rush",
+   "via": "nc_flora:rush",
+   "req_op": "and",
+   "resolved_by": "direct",
+   "closes_cycle": false
+  },
+  {
+   "from": "nc_flora/find-a-rush",
+   "to": "nc_flora/grow-a-rush-on-soil-near-moisture",
+   "via": "nc_flora:rush",
+   "req_op": "and",
+   "resolved_by": "direct",
+   "closes_cycle": false
+  },
+  {
+   "from": "nc_flora/find-a-sedge",
+   "to": "nc_flora/pick-a-sedge",
+   "via": "group:flora_sedges",
+   "req_op": "and",
+   "resolved_by": "direct",
+   "closes_cycle": false
+  },
+  {
+   "from": "nc_flora/find-a-sedge",
+   "to": "nc_flora/grow-a-sedge-on-grass-near-moisture",
+   "via": "group:flora_sedges",
+   "req_op": "and",
+   "resolved_by": "direct",
+   "closes_cycle": false
+  },
+  {
+   "from": "nc_flora/find-a-sedge",
+   "to": "nc_flora/find-a-flower",
+   "via": "group:flora_sedges",
+   "req_op": "and",
+   "resolved_by": "direct",
+   "closes_cycle": false
+  },
+  {
+   "from": "nc_flora/find-a-flower",
+   "to": "nc_flora/wilt-a-flower",
+   "via": "group:flower_living",
+   "req_op": "and",
+   "resolved_by": "direct",
+   "closes_cycle": false
+  },
+  {
+   "from": "nc_flora/find-a-flower",
+   "to": "nc_flora/grow-a-flower-on-soil-near-moisture",
+   "via": "group:flower_living",
+   "req_op": "and",
+   "resolved_by": "direct",
+   "closes_cycle": false
+  },
+  {
+   "from": "nc_flora/find-a-flower",
+   "to": "nc_flora/breed-a-new-flower-variety",
+   "via": "group:flower_living",
+   "req_op": "and",
+   "resolved_by": "direct",
+   "closes_cycle": false
+  },
+  {
+   "from": "nc_flora/grow-a-flower-on-soil-near-moisture",
+   "to": "nc_flora/breed-a-new-flower-variety",
+   "via": "flower spread",
+   "req_op": "and",
+   "resolved_by": "direct",
+   "closes_cycle": false
+  },
+  {
+   "from": "nc_flora/pick-a-sedge",
+   "to": "nc_flora/pack-sedges-into-thatch",
+   "via": "inv:nc_flora:sedge_1",
+   "req_op": "and",
+   "resolved_by": "direct",
+   "closes_cycle": false
+  },
+  {
+   "from": "nc_flora/dry-out-a-rush",
+   "to": "nc_flora/pack-dry-rushes-into-wicker",
+   "via": "nc_flora:rush_dry",
+   "req_op": "and",
+   "resolved_by": "direct",
+   "closes_cycle": false
+  },
+  {
+   "from": "nc_woodwork/assemble-a-wooden-tool",
+   "to": "nc_lux/find-lux",
+   "via": "toolcap:cracky:2",
+   "req_op": "and",
+   "resolved_by": "curated",
+   "closes_cycle": false
+  },
+  {
+   "from": "nc_stonework/put-a-stone-tip-onto-a-wooden-tool",
+   "to": "nc_lux/find-lux",
+   "via": "toolcap:cracky:2",
+   "req_op": "and",
+   "resolved_by": "curated",
+   "closes_cycle": false
+  },
+  {
+   "from": "nc_lux/find-lux",
+   "to": "nc_lux/dig-up-lux-cobble",
+   "via": "group:lux_rock",
+   "req_op": "and",
+   "resolved_by": "direct",
+   "closes_cycle": false
+  },
+  {
+   "from": "nc_woodwork/assemble-a-wooden-tool",
+   "to": "nc_lux/dig-up-lux-cobble",
+   "via": "toolcap:cracky:2",
+   "req_op": "and",
+   "resolved_by": "curated",
+   "closes_cycle": false
+  },
+  {
+   "from": "nc_stonework/put-a-stone-tip-onto-a-wooden-tool",
+   "to": "nc_lux/dig-up-lux-cobble",
+   "via": "toolcap:cracky:2",
+   "req_op": "and",
+   "resolved_by": "curated",
+   "closes_cycle": false
+  },
+  {
+   "from": "nc_lux/dig-up-lux-cobble",
+   "to": "nc_lux/observe-a-lux-reaction",
+   "via": "inv:group:lux_cobble",
+   "req_op": "and",
+   "resolved_by": "direct",
+   "closes_cycle": false
+  },
+  {
+   "from": "nc_lux/observe-a-lux-reaction",
+   "to": "nc_lux/observe-lux-criticality",
+   "via": "group:lux_hot",
+   "req_op": "and",
+   "resolved_by": "direct",
+   "closes_cycle": false
+  },
+  {
+   "from": "nc_lux/observe-lux-criticality",
+   "to": "nc_lux/lux-infuse-a-lode-tool",
+   "via": "group:lux_cobble_max",
+   "req_op": "and",
+   "resolved_by": "direct",
+   "closes_cycle": false
+  },
+  {
+   "from": "nc_lode/forge-an-annealed-lode-frame-into-a-form",
+   "to": "nc_tote/assemble-a-lode-tote-handle",
+   "via": "nc_lode:form",
+   "req_op": "and",
+   "resolved_by": "curated",
+   "closes_cycle": false
+  },
+  {
+   "from": "nc_lode/forge-lode-rods-into-a-frame",
+   "to": "nc_tote/assemble-a-lode-tote-handle",
+   "via": "nc_lode:frame_annealed",
+   "req_op": "and",
+   "resolved_by": "curated",
+   "closes_cycle": false
+  },
+  {
+   "from": "nc_lode/anneal-a-lode-cube",
+   "to": "nc_tote/assemble-a-lode-tote-handle",
+   "via": "nc_lode:frame_annealed",
+   "req_op": "and",
+   "resolved_by": "curated",
+   "closes_cycle": false
+  },
+  {
+   "from": "nc_woodwork/assemble-a-wooden-shelf-from-a-form-and-plank",
+   "to": "nc_tote/assemble-a-lode-tote-handle",
+   "via": "group:totable",
+   "req_op": "and",
+   "resolved_by": "curated",
+   "closes_cycle": false
+  },
+  {
+   "from": "nc_lode/assemble-a-lode-crate-from-form-and-bar",
+   "to": "nc_tote/assemble-a-lode-tote-handle",
+   "via": "group:totable",
+   "req_op": "and",
+   "resolved_by": "curated",
+   "closes_cycle": false
+  },
+  {
+   "from": "nc_tote/assemble-a-lode-tote-handle",
+   "to": "nc_tote/pack-up-a-complete-tote",
+   "via": "craft tote handle",
+   "req_op": "and",
+   "resolved_by": "direct",
+   "closes_cycle": false
+  },
+  {
+   "from": "nc_tote/assemble-a-lode-tote-handle",
+   "to": "nc_lantern/assemble-a-lantern-from-a-tote-handle",
+   "via": "nc_tote:handle",
+   "req_op": "and",
+   "resolved_by": "direct",
+   "closes_cycle": false
+  },
+  {
+   "from": "nc_optics/quench-molten-glass-into-chromatic-glass",
+   "to": "nc_lantern/assemble-a-lantern-from-a-tote-handle",
+   "via": "nc_optics:glass_opaque",
+   "req_op": "and",
+   "resolved_by": "direct",
+   "closes_cycle": false
+  },
+  {
+   "from": "nc_lantern/assemble-a-lantern-from-a-tote-handle",
+   "to": "nc_lantern/charge-a-lantern",
+   "via": "assemble lantern",
+   "req_op": "and",
+   "resolved_by": "direct",
+   "closes_cycle": false
+  },
+  {
+   "from": "nc_lantern/assemble-a-lantern-from-a-tote-handle",
+   "to": "nc_lantern/fully-charge-a-lantern",
+   "via": "assemble lantern",
+   "req_op": "and",
+   "resolved_by": "direct",
+   "closes_cycle": false
+  },
+  {
+   "from": "nc_player_pickup/drop-an-item",
+   "to": "nc_player_pickup/drop-all-your-items-at-once",
+   "via": "item_drop",
+   "req_op": "and",
+   "resolved_by": "direct",
+   "closes_cycle": false
+  },
+  {
+   "from": "nc_scaling/scale-a-wall",
+   "to": "nc_scaling/scale-an-overhang",
+   "via": "scaling dy=0",
+   "req_op": "and",
+   "resolved_by": "direct",
+   "closes_cycle": false
+  },
+  {
+   "from": "nc_player_model/go-for-a-swim",
+   "to": "nc_sponge/find-a-sponge",
+   "via": "anim_swim_up",
+   "req_op": "or",
+   "resolved_by": "direct",
+   "closes_cycle": false
+  },
+  {
+   "from": "nc_player_model/go-for-a-swim",
+   "to": "nc_sponge/find-a-sponge",
+   "via": "anim_swim_down",
+   "req_op": "or",
+   "resolved_by": "direct",
+   "closes_cycle": false
+  },
+  {
+   "from": "nc_player_model/go-for-a-swim",
+   "to": "nc_sponge/find-a-sponge",
+   "via": "anim_swim_mine",
+   "req_op": "or",
+   "resolved_by": "direct",
+   "closes_cycle": false
+  },
+  {
+   "from": "nc_sponge/find-a-sponge",
+   "to": "nc_sponge/harvest-a-sponge",
+   "via": "group:sponge",
+   "req_op": "and",
+   "resolved_by": "direct",
+   "closes_cycle": false
+  },
+  {
+   "from": "nc_sponge/find-a-sponge",
+   "to": "nc_sponge/dry-out-a-sponge",
+   "via": "group:sponge",
+   "req_op": "and",
+   "resolved_by": "direct",
+   "closes_cycle": false
+  },
+  {
+   "from": "nc_sponge/dry-out-a-sponge",
+   "to": "nc_sponge/squeeze-out-a-sponge",
+   "via": "nc_sponge:sponge",
+   "req_op": "or",
+   "resolved_by": "direct",
+   "closes_cycle": false
+  },
+  {
+   "from": "nc_sponge/dry-out-a-sponge",
+   "to": "nc_sponge/squeeze-out-a-sponge",
+   "via": "nc_sponge:sponge_wet",
+   "req_op": "or",
+   "resolved_by": "curated",
+   "closes_cycle": false
+  },
+  {
+   "from": "nc_sponge/find-a-sponge",
+   "to": "nc_sponge/squeeze-out-a-sponge",
+   "via": "nc_sponge:sponge_wet",
+   "req_op": "or",
+   "resolved_by": "curated",
+   "closes_cycle": false
+  },
+  {
+   "from": "nc_sponge/harvest-a-sponge",
+   "to": "nc_sponge/squeeze-out-a-sponge",
+   "via": "nc_sponge:sponge_living",
+   "req_op": "or",
+   "resolved_by": "direct",
+   "closes_cycle": false
+  },
+  {
+   "from": "nc_woodwork/assemble-a-staff-from-sticks",
+   "to": "nc_torch/craft-a-torch-from-staff-and-coal-lump",
+   "via": "nc_woodwork:staff",
+   "req_op": "and",
+   "resolved_by": "direct",
+   "closes_cycle": false
+  },
+  {
+   "from": "nc_fire/chop-up-charcoal",
+   "to": "nc_torch/craft-a-torch-from-staff-and-coal-lump",
+   "via": "nc_fire:lump_coal",
+   "req_op": "and",
+   "resolved_by": "curated",
+   "closes_cycle": false
+  },
+  {
+   "from": "nc_torch/craft-a-torch-from-staff-and-coal-lump",
+   "to": "nc_torch/light-a-torch",
+   "via": "assemble torch",
+   "req_op": "and",
+   "resolved_by": "direct",
+   "closes_cycle": false
+  },
+  {
+   "from": "nc_fire/chop-up-charcoal",
+   "to": "nc_writing/write-on-a-surface-with-a-charcoal-lump",
+   "via": "nc_fire:lump_coal",
+   "req_op": "and",
+   "resolved_by": "curated",
+   "closes_cycle": false
+  },
+  {
+   "from": "nc_writing/write-on-a-surface-with-a-charcoal-lump",
+   "to": "nc_writing/rotate-a-charcoal-glyph",
+   "via": "charcoal writing",
+   "req_op": "and",
+   "resolved_by": "direct",
+   "closes_cycle": false
+  },
+  {
+   "from": "nc_writing/write-on-a-surface-with-a-charcoal-lump",
+   "to": "nc_writing/cycle-through-all-charcoal-glyphs",
+   "via": "charcoal writing",
+   "req_op": "and",
+   "resolved_by": "direct",
+   "closes_cycle": false
+  },
+  {
+   "from": "nc_woodwork/assemble-a-rake-from-adzes-and-a-staff",
+   "to": "nc_writing/rake-sand",
+   "via": "group:rakey",
+   "req_op": "and",
+   "resolved_by": "curated",
+   "closes_cycle": false
+  },
+  {
+   "from": "nc_lode/assemble-a-lode-rake",
+   "to": "nc_writing/rake-sand",
+   "via": "group:rakey",
+   "req_op": "and",
+   "resolved_by": "curated",
+   "closes_cycle": false
+  },
+  {
+   "from": "nc_flora/pack-sedges-into-thatch",
+   "to": "nc_writing/rake-sand",
+   "via": "group:rakey",
+   "req_op": "and",
+   "resolved_by": "curated",
+   "closes_cycle": false
+  },
+  {
+   "from": "nc_flora/pack-dry-rushes-into-wicker",
+   "to": "nc_writing/rake-sand",
+   "via": "group:rakey",
+   "req_op": "and",
+   "resolved_by": "curated",
+   "closes_cycle": false
+  },
+  {
+   "from": "nc_terrain/dig-up-sand",
+   "to": "nc_writing/rake-sand",
+   "via": "nc_terrain:sand",
+   "req_op": "and",
+   "resolved_by": "direct",
+   "closes_cycle": false
+  },
+  {
+   "from": "nc_woodwork/assemble-a-rake-from-adzes-and-a-staff",
+   "to": "nc_writing/rake-gravel",
+   "via": "group:rakey",
+   "req_op": "and",
+   "resolved_by": "curated",
+   "closes_cycle": false
+  },
+  {
+   "from": "nc_lode/assemble-a-lode-rake",
+   "to": "nc_writing/rake-gravel",
+   "via": "group:rakey",
+   "req_op": "and",
+   "resolved_by": "curated",
+   "closes_cycle": false
+  },
+  {
+   "from": "nc_flora/pack-sedges-into-thatch",
+   "to": "nc_writing/rake-gravel",
+   "via": "group:rakey",
+   "req_op": "and",
+   "resolved_by": "curated",
+   "closes_cycle": false
+  },
+  {
+   "from": "nc_flora/pack-dry-rushes-into-wicker",
+   "to": "nc_writing/rake-gravel",
+   "via": "group:rakey",
+   "req_op": "and",
+   "resolved_by": "curated",
+   "closes_cycle": false
+  },
+  {
+   "from": "nc_terrain/dig-up-gravel",
+   "to": "nc_writing/rake-gravel",
+   "via": "nc_terrain:gravel",
+   "req_op": "and",
+   "resolved_by": "direct",
+   "closes_cycle": false
+  },
+  {
+   "from": "nc_stonework/break-cobble-into-chips",
+   "to": "nc_writing/rake-gravel",
+   "via": "nc_terrain:gravel",
+   "req_op": "and",
+   "resolved_by": "direct",
+   "closes_cycle": false
+  },
+  {
+   "from": "nc_woodwork/assemble-a-rake-from-adzes-and-a-staff",
+   "to": "nc_writing/rake-dirt",
+   "via": "group:rakey",
+   "req_op": "and",
+   "resolved_by": "curated",
+   "closes_cycle": false
+  },
+  {
+   "from": "nc_lode/assemble-a-lode-rake",
+   "to": "nc_writing/rake-dirt",
+   "via": "group:rakey",
+   "req_op": "and",
+   "resolved_by": "curated",
+   "closes_cycle": false
+  },
+  {
+   "from": "nc_flora/pack-sedges-into-thatch",
+   "to": "nc_writing/rake-dirt",
+   "via": "group:rakey",
+   "req_op": "and",
+   "resolved_by": "curated",
+   "closes_cycle": false
+  },
+  {
+   "from": "nc_flora/pack-dry-rushes-into-wicker",
+   "to": "nc_writing/rake-dirt",
+   "via": "group:rakey",
+   "req_op": "and",
+   "resolved_by": "curated",
+   "closes_cycle": false
+  },
+  {
+   "from": "nc_terrain/dig-up-dirt",
+   "to": "nc_writing/rake-dirt",
+   "via": "nc_terrain:dirt",
+   "req_op": "and",
+   "resolved_by": "direct",
+   "closes_cycle": false
+  },
+  {
+   "from": "nc_woodwork/assemble-a-rake-from-adzes-and-a-staff",
+   "to": "nc_writing/rake-humus",
+   "via": "group:rakey",
+   "req_op": "and",
+   "resolved_by": "curated",
+   "closes_cycle": false
+  },
+  {
+   "from": "nc_lode/assemble-a-lode-rake",
+   "to": "nc_writing/rake-humus",
+   "via": "group:rakey",
+   "req_op": "and",
+   "resolved_by": "curated",
+   "closes_cycle": false
+  },
+  {
+   "from": "nc_flora/pack-sedges-into-thatch",
+   "to": "nc_writing/rake-humus",
+   "via": "group:rakey",
+   "req_op": "and",
+   "resolved_by": "curated",
+   "closes_cycle": false
+  },
+  {
+   "from": "nc_flora/pack-dry-rushes-into-wicker",
+   "to": "nc_writing/rake-humus",
+   "via": "group:rakey",
+   "req_op": "and",
+   "resolved_by": "curated",
+   "closes_cycle": false
+  },
+  {
+   "from": "nc_tree/ferment-peat-into-humus",
+   "to": "nc_writing/rake-humus",
+   "via": "nc_tree:humus",
+   "req_op": "and",
+   "resolved_by": "curated",
+   "closes_cycle": false
+  },
+  {
+   "from": "nc_writing/rake-humus",
+   "to": "nc_writing/leach-raked-humus-to-dirt",
+   "via": "group:humus_raked",
+   "req_op": "and",
+   "resolved_by": "curated",
+   "closes_cycle": false
+  },
+  {
+   "from": "nc_writing/rake-dirt",
+   "to": "nc_writing/leach-raked-dirt-to-sand",
+   "via": "group:dirt_raked",
+   "req_op": "and",
+   "resolved_by": "curated",
+   "closes_cycle": false
+  }
+ ],
+ "unresolved_req_keys": {},
+ "world_provided_req_keys": {
+  "group:smoothstone": [
+   "nc_stonework/chisel-stone-bricks"
+  ]
+ },
+ "cycle_edges": [
+  {
+   "from": "nc_stonework/pack-stone-chips-back-into-cobble",
+   "to": "nc_stonework/break-cobble-into-chips"
+  },
+  {
+   "from": "nc_stonework/put-a-stone-tip-onto-a-wooden-tool",
+   "to": "nc_terrain/dig-up-cobble"
+  },
+  {
+   "from": "nc_woodwork/assemble-a-wooden-tool",
+   "to": "nc_terrain/dig-up-cobble"
+  }
+ ]
+}
