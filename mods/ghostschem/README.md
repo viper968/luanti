@@ -182,13 +182,22 @@ schematic the same way `generateNodeMesh()` does for one node.
 
 ## Tests
 
-Two standalone specs stub `core` and run `api.lua` directly, so they need no
-server and no build:
-
 ```sh
-lua5.1 tests/rotation_spec.lua   # rotation vs. a transcription of blitToVManip
-lua5.1 tests/culling_spec.lua    # occlusion culling, air, glass, prob=0
+tests/check.sh
 ```
+
+Syntax-checks every file and runs two standalone specs that stub `core` and
+exercise `api.lua` directly, so they need no server and no build:
+
+- `tests/rotation_spec.lua` — rotation against a transcription of `blitToVManip`
+- `tests/culling_spec.lua` — occlusion culling, air, glass, `prob = 0`
+
+**Check syntax with LuaJIT, not `luac5.1`.** Lua 5.1's reference lexer silently
+accepts unknown escape sequences such as `"\."` (it drops the backslash and
+keeps the character), while LuaJIT rejects them with *"invalid escape
+sequence"*. Most Luanti builds ship LuaJIT, so a file can pass `luac5.1 -p`
+and still fail to load in-game. `check.sh` prefers `luajit` for exactly this
+reason, and warns if it has to fall back.
 
 The in-engine suite checks the same claims against the *live* engine, which is
 the part that actually matters — it proves the preview is not lying:
@@ -206,7 +215,7 @@ ghostschem_selftest_on_start = true
 ```
 
 ```
-Ghost schematic self test: all 13 checks passed
+Ghost schematic self test: all 18 checks passed
   ok   rot 0   preview matches place_schematic (30 nodes, 3x2x5)
   ok   rot 90  preview matches place_schematic (30 nodes, 5x2x3)
   ok   rot 180 preview matches place_schematic (30 nodes, 3x2x5)
@@ -219,6 +228,11 @@ Ghost schematic self test: all 13 checks passed
   ok   undo succeeded
   ok   undo restored the region exactly
   ok   oversized schematic falls back to an outline (outlined=true, 12 beams)
+  ok   outline beams lie on the 12 box edges (0 misplaced, 12 distinct positions)
+  ok   export clipboard to .mts
+  ok   exported schematic appears in the file listing
+  ok   read the .mts back
+  ok   round-tripped .mts matches the original (3x2x5, 0 differ)
   ok   preview emerged ungenerated map and reclassified (1 -> 0)
 ```
 

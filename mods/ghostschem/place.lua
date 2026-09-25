@@ -220,7 +220,7 @@ end
 function gs.list_files()
 	local out = {}
 	for _, entry in ipairs(core.get_dir_list(schem_dir(), false) or {}) do
-		local base = entry:match("^(.+)%\.mts$")
+		local base = entry:match("^(.+)%.mts$")
 		if base then
 			out[#out + 1] = base
 		end

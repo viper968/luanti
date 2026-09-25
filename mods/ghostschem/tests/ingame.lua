@@ -125,7 +125,7 @@ local function run_suite(base, log)
 			end
 		end
 
-		local schem = gs.capture(base,
+		local schem = gs.copy(TEST_PLAYER, base,
 			vector.add(base, vector.new(PS.x - 1, PS.y - 1, PS.z - 1)))
 
 		-- 1. Rotation fidelity against the engine itself.
@@ -224,8 +224,84 @@ local function run_suite(base, log)
 		record(big.outlined and #big.objects == 12, string.format(
 			"oversized schematic falls back to an outline (outlined=%s, %d beams)",
 			tostring(big.outlined), #big.objects))
+
+		-- Counting beams is not enough: they also have to be on the edges of
+		-- the bounding box. Each edge beam runs along one axis, so exactly two
+		-- of its three coordinates sit at a box extreme and the third sits at
+		-- the centre of its axis.
+		local p1b, p2b = big:bounds()
+		local lo = vector.subtract(p1b, 0.5)
+		local hi = vector.add(p2b, 0.5)
+		local seen, misplaced = {}, 0
+		for _, obj in ipairs(big.objects) do
+			local pos = obj:get_pos()
+			local extremes, centres = 0, 0
+			for _, axis in ipairs({"x", "y", "z"}) do
+				local mid = (lo[axis] + hi[axis]) / 2
+				if math.abs(pos[axis] - lo[axis]) < 1e-4
+						or math.abs(pos[axis] - hi[axis]) < 1e-4 then
+					extremes = extremes + 1
+				elseif math.abs(pos[axis] - mid) < 1e-4 then
+					centres = centres + 1
+				end
+			end
+			if not (extremes == 2 and centres == 1) then
+				misplaced = misplaced + 1
+			end
+			seen[core.pos_to_string(pos)] = true
+		end
+		local distinct = 0
+		for _ in pairs(seen) do distinct = distinct + 1 end
+		record(misplaced == 0 and distinct == 12, string.format(
+			"outline beams lie on the 12 box edges (%d misplaced, %d distinct positions)",
+			misplaced, distinct))
+
 		gs.hide(TEST_PLAYER)
 		gs.settings.max_entities = saved
+
+		-- 5. File round trip. This path shipped broken once because nothing
+		-- exercised it, so it is covered now: export, list, read back, compare.
+		local fname = "ghostschem_selftest_tmp"
+		local exported, path = gs.save_file(TEST_PLAYER, fname)
+		record(exported, "export clipboard to .mts" ..
+			(exported and "" or (" - " .. tostring(path))))
+
+		if exported then
+			local listed = false
+			for _, n in ipairs(gs.list_files()) do
+				if n == fname then
+					listed = true
+				end
+			end
+			record(listed, "exported schematic appears in the file listing")
+
+			local reloaded, reread = gs.load_file(TEST_PLAYER, fname)
+			record(reloaded, "read the .mts back" ..
+				(reloaded and "" or (" - " .. tostring(reread))))
+
+			if reloaded then
+				local a, b = schem.size, reread.size
+				local same_size = a.x == b.x and a.y == b.y and a.z == b.z
+				local bad = 0
+				if same_size then
+					for z = 0, a.z - 1 do
+						for y = 0, a.y - 1 do
+							for x = 0, a.x - 1 do
+								if gs.get(schem, x, y, z).name
+										~= gs.get(reread, x, y, z).name then
+									bad = bad + 1
+								end
+							end
+						end
+					end
+				end
+				record(same_size and bad == 0, string.format(
+					"round-tripped .mts matches the original (%dx%dx%d, %d differ)",
+					b.x, b.y, b.z, bad))
+			end
+
+			pcall(os.remove, path)
+		end
 	end)
 
 	restore(snap)
