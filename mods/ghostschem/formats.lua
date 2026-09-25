@@ -113,7 +113,7 @@ function gs.import_nodecore(doc)
 		data[i] = AIR
 	end
 
-	local stacks, filled, duplicates = 0, 0, 0
+	local filled, duplicates = 0, 0
 	local names = {}
 	for _, entry in ipairs(doc.nodes) do
 		local p = entry.pos
@@ -139,12 +139,15 @@ function gs.import_nodecore(doc)
 				name = entry.stack.name,
 				count = math.max(1, math.floor(count)),
 			}
-			stacks = stacks + 1
 		end
 
 		data[index] = node
 		names[entry.name] = (names[entry.name] or 0) + 1
 	end
+
+	-- Counted from the final array rather than while reading, so a stack on
+	-- an entry that a later duplicate replaced is not counted.
+	local stacks = gs.count_stacks({size = size, data = data})
 
 	local info = {
 		source_format = FORMAT,

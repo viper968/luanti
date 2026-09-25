@@ -104,6 +104,14 @@ check("duplicate: last entry wins", gs.get(schem, 0, 0, 0).name, "second")
 check("duplicate: counted", info.duplicates, 1)
 check("duplicate: not double counted as filled", info.filled, 1)
 
+schem, info = gs.import_nodecore(doc({
+	{pos = {0, 0, 0}, name = "first", stack = {name = "x", count = 1}},
+	{pos = {0, 0, 0}, name = "second"},
+}))
+check("duplicate: replaced entry's stack is not counted", info.stacks, 0)
+check("duplicate: replaced entry's stack is gone",
+	tostring(gs.get(schem, 0, 0, 0).stack), "nil")
+
 -- 7. Terrain modes other than "off" are skipped and reported, never guessed.
 schem, info = gs.import_nodecore(doc({{pos = {0, 0, 0}, name = "a"}},
 	{terrain = {mode = "off", top = -1, depth = 3, node = "s"}}))

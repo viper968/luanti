@@ -1,0 +1,11 @@
+{
+ "format": "nodecore-optics-schematic",
+ "version": 1,
+ "name": "keep-existing probe",
+ "description": "Two listed nodes with a gap between them. Converted with --keep-existing, the gap must leave the world untouched; converted normally, it must clear to air.",
+ "terrain": {"mode": "off"},
+ "nodes": [
+  {"pos": [-1, 0, 0], "name": "basenodes:sand"},
+  {"pos": [1, 0, 0], "name": "basenodes:gravel", "param2": 3}
+ ]
+}

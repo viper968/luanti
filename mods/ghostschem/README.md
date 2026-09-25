@@ -133,6 +133,61 @@ few lines in `formats.lua`.
 those cannot be placed — useful when a NodeCore schematic meets a world without
 NodeCore.
 
+### Converting to `.mts`
+
+`tools/json2mts.js` turns a builder's JSON into a standard `.mts`, usable by
+WorldEdit, mapgen decorations and `core.place_schematic` on servers that do not
+run this mod. It is one dependency-free file that works two ways.
+
+From the command line (Node 18+):
+
+```sh
+node tools/json2mts.js staff-builder.schematic.json            # -> staff-builder.mts
+node tools/json2mts.js staff-builder.schematic.json out.mts --keep-existing
+```
+
+Or as an export button in the builder itself. Add the script and call
+`download` with the builder's current schematic object:
+
+```html
+<script src="json2mts.js"></script>
+<button onclick="GhostschemMts.download(schematicJson, 'staff-builder.mts')">
+  Export .mts</button>
+```
+
+`GhostschemMts.convert(doc)` returns `{bytes, report}` instead, if the page
+wants to handle the file itself. The file is safe to paste inline into a page
+too; a spec checks it never contains a literal `</script`, because the HTML
+parser ends a script block at the first one it meets, even inside a comment.
+
+Both uses go through `CompressionStream`, so the command line runs exactly the
+code a browser does. The browser path was verified in Chromium: the downloaded
+file decodes identically to the command-line output.
+
+The byte layout comes from the engine's own writer, `serializeToMts()`, not
+from third-party docs, and `/gs selftest` checks the output with the engine's
+own reader: `core.read_schematic` must see every cell of the converted file
+exactly as the in-game JSON importer does.
+
+**Item stacks cannot be converted.** `.mts` has no field for node inventories,
+so the converter lists every stack it had to leave out:
+
+```
+WARNING: .mts cannot store node inventories, so 3 item stack(s) are NOT in this file:
+  1 x nc_woodwork:staff in nc_woodwork:form at (5,0,1)
+  1 x nc_woodwork:tool_hatchet in nc_woodwork:form at (5,1,0)
+  100 x nc_tree:stick in nc_woodwork:form at (1,2,0)
+```
+
+Keep the `.json` and use `/gs load` when the stacks matter.
+
+**Gaps.** By default, cells the JSON does not list become air and clear
+whatever is in the world, which matches `/gs load` and keeps a machine's
+internal gaps open (sticks falling through a tube, beams crossing a cell).
+`--keep-existing` writes them with probability 0 instead, which the engine
+skips (`MTSCHEM_PROB_NEVER` in `blitToVManip`), so existing terrain shows
+through.
+
 ## Correctness notes
 
 These are the places where guessing would produce a preview that *lies*, which
@@ -257,6 +312,9 @@ exercise `api.lua` directly, so they need no server and no build:
 - `tests/culling_spec.lua` — occlusion culling, air, glass, `prob = 0`
 - `tests/import_spec.lua` — JSON import: bounding boxes, sparseness, signed
   coordinates, `param2`, stacks surviving rotation, and every rejection path
+- `tests/json2mts_spec.js` — the converter, decoded independently with
+  `node:zlib`: header, layout, `--keep-existing`, committed fixtures still
+  current, inline safety, the CLI (skipped if `node` is not installed)
 
 **Check syntax with LuaJIT, not `luac5.1`.** Lua 5.1's reference lexer silently
 accepts unknown escape sequences such as `"\."` (it drops the backslash and
@@ -281,21 +339,23 @@ ghostschem_selftest_on_start = true
 ```
 
 ```
-Ghost schematic self test: all 34 checks passed
+Ghost schematic self test: all 40 checks passed
   ok   rot 0/90/180/270  preview matches place_schematic
   ok   force=on / force=off conflict classification
   ok   commit wrote the schematic; undo restored the region exactly
   ok   oversized schematic falls back to an outline on the 12 box edges
   ok   .mts export / listing / read-back round trip
   ok   import the reference JSON (14x5x13, 235 nodes, 3 item stacks)
-  ok   place_schematic accepts entries carrying stacks
-  ok   rotated preview still reports 3 stacks
   ok   /gs load finds a .json by name, and it appears in the listing
-  ok   schematic placement leaves a container unconstructed (no inventory lists)
-  ok   apply_stacks constructs the node and writes the stack
-  ok   the item really is in the container inventory
+  ok   apply_stacks constructs the node and writes the stack into its inventory
+  ok   json2mts staff-builder.mts: engine reads all 910 cells as the JSON import does
+  ok   json2mts default mode clears gaps; --keep-existing leaves them alone
+  ok   test volume restored exactly (0 of 245760 nodes differ)
   ok   preview emerged ungenerated map and reclassified (1 -> 0)
 ```
 
-The suite snapshots its whole test volume with a `VoxelManip` and restores it
-afterwards, so running it does not damage the world.
+The suite snapshots its whole test volume with a `VoxelManip`, restores it
+afterwards, and then checks that the restore was exact. Every section also
+declares the region it writes, and the run fails if any of them falls outside
+the snapshot, so a new section cannot silently leave a test build in the
+world.

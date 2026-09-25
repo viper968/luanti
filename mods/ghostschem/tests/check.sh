@@ -43,6 +43,15 @@ $LUA tests/rotation_spec.lua || status=1
 $LUA tests/culling_spec.lua || status=1
 $LUA tests/import_spec.lua || status=1
 
+if command -v node >/dev/null 2>&1; then
+	echo
+	echo "== json2mts (node) =="
+	node tests/json2mts_spec.js || status=1
+else
+	echo
+	echo "warning: node not found, skipping tests/json2mts_spec.js"
+fi
+
 echo
 if [ $status -eq 0 ]; then
 	echo "all checks passed"

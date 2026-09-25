@@ -107,9 +107,30 @@ local function run_suite(base, log)
 	end
 
 	local stride = math.max(PS.x, PS.z) + 4
+
+	-- Every section writes into its own slot along +Z, and the snapshot has to
+	-- cover all of them or the suite leaves test builds in the world. Each
+	-- placement calls claim(), which fails the run if it would land outside
+	-- the snapshot, so adding a section cannot silently leak again.
+	local Z_CONFLICT = stride * 2 -- 5 deep
+	local Z_IMPORT = 27           -- staff builder from JSON, 13 deep
+	local Z_CHEST = 45            -- one node
+	local Z_MTS = 50              -- staff builder from .mts, 13 deep
+	local Z_PROBE = 66            -- keep-existing probe, one deep
+
 	local area_p1 = vector.subtract(base, vector.new(2, 2, 2))
-	local area_p2 = vector.add(base,
-		vector.new(stride * 5 + 4, PS.y + 2, stride * 3 + 4))
+	local area_p2 = vector.add(base, vector.new(stride * 5 + 4, 8, 72))
+
+	local function claim(p1, p2, what)
+		local inside = p1.x >= area_p1.x and p1.y >= area_p1.y
+			and p1.z >= area_p1.z and p2.x <= area_p2.x
+			and p2.y <= area_p2.y and p2.z <= area_p2.z
+		if not inside then
+			record(false, what .. " writes outside the restored test volume " ..
+				core.pos_to_string(p1) .. ".." .. core.pos_to_string(p2))
+		end
+		return inside
+	end
 
 	core.load_area(area_p1, area_p2)
 	local snap = snapshot(area_p1, area_p2)
@@ -131,6 +152,8 @@ local function run_suite(base, log)
 		-- 1. Rotation fidelity against the engine itself.
 		for slot, rot in ipairs(gs.ROTATIONS) do
 			local dest = vector.add(base, vector.new(stride * slot, 0, 0))
+			claim(dest, vector.add(dest, vector.new(stride - 1, PS.y - 1,
+				stride - 1)), "rotation test")
 			if core.place_schematic(dest, schem, rot, nil, true) == nil then
 				record(false, "rot " .. rot .. ": place_schematic returned nil")
 			else
@@ -162,7 +185,9 @@ local function run_suite(base, log)
 
 		-- 2. Conflict classification, on a deliberately occupied destination.
 		local size = schem.size
-		local dest = vector.add(base, vector.new(0, 0, stride * 2))
+		local dest = vector.add(base, vector.new(0, 0, Z_CONFLICT))
+		claim(dest, vector.add(dest, vector.new(size.x - 1, size.y - 1,
+			size.z - 1)), "conflict test")
 		for z = 0, size.z - 1 do
 			for y = 0, size.y - 1 do
 				for x = 0, size.x - 1 do
@@ -332,7 +357,9 @@ local function run_suite(base, log)
 				-- place_schematic must tolerate the extra `stack` field that
 				-- rides along on node entries; read_schematic_def only reads
 				-- name, param1/prob, param2 and force_place.
-				local far = vector.add(base, vector.new(0, 0, stride * 3))
+				local far = vector.add(base, vector.new(0, 0, Z_IMPORT))
+				claim(far, vector.add(far, vector.new(sz.x - 1, sz.y - 1,
+					sz.z - 1)), "JSON import placement")
 				core.load_area(far, vector.add(far,
 					vector.new(sz.x, sz.y, sz.z)))
 				record(core.place_schematic(far, imported, "0", nil, true)
@@ -380,7 +407,8 @@ local function run_suite(base, log)
 		-- 7. Writing an item stack into a node that really has an inventory.
 		--    This is the part placement cannot do by itself.
 		if core.registered_nodes["chest:chest"] then
-			local spot = vector.add(base, vector.new(0, 0, stride * 4))
+			local spot = vector.add(base, vector.new(0, 0, Z_CHEST))
+			claim(spot, spot, "item stack test")
 			core.load_area(spot, vector.add(spot, vector.new(1, 1, 1)))
 			core.set_node(spot, {name = "air"})
 
@@ -426,11 +454,89 @@ local function run_suite(base, log)
 					"the item really is in the container inventory")
 			end
 		end
+
+		-- 8. .mts files written by tools/json2mts.js. The engine's own reader
+		--    must see exactly what the in-game JSON importer sees.
+		local fixtures = core.get_modpath("ghostschem") .. DIR_DELIM ..
+			"tests" .. DIR_DELIM .. "fixtures" .. DIR_DELIM
+
+		local function same_as_import(label, mts, json, unlisted_prob)
+			local from_mts = core.read_schematic(fixtures .. mts, {})
+			local from_json = gs.import_json(gs.read_file(fixtures .. json) or "")
+			if not (from_mts and from_json) then
+				record(false, label .. ": could not read " ..
+					(from_mts and json or mts))
+				return
+			end
+			local a, b = from_mts.size, from_json.size
+			if a.x ~= b.x or a.y ~= b.y or a.z ~= b.z then
+				record(false, string.format("%s: size %dx%dx%d, import says %dx%dx%d",
+					label, a.x, a.y, a.z, b.x, b.y, b.z))
+				return
+			end
+			local bad, first = 0, nil
+			for i = 1, a.x * a.y * a.z do
+				local m, j = from_mts.data[i], from_json.data[i]
+				-- read_schematic reports probability doubled: 0x7F -> 254.
+				local want = (j.name == "air") and unlisted_prob or 254
+				if m.name ~= j.name or m.param2 ~= j.param2 or m.prob ~= want then
+					bad = bad + 1
+					first = first or string.format("cell %d: %s/%d/%d vs %s/%d/%d",
+						i, m.name, m.param2, m.prob, j.name, j.param2, want)
+				end
+			end
+			record(bad == 0, string.format(
+				"%s: engine reads all %d cells as the JSON import does%s",
+				label, a.x * a.y * a.z,
+				first and (" - " .. bad .. " differ, " .. first) or ""))
+		end
+
+		same_as_import("json2mts staff-builder.mts", "staff-builder.mts",
+			"staff-builder.schematic.json", 254)
+		same_as_import("json2mts --keep-existing", "keep-existing.keep.mts",
+			"keep-existing.schematic.json", 0)
+
+		-- The converted file must place like the preview says it will.
+		local mts_at = vector.add(base, vector.new(0, 0, Z_MTS))
+		claim(mts_at, vector.add(mts_at, vector.new(13, 4, 12)),
+			"converted .mts placement")
+		record(core.place_schematic(mts_at, fixtures .. "staff-builder.mts",
+			"0", nil, true) ~= nil, "place_schematic loads the converted .mts")
+
+		-- And --keep-existing must actually leave the world alone in the gaps.
+		for i, variant in ipairs({"air", "keep"}) do
+			local at = vector.add(base, vector.new((i - 1) * 6, 0, Z_PROBE))
+			claim(at, vector.add(at, vector.new(2, 0, 0)), "probe placement")
+			for x = 0, 2 do
+				core.set_node(vector.add(at, vector.new(x, 0, 0)),
+					{name = palette[1]})
+			end
+			core.place_schematic(at,
+				fixtures .. "keep-existing." .. variant .. ".mts", "0", nil, true)
+			local gap = core.get_node(vector.add(at, vector.new(1, 0, 0))).name
+			local want = variant == "air" and "air" or palette[1]
+			record(gap == want, string.format(
+				"json2mts %s mode: unlisted gap holds %s (want %s)",
+				variant == "air" and "default" or "--keep-existing", gap, want))
+		end
 	end)
 
 	restore(snap)
 	gs.hide(TEST_PLAYER)
 	gs.undo_stack[TEST_PLAYER] = nil
+
+	-- The suite promises not to damage the world, so check it kept that
+	-- promise: the restored volume must match the snapshot exactly.
+	local after = snapshot(area_p1, area_p2)
+	local changed = 0
+	for i = 1, #snap.data do
+		if after.data[i] ~= snap.data[i] or after.param2[i] ~= snap.param2[i] then
+			changed = changed + 1
+		end
+	end
+	record(changed == 0 and #after.data == #snap.data, string.format(
+		"test volume restored exactly (%d of %d nodes differ)",
+		changed, #snap.data))
 
 	if not ok then
 		record(false, "suite crashed: " .. tostring(err))
