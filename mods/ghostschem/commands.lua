@@ -174,6 +174,7 @@ subcommands.place = {
 		if result.skipped > 0 then
 			msg = msg .. " " .. result.skipped .. " node(s) skipped."
 		end
+		msg = msg .. gs.describe_stack_result(result)
 		return true, msg .. " /gs undo to revert."
 	end,
 }
@@ -209,14 +210,44 @@ subcommands.save = {
 
 subcommands.load = {
 	params = "<name>",
-	help = "load worldpath/schems/<name>.mts into the clipboard",
+	help = "load worldpath/schems/<name>.mts or .json into the clipboard",
 	run = function(name, _, arg)
-		local ok, result = gs.load_file(name, arg)
+		local ok, result, info = gs.load_file(name, arg)
 		if not ok then
 			return false, result
 		end
 		local s = result.size
-		return true, string.format("Loaded %dx%dx%d. Use /gs show.", s.x, s.y, s.z)
+		local msg = string.format("Loaded %dx%dx%d. Use /gs show.", s.x, s.y, s.z)
+		if info then
+			msg = msg .. "\n  " .. gs.describe_import(result, info)
+		end
+		return true, msg
+	end,
+}
+
+subcommands.info = {
+	help = "describe the clipboard, including anything an import could not carry",
+	run = function(name)
+		local schem, entry = gs.get_clipboard(name)
+		if not schem then
+			return false, "clipboard is empty"
+		end
+		local s = schem.size
+		local lines = {string.format("Clipboard: %dx%dx%d (%d nodes)",
+			s.x, s.y, s.z, s.x * s.y * s.z)}
+		if entry.info then
+			lines[#lines + 1] = gs.describe_import(schem, entry.info)
+			local off = entry.info.origin_offset
+			if off then
+				lines[#lines + 1] = string.format(
+					"builder origin (0,0,0) sits at local %s",
+					core.pos_to_string(vector.new(off.x, off.y, off.z)))
+			end
+			if entry.info.description then
+				lines[#lines + 1] = entry.info.description
+			end
+		end
+		return true, table.concat(lines, "\n  ")
 	end,
 }
 

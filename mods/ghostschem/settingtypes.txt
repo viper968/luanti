@@ -4,6 +4,10 @@ ghostschem_opacity (Ghost opacity) int 110 0 255
 #    Above this many ghost entities, previews fall back to a bounding box.
 ghostschem_max_entities (Max ghost entities) int 3000 1 100000
 
+#    Largest bounding box an imported schematic may expand to, in nodes.
+#    External formats are sparse, so a few far-flung nodes can imply a huge box.
+ghostschem_max_import_volume (Max import volume) int 524288 1 100000000
+
 #    How many placements can be undone per player.
 ghostschem_undo_depth (Undo depth) int 10 0 100
 

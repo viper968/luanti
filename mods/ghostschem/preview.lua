@@ -48,7 +48,8 @@ function Preview.new(player_name, schem, origin, rotation, force)
 	self.rotation = rotation or "0"
 	self.force = force ~= false
 	self.objects = {}
-	self.counts = {shown = 0, total = 0, overwrite = 0, skipped = 0, unknown = 0}
+	self.counts = {shown = 0, total = 0, overwrite = 0, skipped = 0,
+		unknown = 0, stacks = 0}
 	-- Bumped on every build so a late emerge callback can tell whether the
 	-- preview it was started for is still the current one.
 	self.generation = 0
@@ -148,7 +149,8 @@ function Preview:build()
 	local rotated = gs.rotate(self.schem, self.rotation)
 	self.rotated = rotated
 
-	local counts = {shown = 0, total = 0, overwrite = 0, skipped = 0, unknown = 0}
+	local counts = {shown = 0, total = 0, overwrite = 0, skipped = 0,
+		unknown = 0, stacks = 0}
 	self.counts = counts
 
 	-- Make sure the target area is loaded before classifying, otherwise every
@@ -158,6 +160,7 @@ function Preview:build()
 
 	local shown, total = gs.count_visible(rotated)
 	counts.shown, counts.total = shown, total
+	counts.stacks = gs.count_stacks(rotated)
 
 	if shown > gs.settings.max_entities then
 		self.outlined = true
@@ -219,6 +222,9 @@ function Preview:summary()
 	end
 	if c.unknown > 0 then
 		parts[#parts + 1] = string.format("%d in unloaded area", c.unknown)
+	end
+	if (c.stacks or 0) > 0 then
+		parts[#parts + 1] = string.format("%d item stack(s)", c.stacks)
 	end
 	parts[#parts + 1] = self.force and "force_placement: on" or "force_placement: off"
 	return table.concat(parts, "; ")

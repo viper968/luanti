@@ -15,6 +15,9 @@ are entities, not nodes: nothing is written to the map until you commit.
                                 sneak+place = rotate 90 degrees
                                 punch = commit
 /gs undo                revert the last commit
+
+/gs load <name>         load worldpath/schems/<name>.mts or .json
+/gs info                describe the clipboard and anything the import dropped
 ```
 
 Ghost colouring tells you what will actually happen:
@@ -69,6 +72,66 @@ and that only works for visuals whose textures *are* strings.
 Translucency matters more than stair shapes for a preview, so: cube. See
 *Upgrading to `visual = "node"`* below for the small engine patch that removes
 this trade-off.
+
+## Importing from external builders
+
+`/gs load <name>` reads `worldpath/schems/<name>.mts` or `<name>.json`. JSON is
+dispatched on its `format` field through `ghostschem.json_importers`, so
+another builder's format can be added without touching the loading code.
+
+### `nodecore-optics-schematic` v1
+
+```json
+{ "format": "nodecore-optics-schematic", "version": 1,
+  "name": "Staff builder", "description": "...",
+  "terrain": {"mode": "off", "top": -1, "depth": 3, "node": "nc_terrain:stone"},
+  "nodes": [ {"pos": [5, 1, 0], "name": "nc_woodwork:form",
+              "param2": 3, "stack": {"name": "nc_tree:stick", "count": 100}} ] }
+```
+
+Three things differ from a Luanti schematic and have to be reconciled:
+
+**It is sparse.** Only listed positions hold nodes, so every unlisted cell in
+the bounding box becomes air. The reference fixture is 74% air (235 nodes in a
+14×5×13 box).
+
+**Coordinates are signed** and centred on the builder's own origin — the
+reference fixture spans x −3..10, y −1..3, z −6..6 — so they are translated to
+a 0-based dense array. A paste therefore anchors its *minimum corner* at your
+cursor, like WorldEdit. The local coordinate the builder called `(0,0,0)` is
+reported by `/gs info` as `origin_offset`, so anchoring on the builder's origin
+instead is a small addition on top.
+
+**Nodes may carry an item `stack`,** and Luanti schematics cannot store node
+inventories at all — neither `.mts` nor `place_schematic` has anywhere to put
+them. Stacks therefore ride along on the node entries (`place_schematic`
+ignores the extra field: `read_schematic_def` reads only `name`, `param1`/
+`prob`, `param2` and `force_place`) and are written after placement.
+
+That last part has a catch worth knowing about:
+
+> `Schematic::placeOnMap()` blits through a `VoxelManip` and dispatches a map
+> edit event, but it **never runs `on_construct`**. A container placed by a
+> schematic therefore has no inventory lists at all, because those are created
+> by the node's own `on_construct`. `gs.apply_stacks` re-sets each
+> stack-carrying node with `core.set_node` — which does run the callbacks —
+> before writing the stack. It first checks the node actually landed, so a
+> `force_placement = off` paste is never quietly forced.
+
+The target inventory list is discovered at runtime from the placed node rather
+than guessed per game: one list is used directly, `main` wins when there are
+several, and genuinely ambiguous cases are reported rather than picked at
+random. Anything that could not be written is named in the placement message.
+
+**Terrain modes are not guessed.** `"off"` is honoured exactly; any other mode
+is skipped and reported, because the builder's terrain semantics are not
+documented anywhere checkable and a preview that guesses is worse than one that
+says it does not know. Tell the importer what the other modes mean and it is a
+few lines in `formats.lua`.
+
+`/gs info` also names any node types the running game does not have, since
+those cannot be placed — useful when a NodeCore schematic meets a world without
+NodeCore.
 
 ## Correctness notes
 
@@ -139,6 +202,7 @@ bounding box, still coloured by whether the paste would overwrite anything.
 | `ghostschem_opacity` | `110` | ghost alpha, 0–255 |
 | `ghostschem_max_entities` | `3000` | above this, draw an outline instead |
 | `ghostschem_undo_depth` | `10` | undo steps kept per player |
+| `ghostschem_max_import_volume` | `524288` | largest bounding box an import may expand to |
 | `ghostschem_selftest` | `false` | enable `/gs selftest` (registers no nodes in this build, but keeps the test code out of production servers) |
 | `ghostschem_selftest_on_start` | `false` | run the suite on server start, then shut down (for CI) |
 
@@ -191,6 +255,8 @@ exercise `api.lua` directly, so they need no server and no build:
 
 - `tests/rotation_spec.lua` — rotation against a transcription of `blitToVManip`
 - `tests/culling_spec.lua` — occlusion culling, air, glass, `prob = 0`
+- `tests/import_spec.lua` — JSON import: bounding boxes, sparseness, signed
+  coordinates, `param2`, stacks surviving rotation, and every rejection path
 
 **Check syntax with LuaJIT, not `luac5.1`.** Lua 5.1's reference lexer silently
 accepts unknown escape sequences such as `"\."` (it drops the backslash and
@@ -215,24 +281,19 @@ ghostschem_selftest_on_start = true
 ```
 
 ```
-Ghost schematic self test: all 18 checks passed
-  ok   rot 0   preview matches place_schematic (30 nodes, 3x2x5)
-  ok   rot 90  preview matches place_schematic (30 nodes, 5x2x3)
-  ok   rot 180 preview matches place_schematic (30 nodes, 3x2x5)
-  ok   rot 270 preview matches place_schematic (30 nodes, 5x2x3)
-  ok   force=on: 20/20 reported as overwritten
-  ok   force=off: 20/20 reported as skipped
-  ok   commit succeeded
-  ok   commit wrote the schematic to the map
-  ok   preview cleared after commit
-  ok   undo succeeded
-  ok   undo restored the region exactly
-  ok   oversized schematic falls back to an outline (outlined=true, 12 beams)
-  ok   outline beams lie on the 12 box edges (0 misplaced, 12 distinct positions)
-  ok   export clipboard to .mts
-  ok   exported schematic appears in the file listing
-  ok   read the .mts back
-  ok   round-tripped .mts matches the original (3x2x5, 0 differ)
+Ghost schematic self test: all 34 checks passed
+  ok   rot 0/90/180/270  preview matches place_schematic
+  ok   force=on / force=off conflict classification
+  ok   commit wrote the schematic; undo restored the region exactly
+  ok   oversized schematic falls back to an outline on the 12 box edges
+  ok   .mts export / listing / read-back round trip
+  ok   import the reference JSON (14x5x13, 235 nodes, 3 item stacks)
+  ok   place_schematic accepts entries carrying stacks
+  ok   rotated preview still reports 3 stacks
+  ok   /gs load finds a .json by name, and it appears in the listing
+  ok   schematic placement leaves a container unconstructed (no inventory lists)
+  ok   apply_stacks constructs the node and writes the stack
+  ok   the item really is in the container inventory
   ok   preview emerged ungenerated map and reclassified (1 -> 0)
 ```
 

@@ -170,6 +170,7 @@ core.register_tool("ghostschem:placer", {
 		if result.skipped > 0 then
 			msg = msg .. " " .. result.skipped .. " node(s) skipped."
 		end
+		msg = msg .. gs.describe_stack_result(result)
 		core.chat_send_player(name, msg .. " Use /gs undo to revert.")
 	end,
 

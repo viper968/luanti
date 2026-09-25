@@ -41,6 +41,7 @@ echo
 echo "== specs =="
 $LUA tests/rotation_spec.lua || status=1
 $LUA tests/culling_spec.lua || status=1
+$LUA tests/import_spec.lua || status=1
 
 echo
 if [ $status -eq 0 ]; then

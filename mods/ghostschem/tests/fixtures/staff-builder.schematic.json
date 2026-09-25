@@ -1,0 +1,1917 @@
+{
+ "format": "nodecore-optics-schematic",
+ "version": 1,
+ "name": "Staff builder",
+ "description": "Turns a form of 100 sticks into 50 staffs: sticks are thrown one at a time into a tube, a beam across the upper cell fires the press door above it, a beam across the lower cell fires a door into a form holding a hatchet, which chops the staff into the collecting form below.",
+ "terrain": {
+  "mode": "off",
+  "top": -1,
+  "depth": 3,
+  "node": "nc_terrain:stone"
+ },
+ "nodes": [
+  {
+   "pos": [
+    -3,
+    -1,
+    -6
+   ],
+   "name": "nc_terrain:stone"
+  },
+  {
+   "pos": [
+    -2,
+    -1,
+    -6
+   ],
+   "name": "nc_terrain:stone"
+  },
+  {
+   "pos": [
+    -1,
+    -1,
+    -6
+   ],
+   "name": "nc_terrain:stone"
+  },
+  {
+   "pos": [
+    0,
+    -1,
+    -6
+   ],
+   "name": "nc_terrain:stone"
+  },
+  {
+   "pos": [
+    1,
+    -1,
+    -6
+   ],
+   "name": "nc_terrain:stone"
+  },
+  {
+   "pos": [
+    2,
+    -1,
+    -6
+   ],
+   "name": "nc_terrain:stone"
+  },
+  {
+   "pos": [
+    3,
+    -1,
+    -6
+   ],
+   "name": "nc_terrain:stone"
+  },
+  {
+   "pos": [
+    4,
+    -1,
+    -6
+   ],
+   "name": "nc_terrain:stone"
+  },
+  {
+   "pos": [
+    5,
+    -1,
+    -6
+   ],
+   "name": "nc_terrain:stone"
+  },
+  {
+   "pos": [
+    6,
+    -1,
+    -6
+   ],
+   "name": "nc_terrain:stone"
+  },
+  {
+   "pos": [
+    7,
+    -1,
+    -6
+   ],
+   "name": "nc_terrain:stone"
+  },
+  {
+   "pos": [
+    8,
+    -1,
+    -6
+   ],
+   "name": "nc_terrain:stone"
+  },
+  {
+   "pos": [
+    9,
+    -1,
+    -6
+   ],
+   "name": "nc_terrain:stone"
+  },
+  {
+   "pos": [
+    10,
+    -1,
+    -6
+   ],
+   "name": "nc_terrain:stone"
+  },
+  {
+   "pos": [
+    -3,
+    -1,
+    -5
+   ],
+   "name": "nc_terrain:stone"
+  },
+  {
+   "pos": [
+    -2,
+    -1,
+    -5
+   ],
+   "name": "nc_terrain:stone"
+  },
+  {
+   "pos": [
+    -1,
+    -1,
+    -5
+   ],
+   "name": "nc_terrain:stone"
+  },
+  {
+   "pos": [
+    0,
+    -1,
+    -5
+   ],
+   "name": "nc_terrain:stone"
+  },
+  {
+   "pos": [
+    1,
+    -1,
+    -5
+   ],
+   "name": "nc_terrain:stone"
+  },
+  {
+   "pos": [
+    2,
+    -1,
+    -5
+   ],
+   "name": "nc_terrain:stone"
+  },
+  {
+   "pos": [
+    3,
+    -1,
+    -5
+   ],
+   "name": "nc_terrain:stone"
+  },
+  {
+   "pos": [
+    4,
+    -1,
+    -5
+   ],
+   "name": "nc_terrain:stone"
+  },
+  {
+   "pos": [
+    5,
+    -1,
+    -5
+   ],
+   "name": "nc_terrain:stone"
+  },
+  {
+   "pos": [
+    6,
+    -1,
+    -5
+   ],
+   "name": "nc_terrain:stone"
+  },
+  {
+   "pos": [
+    7,
+    -1,
+    -5
+   ],
+   "name": "nc_terrain:stone"
+  },
+  {
+   "pos": [
+    8,
+    -1,
+    -5
+   ],
+   "name": "nc_terrain:stone"
+  },
+  {
+   "pos": [
+    9,
+    -1,
+    -5
+   ],
+   "name": "nc_terrain:stone"
+  },
+  {
+   "pos": [
+    10,
+    -1,
+    -5
+   ],
+   "name": "nc_terrain:stone"
+  },
+  {
+   "pos": [
+    -3,
+    -1,
+    -4
+   ],
+   "name": "nc_terrain:stone"
+  },
+  {
+   "pos": [
+    -2,
+    -1,
+    -4
+   ],
+   "name": "nc_terrain:stone"
+  },
+  {
+   "pos": [
+    -1,
+    -1,
+    -4
+   ],
+   "name": "nc_terrain:stone"
+  },
+  {
+   "pos": [
+    0,
+    -1,
+    -4
+   ],
+   "name": "nc_terrain:stone"
+  },
+  {
+   "pos": [
+    1,
+    -1,
+    -4
+   ],
+   "name": "nc_terrain:stone"
+  },
+  {
+   "pos": [
+    2,
+    -1,
+    -4
+   ],
+   "name": "nc_terrain:stone"
+  },
+  {
+   "pos": [
+    3,
+    -1,
+    -4
+   ],
+   "name": "nc_terrain:stone"
+  },
+  {
+   "pos": [
+    4,
+    -1,
+    -4
+   ],
+   "name": "nc_terrain:stone"
+  },
+  {
+   "pos": [
+    5,
+    -1,
+    -4
+   ],
+   "name": "nc_terrain:stone"
+  },
+  {
+   "pos": [
+    6,
+    -1,
+    -4
+   ],
+   "name": "nc_terrain:stone"
+  },
+  {
+   "pos": [
+    7,
+    -1,
+    -4
+   ],
+   "name": "nc_terrain:stone"
+  },
+  {
+   "pos": [
+    8,
+    -1,
+    -4
+   ],
+   "name": "nc_terrain:stone"
+  },
+  {
+   "pos": [
+    9,
+    -1,
+    -4
+   ],
+   "name": "nc_terrain:stone"
+  },
+  {
+   "pos": [
+    10,
+    -1,
+    -4
+   ],
+   "name": "nc_terrain:stone"
+  },
+  {
+   "pos": [
+    -3,
+    -1,
+    -3
+   ],
+   "name": "nc_terrain:stone"
+  },
+  {
+   "pos": [
+    -2,
+    -1,
+    -3
+   ],
+   "name": "nc_terrain:stone"
+  },
+  {
+   "pos": [
+    -1,
+    -1,
+    -3
+   ],
+   "name": "nc_terrain:stone"
+  },
+  {
+   "pos": [
+    0,
+    -1,
+    -3
+   ],
+   "name": "nc_terrain:stone"
+  },
+  {
+   "pos": [
+    1,
+    -1,
+    -3
+   ],
+   "name": "nc_terrain:stone"
+  },
+  {
+   "pos": [
+    2,
+    -1,
+    -3
+   ],
+   "name": "nc_terrain:stone"
+  },
+  {
+   "pos": [
+    3,
+    -1,
+    -3
+   ],
+   "name": "nc_terrain:stone"
+  },
+  {
+   "pos": [
+    4,
+    -1,
+    -3
+   ],
+   "name": "nc_terrain:stone"
+  },
+  {
+   "pos": [
+    5,
+    -1,
+    -3
+   ],
+   "name": "nc_terrain:stone"
+  },
+  {
+   "pos": [
+    6,
+    -1,
+    -3
+   ],
+   "name": "nc_terrain:stone"
+  },
+  {
+   "pos": [
+    7,
+    -1,
+    -3
+   ],
+   "name": "nc_terrain:stone"
+  },
+  {
+   "pos": [
+    8,
+    -1,
+    -3
+   ],
+   "name": "nc_terrain:stone"
+  },
+  {
+   "pos": [
+    9,
+    -1,
+    -3
+   ],
+   "name": "nc_terrain:stone"
+  },
+  {
+   "pos": [
+    10,
+    -1,
+    -3
+   ],
+   "name": "nc_terrain:stone"
+  },
+  {
+   "pos": [
+    -3,
+    -1,
+    -2
+   ],
+   "name": "nc_terrain:stone"
+  },
+  {
+   "pos": [
+    -2,
+    -1,
+    -2
+   ],
+   "name": "nc_terrain:stone"
+  },
+  {
+   "pos": [
+    -1,
+    -1,
+    -2
+   ],
+   "name": "nc_terrain:stone"
+  },
+  {
+   "pos": [
+    0,
+    -1,
+    -2
+   ],
+   "name": "nc_terrain:stone"
+  },
+  {
+   "pos": [
+    1,
+    -1,
+    -2
+   ],
+   "name": "nc_terrain:stone"
+  },
+  {
+   "pos": [
+    2,
+    -1,
+    -2
+   ],
+   "name": "nc_terrain:stone"
+  },
+  {
+   "pos": [
+    3,
+    -1,
+    -2
+   ],
+   "name": "nc_terrain:stone"
+  },
+  {
+   "pos": [
+    4,
+    -1,
+    -2
+   ],
+   "name": "nc_terrain:stone"
+  },
+  {
+   "pos": [
+    5,
+    -1,
+    -2
+   ],
+   "name": "nc_terrain:stone"
+  },
+  {
+   "pos": [
+    6,
+    -1,
+    -2
+   ],
+   "name": "nc_terrain:stone"
+  },
+  {
+   "pos": [
+    7,
+    -1,
+    -2
+   ],
+   "name": "nc_terrain:stone"
+  },
+  {
+   "pos": [
+    8,
+    -1,
+    -2
+   ],
+   "name": "nc_terrain:stone"
+  },
+  {
+   "pos": [
+    9,
+    -1,
+    -2
+   ],
+   "name": "nc_terrain:stone"
+  },
+  {
+   "pos": [
+    10,
+    -1,
+    -2
+   ],
+   "name": "nc_terrain:stone"
+  },
+  {
+   "pos": [
+    -3,
+    -1,
+    -1
+   ],
+   "name": "nc_terrain:stone"
+  },
+  {
+   "pos": [
+    -2,
+    -1,
+    -1
+   ],
+   "name": "nc_terrain:stone"
+  },
+  {
+   "pos": [
+    -1,
+    -1,
+    -1
+   ],
+   "name": "nc_terrain:stone"
+  },
+  {
+   "pos": [
+    0,
+    -1,
+    -1
+   ],
+   "name": "nc_terrain:stone"
+  },
+  {
+   "pos": [
+    1,
+    -1,
+    -1
+   ],
+   "name": "nc_terrain:stone"
+  },
+  {
+   "pos": [
+    2,
+    -1,
+    -1
+   ],
+   "name": "nc_terrain:stone"
+  },
+  {
+   "pos": [
+    3,
+    -1,
+    -1
+   ],
+   "name": "nc_terrain:stone"
+  },
+  {
+   "pos": [
+    4,
+    -1,
+    -1
+   ],
+   "name": "nc_terrain:stone"
+  },
+  {
+   "pos": [
+    5,
+    -1,
+    -1
+   ],
+   "name": "nc_terrain:stone"
+  },
+  {
+   "pos": [
+    6,
+    -1,
+    -1
+   ],
+   "name": "nc_terrain:stone"
+  },
+  {
+   "pos": [
+    7,
+    -1,
+    -1
+   ],
+   "name": "nc_terrain:stone"
+  },
+  {
+   "pos": [
+    8,
+    -1,
+    -1
+   ],
+   "name": "nc_terrain:stone"
+  },
+  {
+   "pos": [
+    9,
+    -1,
+    -1
+   ],
+   "name": "nc_terrain:stone"
+  },
+  {
+   "pos": [
+    10,
+    -1,
+    -1
+   ],
+   "name": "nc_terrain:stone"
+  },
+  {
+   "pos": [
+    -3,
+    -1,
+    0
+   ],
+   "name": "nc_terrain:stone"
+  },
+  {
+   "pos": [
+    -2,
+    -1,
+    0
+   ],
+   "name": "nc_terrain:stone"
+  },
+  {
+   "pos": [
+    -1,
+    -1,
+    0
+   ],
+   "name": "nc_terrain:stone"
+  },
+  {
+   "pos": [
+    0,
+    -1,
+    0
+   ],
+   "name": "nc_terrain:stone"
+  },
+  {
+   "pos": [
+    1,
+    -1,
+    0
+   ],
+   "name": "nc_terrain:stone"
+  },
+  {
+   "pos": [
+    2,
+    -1,
+    0
+   ],
+   "name": "nc_terrain:stone"
+  },
+  {
+   "pos": [
+    3,
+    -1,
+    0
+   ],
+   "name": "nc_terrain:stone"
+  },
+  {
+   "pos": [
+    4,
+    -1,
+    0
+   ],
+   "name": "nc_terrain:stone"
+  },
+  {
+   "pos": [
+    5,
+    -1,
+    0
+   ],
+   "name": "nc_terrain:stone"
+  },
+  {
+   "pos": [
+    6,
+    -1,
+    0
+   ],
+   "name": "nc_terrain:stone"
+  },
+  {
+   "pos": [
+    7,
+    -1,
+    0
+   ],
+   "name": "nc_terrain:stone"
+  },
+  {
+   "pos": [
+    8,
+    -1,
+    0
+   ],
+   "name": "nc_terrain:stone"
+  },
+  {
+   "pos": [
+    9,
+    -1,
+    0
+   ],
+   "name": "nc_terrain:stone"
+  },
+  {
+   "pos": [
+    10,
+    -1,
+    0
+   ],
+   "name": "nc_terrain:stone"
+  },
+  {
+   "pos": [
+    -3,
+    -1,
+    1
+   ],
+   "name": "nc_terrain:stone"
+  },
+  {
+   "pos": [
+    -2,
+    -1,
+    1
+   ],
+   "name": "nc_terrain:stone"
+  },
+  {
+   "pos": [
+    -1,
+    -1,
+    1
+   ],
+   "name": "nc_terrain:stone"
+  },
+  {
+   "pos": [
+    0,
+    -1,
+    1
+   ],
+   "name": "nc_terrain:stone"
+  },
+  {
+   "pos": [
+    1,
+    -1,
+    1
+   ],
+   "name": "nc_terrain:stone"
+  },
+  {
+   "pos": [
+    2,
+    -1,
+    1
+   ],
+   "name": "nc_terrain:stone"
+  },
+  {
+   "pos": [
+    3,
+    -1,
+    1
+   ],
+   "name": "nc_terrain:stone"
+  },
+  {
+   "pos": [
+    4,
+    -1,
+    1
+   ],
+   "name": "nc_terrain:stone"
+  },
+  {
+   "pos": [
+    5,
+    -1,
+    1
+   ],
+   "name": "nc_terrain:stone"
+  },
+  {
+   "pos": [
+    6,
+    -1,
+    1
+   ],
+   "name": "nc_terrain:stone"
+  },
+  {
+   "pos": [
+    7,
+    -1,
+    1
+   ],
+   "name": "nc_terrain:stone"
+  },
+  {
+   "pos": [
+    8,
+    -1,
+    1
+   ],
+   "name": "nc_terrain:stone"
+  },
+  {
+   "pos": [
+    9,
+    -1,
+    1
+   ],
+   "name": "nc_terrain:stone"
+  },
+  {
+   "pos": [
+    10,
+    -1,
+    1
+   ],
+   "name": "nc_terrain:stone"
+  },
+  {
+   "pos": [
+    -3,
+    -1,
+    2
+   ],
+   "name": "nc_terrain:stone"
+  },
+  {
+   "pos": [
+    -2,
+    -1,
+    2
+   ],
+   "name": "nc_terrain:stone"
+  },
+  {
+   "pos": [
+    -1,
+    -1,
+    2
+   ],
+   "name": "nc_terrain:stone"
+  },
+  {
+   "pos": [
+    0,
+    -1,
+    2
+   ],
+   "name": "nc_terrain:stone"
+  },
+  {
+   "pos": [
+    1,
+    -1,
+    2
+   ],
+   "name": "nc_terrain:stone"
+  },
+  {
+   "pos": [
+    2,
+    -1,
+    2
+   ],
+   "name": "nc_terrain:stone"
+  },
+  {
+   "pos": [
+    3,
+    -1,
+    2
+   ],
+   "name": "nc_terrain:stone"
+  },
+  {
+   "pos": [
+    4,
+    -1,
+    2
+   ],
+   "name": "nc_terrain:stone"
+  },
+  {
+   "pos": [
+    5,
+    -1,
+    2
+   ],
+   "name": "nc_terrain:stone"
+  },
+  {
+   "pos": [
+    6,
+    -1,
+    2
+   ],
+   "name": "nc_terrain:stone"
+  },
+  {
+   "pos": [
+    7,
+    -1,
+    2
+   ],
+   "name": "nc_terrain:stone"
+  },
+  {
+   "pos": [
+    8,
+    -1,
+    2
+   ],
+   "name": "nc_terrain:stone"
+  },
+  {
+   "pos": [
+    9,
+    -1,
+    2
+   ],
+   "name": "nc_terrain:stone"
+  },
+  {
+   "pos": [
+    10,
+    -1,
+    2
+   ],
+   "name": "nc_terrain:stone"
+  },
+  {
+   "pos": [
+    -3,
+    -1,
+    3
+   ],
+   "name": "nc_terrain:stone"
+  },
+  {
+   "pos": [
+    -2,
+    -1,
+    3
+   ],
+   "name": "nc_terrain:stone"
+  },
+  {
+   "pos": [
+    -1,
+    -1,
+    3
+   ],
+   "name": "nc_terrain:stone"
+  },
+  {
+   "pos": [
+    0,
+    -1,
+    3
+   ],
+   "name": "nc_terrain:stone"
+  },
+  {
+   "pos": [
+    1,
+    -1,
+    3
+   ],
+   "name": "nc_terrain:stone"
+  },
+  {
+   "pos": [
+    2,
+    -1,
+    3
+   ],
+   "name": "nc_terrain:stone"
+  },
+  {
+   "pos": [
+    3,
+    -1,
+    3
+   ],
+   "name": "nc_terrain:stone"
+  },
+  {
+   "pos": [
+    4,
+    -1,
+    3
+   ],
+   "name": "nc_terrain:stone"
+  },
+  {
+   "pos": [
+    5,
+    -1,
+    3
+   ],
+   "name": "nc_terrain:stone"
+  },
+  {
+   "pos": [
+    6,
+    -1,
+    3
+   ],
+   "name": "nc_terrain:stone"
+  },
+  {
+   "pos": [
+    7,
+    -1,
+    3
+   ],
+   "name": "nc_terrain:stone"
+  },
+  {
+   "pos": [
+    8,
+    -1,
+    3
+   ],
+   "name": "nc_terrain:stone"
+  },
+  {
+   "pos": [
+    9,
+    -1,
+    3
+   ],
+   "name": "nc_terrain:stone"
+  },
+  {
+   "pos": [
+    10,
+    -1,
+    3
+   ],
+   "name": "nc_terrain:stone"
+  },
+  {
+   "pos": [
+    -3,
+    -1,
+    4
+   ],
+   "name": "nc_terrain:stone"
+  },
+  {
+   "pos": [
+    -2,
+    -1,
+    4
+   ],
+   "name": "nc_terrain:stone"
+  },
+  {
+   "pos": [
+    -1,
+    -1,
+    4
+   ],
+   "name": "nc_terrain:stone"
+  },
+  {
+   "pos": [
+    0,
+    -1,
+    4
+   ],
+   "name": "nc_terrain:stone"
+  },
+  {
+   "pos": [
+    1,
+    -1,
+    4
+   ],
+   "name": "nc_terrain:stone"
+  },
+  {
+   "pos": [
+    2,
+    -1,
+    4
+   ],
+   "name": "nc_terrain:stone"
+  },
+  {
+   "pos": [
+    3,
+    -1,
+    4
+   ],
+   "name": "nc_terrain:stone"
+  },
+  {
+   "pos": [
+    4,
+    -1,
+    4
+   ],
+   "name": "nc_terrain:stone"
+  },
+  {
+   "pos": [
+    5,
+    -1,
+    4
+   ],
+   "name": "nc_terrain:stone"
+  },
+  {
+   "pos": [
+    6,
+    -1,
+    4
+   ],
+   "name": "nc_terrain:stone"
+  },
+  {
+   "pos": [
+    7,
+    -1,
+    4
+   ],
+   "name": "nc_terrain:stone"
+  },
+  {
+   "pos": [
+    8,
+    -1,
+    4
+   ],
+   "name": "nc_terrain:stone"
+  },
+  {
+   "pos": [
+    9,
+    -1,
+    4
+   ],
+   "name": "nc_terrain:stone"
+  },
+  {
+   "pos": [
+    10,
+    -1,
+    4
+   ],
+   "name": "nc_terrain:stone"
+  },
+  {
+   "pos": [
+    -3,
+    -1,
+    5
+   ],
+   "name": "nc_terrain:stone"
+  },
+  {
+   "pos": [
+    -2,
+    -1,
+    5
+   ],
+   "name": "nc_terrain:stone"
+  },
+  {
+   "pos": [
+    -1,
+    -1,
+    5
+   ],
+   "name": "nc_terrain:stone"
+  },
+  {
+   "pos": [
+    0,
+    -1,
+    5
+   ],
+   "name": "nc_terrain:stone"
+  },
+  {
+   "pos": [
+    1,
+    -1,
+    5
+   ],
+   "name": "nc_terrain:stone"
+  },
+  {
+   "pos": [
+    2,
+    -1,
+    5
+   ],
+   "name": "nc_terrain:stone"
+  },
+  {
+   "pos": [
+    3,
+    -1,
+    5
+   ],
+   "name": "nc_terrain:stone"
+  },
+  {
+   "pos": [
+    4,
+    -1,
+    5
+   ],
+   "name": "nc_terrain:stone"
+  },
+  {
+   "pos": [
+    5,
+    -1,
+    5
+   ],
+   "name": "nc_terrain:stone"
+  },
+  {
+   "pos": [
+    6,
+    -1,
+    5
+   ],
+   "name": "nc_terrain:stone"
+  },
+  {
+   "pos": [
+    7,
+    -1,
+    5
+   ],
+   "name": "nc_terrain:stone"
+  },
+  {
+   "pos": [
+    8,
+    -1,
+    5
+   ],
+   "name": "nc_terrain:stone"
+  },
+  {
+   "pos": [
+    9,
+    -1,
+    5
+   ],
+   "name": "nc_terrain:stone"
+  },
+  {
+   "pos": [
+    10,
+    -1,
+    5
+   ],
+   "name": "nc_terrain:stone"
+  },
+  {
+   "pos": [
+    -3,
+    -1,
+    6
+   ],
+   "name": "nc_terrain:stone"
+  },
+  {
+   "pos": [
+    -2,
+    -1,
+    6
+   ],
+   "name": "nc_terrain:stone"
+  },
+  {
+   "pos": [
+    -1,
+    -1,
+    6
+   ],
+   "name": "nc_terrain:stone"
+  },
+  {
+   "pos": [
+    0,
+    -1,
+    6
+   ],
+   "name": "nc_terrain:stone"
+  },
+  {
+   "pos": [
+    1,
+    -1,
+    6
+   ],
+   "name": "nc_terrain:stone"
+  },
+  {
+   "pos": [
+    2,
+    -1,
+    6
+   ],
+   "name": "nc_terrain:stone"
+  },
+  {
+   "pos": [
+    3,
+    -1,
+    6
+   ],
+   "name": "nc_terrain:stone"
+  },
+  {
+   "pos": [
+    4,
+    -1,
+    6
+   ],
+   "name": "nc_terrain:stone"
+  },
+  {
+   "pos": [
+    5,
+    -1,
+    6
+   ],
+   "name": "nc_terrain:stone"
+  },
+  {
+   "pos": [
+    6,
+    -1,
+    6
+   ],
+   "name": "nc_terrain:stone"
+  },
+  {
+   "pos": [
+    7,
+    -1,
+    6
+   ],
+   "name": "nc_terrain:stone"
+  },
+  {
+   "pos": [
+    8,
+    -1,
+    6
+   ],
+   "name": "nc_terrain:stone"
+  },
+  {
+   "pos": [
+    9,
+    -1,
+    6
+   ],
+   "name": "nc_terrain:stone"
+  },
+  {
+   "pos": [
+    10,
+    -1,
+    6
+   ],
+   "name": "nc_terrain:stone"
+  },
+  {
+   "pos": [
+    5,
+    0,
+    -3
+   ],
+   "name": "nc_terrain:stone"
+  },
+  {
+   "pos": [
+    5,
+    0,
+    -2
+   ],
+   "name": "nc_terrain:stone"
+  },
+  {
+   "pos": [
+    5,
+    0,
+    -1
+   ],
+   "name": "nc_terrain:stone"
+  },
+  {
+   "pos": [
+    5,
+    0,
+    0
+   ],
+   "name": "nc_terrain:stone"
+  },
+  {
+   "pos": [
+    4,
+    0,
+    1
+   ],
+   "name": "nc_terrain:stone"
+  },
+  {
+   "pos": [
+    5,
+    0,
+    1
+   ],
+   "name": "nc_woodwork:form",
+   "stack": {
+    "name": "nc_woodwork:staff",
+    "count": 1
+   }
+  },
+  {
+   "pos": [
+    7,
+    0,
+    1
+   ],
+   "name": "nc_terrain:stone"
+  },
+  {
+   "pos": [
+    8,
+    0,
+    1
+   ],
+   "name": "nc_terrain:stone"
+  },
+  {
+   "pos": [
+    6,
+    0,
+    2
+   ],
+   "name": "nc_terrain:stone"
+  },
+  {
+   "pos": [
+    4,
+    0,
+    3
+   ],
+   "name": "nc_terrain:stone"
+  },
+  {
+   "pos": [
+    4,
+    0,
+    4
+   ],
+   "name": "nc_terrain:stone"
+  },
+  {
+   "pos": [
+    4,
+    1,
+    -4
+   ],
+   "name": "nc_terrain:stone"
+  },
+  {
+   "pos": [
+    4,
+    1,
+    -3
+   ],
+   "name": "nc_optics:prism",
+   "param2": 2
+  },
+  {
+   "pos": [
+    5,
+    1,
+    -3
+   ],
+   "name": "nc_optics:lens",
+   "param2": 3
+  },
+  {
+   "pos": [
+    0,
+    1,
+    -2
+   ],
+   "name": "nc_terrain:stone"
+  },
+  {
+   "pos": [
+    5,
+    1,
+    -2
+   ],
+   "name": "nc_optics:lens"
+  },
+  {
+   "pos": [
+    0,
+    1,
+    -1
+   ],
+   "name": "nc_terrain:stone"
+  },
+  {
+   "pos": [
+    5,
+    1,
+    -1
+   ],
+   "name": "nc_doors:door_cobble",
+   "param2": 2
+  },
+  {
+   "pos": [
+    0,
+    1,
+    0
+   ],
+   "name": "nc_terrain:stone"
+  },
+  {
+   "pos": [
+    1,
+    1,
+    0
+   ],
+   "name": "nc_terrain:stone"
+  },
+  {
+   "pos": [
+    2,
+    1,
+    0
+   ],
+   "name": "nc_terrain:stone"
+  },
+  {
+   "pos": [
+    3,
+    1,
+    0
+   ],
+   "name": "nc_terrain:stone"
+  },
+  {
+   "pos": [
+    5,
+    1,
+    0
+   ],
+   "name": "nc_woodwork:form",
+   "stack": {
+    "name": "nc_woodwork:tool_hatchet",
+    "count": 1
+   }
+  },
+  {
+   "pos": [
+    2,
+    1,
+    1
+   ],
+   "name": "nc_terrain:stone"
+  },
+  {
+   "pos": [
+    3,
+    1,
+    1
+   ],
+   "name": "nc_terrain:stone"
+  },
+  {
+   "pos": [
+    4,
+    1,
+    1
+   ],
+   "name": "nc_optics:prism",
+   "param2": 14
+  },
+  {
+   "pos": [
+    6,
+    1,
+    1
+   ],
+   "name": "nc_optics:glass"
+  },
+  {
+   "pos": [
+    7,
+    1,
+    1
+   ],
+   "name": "nc_optics:lens",
+   "param2": 3
+  },
+  {
+   "pos": [
+    8,
+    1,
+    1
+   ],
+   "name": "nc_lantern:lamp7"
+  },
+  {
+   "pos": [
+    5,
+    1,
+    2
+   ],
+   "name": "nc_terrain:stone"
+  },
+  {
+   "pos": [
+    6,
+    1,
+    2
+   ],
+   "name": "nc_terrain:stone"
+  },
+  {
+   "pos": [
+    4,
+    1,
+    3
+   ],
+   "name": "nc_optics:lens",
+   "param2": 2
+  },
+  {
+   "pos": [
+    6,
+    1,
+    3
+   ],
+   "name": "nc_terrain:stone"
+  },
+  {
+   "pos": [
+    7,
+    1,
+    3
+   ],
+   "name": "nc_terrain:stone"
+  },
+  {
+   "pos": [
+    8,
+    1,
+    3
+   ],
+   "name": "nc_terrain:stone"
+  },
+  {
+   "pos": [
+    4,
+    1,
+    4
+   ],
+   "name": "nc_lantern:lamp7"
+  },
+  {
+   "pos": [
+    0,
+    2,
+    -2
+   ],
+   "name": "nc_lantern:lamp7"
+  },
+  {
+   "pos": [
+    5,
+    2,
+    -2
+   ],
+   "name": "nc_lantern:lamp7"
+  },
+  {
+   "pos": [
+    0,
+    2,
+    -1
+   ],
+   "name": "nc_optics:lens"
+  },
+  {
+   "pos": [
+    5,
+    2,
+    -1
+   ],
+   "name": "nc_optics:lens"
+  },
+  {
+   "pos": [
+    0,
+    2,
+    0
+   ],
+   "name": "nc_doors:door_cobble"
+  },
+  {
+   "pos": [
+    1,
+    2,
+    0
+   ],
+   "name": "nc_woodwork:form",
+   "stack": {
+    "name": "nc_tree:stick",
+    "count": 100
+   }
+  },
+  {
+   "pos": [
+    5,
+    2,
+    0
+   ],
+   "name": "nc_optics:glass"
+  },
+  {
+   "pos": [
+    6,
+    2,
+    1
+   ],
+   "name": "nc_terrain:stone"
+  },
+  {
+   "pos": [
+    5,
+    2,
+    2
+   ],
+   "name": "nc_optics:glass"
+  },
+  {
+   "pos": [
+    6,
+    2,
+    2
+   ],
+   "name": "nc_terrain:stone"
+  },
+  {
+   "pos": [
+    4,
+    2,
+    3
+   ],
+   "name": "nc_terrain:stone"
+  },
+  {
+   "pos": [
+    5,
+    2,
+    3
+   ],
+   "name": "nc_optics:prism",
+   "param2": 7
+  },
+  {
+   "pos": [
+    7,
+    2,
+    3
+   ],
+   "name": "nc_optics:lens",
+   "param2": 3
+  },
+  {
+   "pos": [
+    8,
+    2,
+    3
+   ],
+   "name": "nc_lantern:lamp7"
+  },
+  {
+   "pos": [
+    5,
+    3,
+    1
+   ],
+   "name": "nc_doors:door_cobble",
+   "param2": 15
+  },
+  {
+   "pos": [
+    5,
+    3,
+    2
+   ],
+   "name": "nc_optics:lens",
+   "param2": 2
+  },
+  {
+   "pos": [
+    5,
+    3,
+    3
+   ],
+   "name": "nc_optics:lens",
+   "param2": 4
+  }
+ ]
+}

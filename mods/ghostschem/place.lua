@@ -118,7 +118,18 @@ function gs.commit(player_name)
 	end
 
 	push_undo(player_name, snap)
+
 	local counts = preview.counts
+
+	-- Schematics cannot carry node inventories, so any stacks an import
+	-- preserved are written now, against the rotated layout that was actually
+	-- placed.
+	local placed = preview.rotated or preview.schem
+	if gs.count_stacks(placed) > 0 then
+		counts.stacks_applied, counts.stacks_failed =
+			gs.apply_stacks(preview.origin, placed)
+	end
+
 	gs.hide(player_name)
 	return true, counts
 end
@@ -156,6 +167,25 @@ end)
 --------------------------------------------------------------------------
 -- Files
 --------------------------------------------------------------------------
+
+function gs.file_exists(path)
+	local file = io.open(path, "rb")
+	if not file then
+		return false
+	end
+	file:close()
+	return true
+end
+
+function gs.read_file(path)
+	local file = io.open(path, "rb")
+	if not file then
+		return nil
+	end
+	local text = file:read("*a")
+	file:close()
+	return text
+end
 
 local function schem_dir()
 	local dir = core.get_worldpath() .. DIR_DELIM .. "schems"
@@ -201,27 +231,49 @@ function gs.load_file(player_name, name)
 		return false, "name may only contain letters, digits, _ and -"
 	end
 
-	local path = schem_dir() .. DIR_DELIM .. name .. ".mts"
-	-- Read straight into a table. Everything downstream then places from the
-	-- table, which sidesteps place_schematic's permanent per-filename cache.
-	local schem, err = gs.load(path)
-	if not schem then
-		return false, "no such schematic: " .. name .. " (" .. tostring(err) .. ")"
+	local dir = schem_dir() .. DIR_DELIM
+	local schem, info, err
+
+	-- A Luanti .mts, read straight into a table so everything downstream places
+	-- from the table and sidesteps place_schematic's per-filename cache.
+	if gs.file_exists(dir .. name .. ".mts") then
+		schem, err = gs.load(dir .. name .. ".mts")
+		if not schem then
+			return false, "could not read " .. name .. ".mts: " .. tostring(err)
+		end
+
+	-- Or JSON from an external builder.
+	elseif gs.file_exists(dir .. name .. ".json") then
+		local text = gs.read_file(dir .. name .. ".json")
+		if not text then
+			return false, "could not read " .. name .. ".json"
+		end
+		schem, info = gs.import_json(text)
+		if not schem then
+			return false, "could not import " .. name .. ".json: " ..
+				tostring(info)
+		end
+
+	else
+		return false, "no such schematic: " .. name ..
+			" (looked for " .. name .. ".mts and " .. name .. ".json)"
 	end
 
 	gs.clipboard[player_name] = {
 		schem = schem,
+		info = info,
 		origin = "file",
 		name = name,
 	}
-	return true, schem
+	return true, schem, info
 end
 
 function gs.list_files()
-	local out = {}
+	local seen, out = {}, {}
 	for _, entry in ipairs(core.get_dir_list(schem_dir(), false) or {}) do
-		local base = entry:match("^(.+)%.mts$")
-		if base then
+		local base = entry:match("^(.+)%.mts$") or entry:match("^(.+)%.json$")
+		if base and not seen[base] then
+			seen[base] = true
 			out[#out + 1] = base
 		end
 	end

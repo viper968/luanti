@@ -302,6 +302,130 @@ local function run_suite(base, log)
 
 			pcall(os.remove, path)
 		end
+
+		-- 6. Import the reference JSON from an external builder.
+		local fixture = core.get_modpath("ghostschem") ..
+			DIR_DELIM .. "tests" .. DIR_DELIM .. "fixtures" ..
+			DIR_DELIM .. "staff-builder.schematic.json"
+		local text = gs.read_file(fixture)
+		record(text ~= nil, "read the reference JSON fixture")
+
+		if text then
+			local imported, iinfo = gs.import_json(text)
+			record(imported ~= nil, "import the reference JSON" ..
+				(imported and "" or (" - " .. tostring(iinfo))))
+
+			if imported then
+				local sz = imported.size
+				record(sz.x == 14 and sz.y == 5 and sz.z == 13, string.format(
+					"imported bounding box is 14x5x13 (got %dx%dx%d)",
+					sz.x, sz.y, sz.z))
+				record(iinfo.filled == 235, string.format(
+					"imported 235 listed nodes (got %d)", iinfo.filled))
+				record(iinfo.stacks == 3, string.format(
+					"carried 3 item stacks (got %d)", iinfo.stacks))
+				record(iinfo.duplicates == 0, string.format(
+					"no duplicate positions (got %d)", iinfo.duplicates))
+				record(gs.count_stacks(imported) == 3,
+					"stacks are on the node entries")
+
+				-- place_schematic must tolerate the extra `stack` field that
+				-- rides along on node entries; read_schematic_def only reads
+				-- name, param1/prob, param2 and force_place.
+				local far = vector.add(base, vector.new(0, 0, stride * 3))
+				core.load_area(far, vector.add(far,
+					vector.new(sz.x, sz.y, sz.z)))
+				record(core.place_schematic(far, imported, "0", nil, true)
+					~= nil, "place_schematic accepts entries carrying stacks")
+
+				-- A preview of it must build without error even though this
+				-- game has none of the nc_* node types registered.
+				local ipv = gs.show(TEST_PLAYER, imported, far, "90", true)
+				record(ipv ~= nil and ipv.counts.total == 235, string.format(
+					"preview of the import counts 235 nodes (got %d)",
+					ipv and ipv.counts.total or -1))
+				record(ipv.counts.stacks == 3, string.format(
+					"rotated preview still reports 3 stacks (got %d)",
+					ipv.counts.stacks))
+				gs.hide(TEST_PLAYER)
+
+				-- The user-facing path: drop the .json into the world's
+				-- schems directory and load it by bare name.
+				local dir = core.get_worldpath() .. DIR_DELIM .. "schems"
+				core.mkdir(dir)
+				local dropped = dir .. DIR_DELIM .. "gs_import_tmp.json"
+				local out = io.open(dropped, "wb")
+				if out then
+					out:write(text)
+					out:close()
+
+					local lok, lschem, linfo =
+						gs.load_file(TEST_PLAYER, "gs_import_tmp")
+					record(lok, "/gs load finds a .json by name" ..
+						(lok and "" or (" - " .. tostring(lschem))))
+					if lok then
+						record(linfo ~= nil and linfo.filled == 235,
+							"loading a .json returns its import info")
+						local seen = false
+						for _, n in ipairs(gs.list_files()) do
+							if n == "gs_import_tmp" then seen = true end
+						end
+						record(seen, ".json appears in the file listing")
+					end
+					pcall(os.remove, dropped)
+				end
+			end
+		end
+
+		-- 7. Writing an item stack into a node that really has an inventory.
+		--    This is the part placement cannot do by itself.
+		if core.registered_nodes["chest:chest"] then
+			local spot = vector.add(base, vector.new(0, 0, stride * 4))
+			core.load_area(spot, vector.add(spot, vector.new(1, 1, 1)))
+			core.set_node(spot, {name = "air"})
+
+			local with_stack = {
+				size = {x = 1, y = 1, z = 1},
+				data = {{
+					name = "chest:chest",
+					param2 = 0,
+					prob = 255,
+					stack = {name = "default:stick", count = 7},
+				}},
+			}
+			-- Use a real item from this game so the stack is known.
+			for item in pairs(core.registered_items) do
+				if item ~= "" and not core.registered_nodes[item] then
+					with_stack.data[1].stack.name = item
+					break
+				end
+			end
+
+			core.place_schematic(spot, with_stack, "0", nil, true)
+
+			-- Straight after the blit the chest has no inventory at all,
+			-- because placeOnMap never runs on_construct.
+			local lists_before = core.get_meta(spot):get_inventory():get_lists()
+			local n_before = 0
+			for _ in pairs(lists_before) do n_before = n_before + 1 end
+			record(n_before == 0,
+				"schematic placement leaves a container unconstructed " ..
+				"(no inventory lists)")
+
+			local applied, sfailed = gs.apply_stacks(spot, with_stack)
+			record(applied == 1 and #sfailed == 0, string.format(
+				"apply_stacks constructs the node and writes the stack " ..
+				"(%d applied, %d failed%s)", applied, #sfailed,
+				sfailed[1] and (": " .. sfailed[1].why) or ""))
+
+			if applied == 1 then
+				local inv = core.get_meta(spot):get_inventory()
+				local wanted = with_stack.data[1].stack
+				record(inv:contains_item("main",
+					ItemStack(wanted.name .. " " .. wanted.count)),
+					"the item really is in the container inventory")
+			end
+		end
 	end)
 
 	restore(snap)

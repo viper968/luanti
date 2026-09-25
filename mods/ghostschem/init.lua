@@ -11,6 +11,7 @@ local modpath = core.get_modpath("ghostschem")
 
 dofile(modpath .. "/api.lua")
 dofile(modpath .. "/ghost.lua")
+dofile(modpath .. "/formats.lua")
 dofile(modpath .. "/preview.lua")
 dofile(modpath .. "/place.lua")
 dofile(modpath .. "/tool.lua")
