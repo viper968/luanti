@@ -57,6 +57,11 @@ bool sd_mount(void)
 	return true;
 }
 
+sdmmc_card_t *sd_card(void)
+{
+	return s_card;
+}
+
 static double mb_per_s(size_t bytes, int64_t us)
 {
 	return us > 0 ? (bytes / (1024.0 * 1024.0)) / (us / 1e6) : 0;

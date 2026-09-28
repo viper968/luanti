@@ -14,6 +14,7 @@
 #include "board.h"
 #include "sd_test.h"
 #include "net_test.h"
+#include "status_web.h"
 
 static void print_memory(const char *when)
 {
@@ -104,10 +105,23 @@ void app_main(void)
 	printf("Battery: %.2f V (reads ~USB voltage or 0 with no battery attached)\n",
 		board_battery_volts());
 
-	if (sd_mount())
-		sd_benchmark(CONFIG_LBT_SD_TEST_MB);
-
+	stats_start();
+	// Network first, so the SD benchmark shows up live on the status page
 	bool net = net_connect();
+	if (net) {
+		stats_attach_netif(net_netif());
+		if (status_web_start(CONFIG_LBT_STATUS_PORT) == ESP_OK) {
+			esp_netif_ip_info_t ip;
+			esp_netif_get_ip_info(net_netif(), &ip);
+			printf("Status page: http://" IPSTR ":%d/\n", IP2STR(&ip.ip),
+				CONFIG_LBT_STATUS_PORT);
+		}
+	}
+
+	if (sd_mount()) {
+		stats_attach_sd(sd_card());
+		sd_benchmark(CONFIG_LBT_SD_TEST_MB);
+	}
 	print_memory("after SD + Wi-Fi init");
 	board_beep(80);
 	printf("==== Hardware tests done ====\n");

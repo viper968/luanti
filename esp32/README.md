@@ -16,6 +16,7 @@ A small ESP-IDF app that checks the board and measures what the port depends on:
 * PCF85063 RTC time and battery voltage
 * TF card mount in 1-bit SDMMC mode, plus sequential and random 4 KiB read/write speed
 * Wi-Fi connect (power save off) and a UDP echo server on port 30000
+* a live status web page (see below)
 
 ### Build and flash (ESP-IDF v5.5.x)
 
@@ -39,3 +40,22 @@ network:
 ```bash
 python3 esp32/tools/udp_ping.py <board-ip>
 ```
+
+### Status web page
+
+With Wi-Fi configured, the monitor prints `Status page: http://<board-ip>/`.
+Open that address in a browser on the same network to see live:
+
+* CPU load per core (FreeRTOS idle-time accounting)
+* internal RAM and PSRAM in use, plus lowest-ever free and largest free block
+  (fragmentation)
+* TF card space used, read/write throughput and totals
+* Wi-Fi down/up throughput, totals, packet counts and signal strength
+* 2-minute history graphs, kept on the board so a page reload doesn't lose them
+
+The page is the reusable `components/status_web` ESP-IDF component, which the
+real server firmware will use too. The TF card is counted by a FatFs disk driver
+that wraps IDF's SDMMC one, and Wi-Fi by hooking the lwIP interface's
+input/output functions. Both count every byte, not just the game's. JSON is at
+`/api/stats` and `/api/history`. There's no login, so only use it on a
+network you trust.

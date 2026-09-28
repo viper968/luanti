@@ -15,6 +15,12 @@
 
 static EventGroupHandle_t s_events;
 static int s_retries;
+static esp_netif_t *s_netif;
+
+esp_netif_t *net_netif(void)
+{
+	return s_netif;
+}
 
 static void on_event(void *arg, esp_event_base_t base, int32_t id, void *data)
 {
@@ -46,7 +52,7 @@ bool net_connect(void)
 	}
 	esp_netif_init();
 	esp_event_loop_create_default();
-	esp_netif_create_default_wifi_sta();
+	s_netif = esp_netif_create_default_wifi_sta();
 
 	wifi_init_config_t icfg = WIFI_INIT_CONFIG_DEFAULT();
 	esp_wifi_init(&icfg);

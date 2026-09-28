@@ -15,6 +15,10 @@ config LBT_UDP_PORT
 		Same as Luanti's default server port, so firewall rules can be
 		tested too.
 
+config LBT_STATUS_PORT
+	int "Status web page port"
+	default 80
+
 config LBT_SD_TEST_MB
 	int "Size of the SD sequential test file (MB)"
 	range 1 64

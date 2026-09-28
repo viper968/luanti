@@ -1,0 +1,121 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Luanti ESP32 Status</title>
+<style>
+:root{--bg:#f6f7f9;--card:#fff;--fg:#1c2024;--muted:#667;--line:#e3e6ea;--track:#e9ecef;
+--a:#2f7d4f;--b:#3b6fd8;--warn:#c77a12;--bad:#c23b3b}
+@media (prefers-color-scheme:dark){:root{--bg:#111416;--card:#1a1e21;--fg:#e6e9ec;--muted:#98a2ab;
+--line:#2a3035;--track:#262c31;--a:#5cc486;--b:#7aa2f2;--warn:#e0a040;--bad:#ef6b6b}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font:14px/1.4 system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
+header{padding:16px;display:flex;flex-wrap:wrap;gap:6px 18px;align-items:baseline}
+h1{font-size:18px;margin:0 8px 0 0}
+.meta{color:var(--muted);font-variant-numeric:tabular-nums}
+#dot{display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--muted);margin-right:6px}
+main{display:grid;gap:12px;padding:0 16px 16px;grid-template-columns:repeat(auto-fit,minmax(280px,1fr))}
+section{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:14px}
+h2{font-size:13px;font-weight:600;text-transform:uppercase;letter-spacing:.04em;color:var(--muted);margin:0 0 10px}
+.row{display:flex;justify-content:space-between;gap:8px;margin:6px 0;font-variant-numeric:tabular-nums}
+.row span:first-child{color:var(--muted)}
+.row span:last-child{white-space:nowrap;text-align:right}
+.bar{height:8px;background:var(--track);border-radius:4px;overflow:hidden;margin:4px 0 10px}
+.bar i{display:block;height:100%;width:0;background:var(--a);transition:width .4s}
+.big{font-size:22px;font-weight:600;font-variant-numeric:tabular-nums}
+canvas{width:100%;height:70px;display:block;margin-top:8px}
+.key{display:flex;gap:14px;font-size:12px;color:var(--muted)}
+.key b{display:inline-block;width:10px;height:3px;vertical-align:middle;margin-right:5px}
+</style>
+</head>
+<body>
+<header>
+<h1>Luanti ESP32 server</h1>
+<span class="meta"><span id="dot"></span><span id="state">connecting…</span></span>
+<span class="meta" id="ip"></span>
+<span class="meta" id="up"></span>
+</header>
+<main>
+<section>
+<h2>CPU</h2>
+<div class="row"><span>Core 0</span><span id="c0">–</span></div><div class="bar"><i id="c0b"></i></div>
+<div class="row"><span>Core 1</span><span id="c1">–</span></div><div class="bar"><i id="c1b"></i></div>
+<div class="key"><span><b style="background:var(--a)"></b>core 0</span><span><b style="background:var(--b)"></b>core 1</span></div>
+<canvas id="gcpu"></canvas>
+<div class="row"><span>Tasks</span><span id="tasks">–</span></div>
+</section>
+<section>
+<h2>Memory</h2>
+<div class="row"><span>PSRAM used</span><span id="ps">–</span></div><div class="bar"><i id="psb"></i></div>
+<div class="row"><span>Internal RAM used</span><span id="in">–</span></div><div class="bar"><i id="inb"></i></div>
+<div class="row"><span>PSRAM min free / biggest block</span><span id="psx">–</span></div>
+<div class="row"><span>Internal min free / biggest block</span><span id="inx">–</span></div>
+</section>
+<section>
+<h2>Wi-Fi</h2>
+<div class="row"><span>Down</span><span class="big" id="rx">–</span></div>
+<div class="row"><span>Up</span><span class="big" id="tx">–</span></div>
+<div class="key"><span><b style="background:var(--a)"></b>down</span><span><b style="background:var(--b)"></b>up</span></div>
+<canvas id="gnet"></canvas>
+<div class="row"><span>Total down / up</span><span id="nett">–</span></div>
+<div class="row"><span>Packets down / up</span><span id="netp">–</span></div>
+<div class="row"><span>Signal</span><span id="rssi">–</span></div>
+</section>
+<section>
+<h2>TF card</h2>
+<div class="row"><span>Used</span><span id="sdu">–</span></div><div class="bar"><i id="sdb"></i></div>
+<div class="row"><span>Read</span><span class="big" id="sdr">–</span></div>
+<div class="row"><span>Write</span><span class="big" id="sdw">–</span></div>
+<div class="key"><span><b style="background:var(--a)"></b>read</span><span><b style="background:var(--b)"></b>write</span></div>
+<canvas id="gsd"></canvas>
+<div class="row"><span>Total read / written</span><span id="sdt">–</span></div>
+<div class="row"><span>Operations</span><span id="sdo">–</span></div>
+</section>
+</main>
+<script>
+const N=120,$=id=>document.getElementById(id);
+let hist=[];
+function bytes(v){const u=['B','KB','MB','GB','TB'];let i=0;while(v>=1024&&i<4){v/=1024;i++}return (i?v.toFixed(v<10?2:1):v)+' '+u[i]}
+const rate=v=>bytes(v)+'/s';
+function dur(s){const d=Math.floor(s/86400),h=Math.floor(s%86400/3600),m=Math.floor(s%3600/60);return 'up '+(d?d+'d ':'')+(d||h?h+'h ':'')+m+'m '+(s%60)+'s'}
+function bar(id,frac){const e=$(id);e.style.width=(Math.max(0,Math.min(1,frac))*100).toFixed(1)+'%';
+e.style.background=frac>.9?'var(--bad)':frac>.75?'var(--warn)':''}
+function css(v){return getComputedStyle(document.documentElement).getPropertyValue(v).trim()}
+function draw(id,a,b,fixedMax){
+const c=$(id),r=devicePixelRatio||1,w=c.clientWidth,h=c.clientHeight;
+if(c.width!==w*r||c.height!==h*r){c.width=w*r;c.height=h*r}
+const g=c.getContext('2d');g.setTransform(r,0,0,r,0,0);g.clearRect(0,0,w,h);
+const pts=hist.map(s=>[s[a],s[b]]),max=fixedMax||Math.max(1,...pts.flat());
+g.strokeStyle=css('--line');g.lineWidth=1;g.beginPath();g.moveTo(0,h-.5);g.lineTo(w,h-.5);g.stroke();
+[[0,'--a'],[1,'--b']].forEach(([k,col])=>{g.strokeStyle=css(col);g.lineWidth=1.5;g.beginPath();
+pts.forEach((p,i)=>{const x=w-(pts.length-1-i)*w/(N-1),y=h-2-(Math.max(0,p[k])/max)*(h-6);i?g.lineTo(x,y):g.moveTo(x,y)});g.stroke()});
+if(!fixedMax){g.fillStyle=css('--muted');g.font='11px system-ui';g.fillText('peak '+rate(max),4,12)}}
+function render(s){
+$('state').textContent='live';$('dot').style.background='var(--a)';
+$('ip').textContent=s.net.up?s.net.ip:'no network';$('up').textContent=dur(s.uptime);
+s.cpu.forEach((v,i)=>{$('c'+i).textContent=v<0?'n/a':(v/10).toFixed(1)+'%';bar('c'+i+'b',v/1000)});
+$('tasks').textContent=s.tasks;
+const p=s.ram.psram,n=s.ram.int;
+$('ps').textContent=bytes(p.total-p.free)+' / '+bytes(p.total);bar('psb',p.total?(p.total-p.free)/p.total:0);
+$('in').textContent=bytes(n.total-n.free)+' / '+bytes(n.total);bar('inb',(n.total-n.free)/n.total);
+$('psx').textContent=bytes(p.min)+' / '+bytes(p.largest);$('inx').textContent=bytes(n.min)+' / '+bytes(n.largest);
+$('rx').textContent=rate(s.net.rx);$('tx').textContent=rate(s.net.tx);
+$('nett').textContent=bytes(s.net.rx_total)+' / '+bytes(s.net.tx_total);
+$('netp').textContent=s.net.rx_pkts.toLocaleString()+' / '+s.net.tx_pkts.toLocaleString();
+$('rssi').textContent=s.net.up?s.net.rssi+' dBm':'–';
+if(s.sd.present){$('sdu').textContent=bytes(s.sd.used)+' / '+bytes(s.sd.size);bar('sdb',s.sd.used/s.sd.size)}
+else $('sdu').textContent='no card';
+$('sdr').textContent=rate(s.sd.rd);$('sdw').textContent=rate(s.sd.wr);
+$('sdt').textContent=bytes(s.sd.rd_total)+' / '+bytes(s.sd.wr_total);$('sdo').textContent=s.sd.ops.toLocaleString();
+draw('gcpu',0,1,1000);draw('gnet',2,3);draw('gsd',4,5)}
+async function tick(){
+try{const s=await(await fetch('/api/stats')).json();
+hist.push([s.cpu[0],s.cpu[1],s.net.rx,s.net.tx,s.sd.rd,s.sd.wr]);if(hist.length>N)hist.shift();render(s)}
+catch(e){$('state').textContent='offline';$('dot').style.background='var(--bad)'}
+setTimeout(tick,1000)}
+fetch('/api/history').then(r=>r.json()).then(h=>{hist=h.slice(-N)}).catch(()=>{}).finally(tick);
+addEventListener('resize',()=>{if(hist.length){draw('gcpu',0,1,1000);draw('gnet',2,3);draw('gsd',4,5)}});
+</script>
+</body>
+</html>
