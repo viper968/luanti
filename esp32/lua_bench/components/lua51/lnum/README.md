@@ -19,6 +19,43 @@ Provenance:
   * `llex.c`: merged with Luanti's `__ANDROID__` locale guards in `trydecpoint`.
   * `liolib.c`: merged with 5.1.5's fix that pushes nil when `read_number`
     fails. The same fix is applied to LNUM's new `read_integer`.
+* `luaconf.h`: LNUM's rewrite dropped `LUA_NUMBER_DOUBLE`. It is defined again
+  in double mode, because Luanti's `lib/bitop` refuses to build without it.
+* `lauxlib.c`: `luaL_checkinteger` is restored to stock 5.1 behaviour (any
+  number is accepted and truncated). LNUM rejected non-integral values that
+  truncate to 0, so `("%d"):format(0.4)` raised an error, which the devtest
+  unit tests caught. `LUA_COMPAT_TOINTEGER` (on by default) already keeps
+  `lua_tointeger` truncating.
+
+Bugs fixed in LNUM itself (found by comparing against stock Lua on a 64-bit PC,
+see "Verification" below):
+
+* `try_addint`/`try_subint` detected overflow *after* a signed add/subtract.
+  That is undefined behaviour, and GCC removed the checks, so
+  `2147483647 + 1` gave `-2147483648`. They now range-check first.
+* `try_modint`: `-2147483648 % -1` trapped (SIGFPE). It now returns 0 like stock.
+* `luaO_str2d` stored `strtoul()` in an `unsigned lua_Integer`. On LP64 hosts,
+  `4294967296`, `0x100000000` and `1234567891011` were silently truncated
+  (e.g. to 0). Hex literals above `LUA_INTEGER_MAX` also became negative
+  (`0xFF00FF00` gave -16711936). Out-of-range values now use the FP reader, so
+  they are exact doubles as in stock Lua. Negative strings (including `"-0"`)
+  take the FP path too, and `-0.0` keeps its sign.
+* `tonumber(s, base)` parsed into `unsigned lua_Integer`; restored stock `unsigned long`.
+* `lua_pushvalue_as_number` (used by `tonumber`) turned integral doubles into
+  integers, dropping the sign of `-0.0`. Numbers are now pushed unchanged.
+* `string.format("%d"/"%x"...)` went through the 32-bit `lua_Integer`
+  (`%d` of 1234567891011 wrapped). The stock `LUA_INTFRM_T` code is restored,
+  and `LUA_INTFRMLEN`/`LUA_INTFRM_T` are defined again in `luaconf.h`.
+
+Verification (LNUM_DOUBLE + LNUM_INT32):
+
+* A 27-line number-semantics script (overflow edges, big/hex literals, `%`, `/`,
+  `^`, `tostring`, `tonumber` with bases, `string.format`, table keys, position
+  hashes, colours, numeric for loops, coercions) prints identical output on
+  stock and patched standalone interpreters.
+* All 23 files of the official Lua 5.1 test suite (lua.org/tests) give
+  identical exit codes and output on stock and patched.
+
 * Re-applying this patch to a clean `lib/lua/src` reproduces the merged tree
   exactly (verified with `diff -r`).
 
