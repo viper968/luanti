@@ -32,6 +32,32 @@ Put a **FAT32**-formatted TF card in the slot first. The test writes and then
 deletes a 4 MB `lbt_test.bin`. If flashing fails, hold **BOOT**, tap
 **RESET**, release **BOOT**, and try again.
 
+### Flashing safely
+
+* The partition table (`board_test/partitions.csv`) is byte-identical to what
+  these boards ship with (two 7.94 MB app slots, no FATFS). `idf.py flash`
+  therefore only rewrites the bootloader, the same partition table, otadata and
+  the app, all of which can be rewritten again at any time.
+* The ESP32-S3's first-stage bootloader is in mask ROM. If a flashed app won't
+  boot, hold **BOOT**, tap **RESET**, release **BOOT**, and flash again.
+* The only irreversible operations are eFuse writes. **Never run `espefuse`
+  burn commands, and don't enable secure boot or flash encryption** in menuconfig.
+* The board uses the S3's native USB Serial/JTAG, so the baud rate doesn't affect
+  speed. Writes are fast (compressed), but `read_flash` with esptool 4.6 manages
+  only ~9 KB/s, so back up just the used region rather than all 16 MB.
+
+Back up the used region before the first flash (about 4.5 minutes), then restore
+it later if needed:
+
+```bash
+esptool.py --chip esp32s3 -p /dev/ttyACM0 read_flash 0x0 0x240000 backup.bin
+esptool.py --chip esp32s3 -p /dev/ttyACM0 write_flash 0x0 backup.bin
+```
+
+Waveshare's demo zip also has a full factory image,
+`Firmware/ESP32-S3-Touch-LCD-2.8B.bin`, written at `0x0`. Note that it uses a
+different partition layout (3 MB apps + a 9.9 MB FATFS).
+
 ### Wi-Fi latency test
 
 Once the monitor shows `UDP: echoing on port 30000`, run from a PC on the same
