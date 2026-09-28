@@ -128,11 +128,13 @@ print(string.format("BENCH %-15s %9.1f ms", "TOTAL", total / 1000))
 
 -- Memory: 20000 position tables {x=, y=, z=}, like a mod caching nodes
 collectgarbage("collect")
-local before = collectgarbage("count")
+local before, sys_before = collectgarbage("count"), sysfree_kb()
 local keep = {}
 for i = 1, 20000 do keep[i] = {x = i * 0.5, y = i, z = -i} end
 collectgarbage("collect")
-print(string.format("MEM 20000 position tables: %.0f KB", collectgarbage("count") - before))
+-- Lua's own count vs what the heap actually lost (includes allocator overhead)
+print(string.format("MEM 20000 position tables: %.0f KB (Lua count), %.0f KB (real heap)",
+	collectgarbage("count") - before, sys_before - sysfree_kb()))
 keep = nil
 collectgarbage("collect")
 print(string.format("MEM Lua heap after benchmarks: %.0f KB", collectgarbage("count")))

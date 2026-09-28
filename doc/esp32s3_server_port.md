@@ -145,6 +145,49 @@ Conclusions:
   A faster Lua allocator (e.g. a small-object pool in internal RAM) is likely
   worth as much as the number type and should be measured next.
 
+### 1d. Allocator and integer subtype (measured, `esp32/lua_bench`)
+
+Two follow-ups to 1c, on the same board.
+
+**Allocators** (stock double Lua, time excluding hash_positions):
+
+| Allocator | Total | vector_tables | table_churn | Others |
+|---|---|---|---|---|
+| stock `realloc` (≤256 B prefer internal RAM) | 9684 ms | 2573 ms | 1405 ms | — |
+| everything in PSRAM (`heap_caps_realloc`) | about the same | about the same | 1.25× faster | unchanged |
+| small-object pool (≤128 B, 16 KB slabs) in PSRAM | 1.12× | 1.37× | 1.46× | unchanged |
+| same pool, first 128 KB of slabs in internal RAM | **1.18×** | **1.64×** | **1.51×** | unchanged |
+
+* The cost is malloc/free overhead (TLSF plus locking), not PSRAM itself.
+  Putting all of Lua in PSRAM is no slower than the stock split, which is good
+  news, because the real server will have little internal RAM to spare.
+* A production pool must give empty slabs back (this test never does). The
+  "real heap" figure for pooled runs is therefore not a valid memory
+  measurement. The stock allocator's overhead is ~4 % (3793 KB real vs 3636 KB
+  Lua-counted).
+
+**Integer subtype:** the LNUM patch, ported to Lua 5.1.5
+(`esp32/lua_bench/components/lua51/lnum/`).
+
+| Variant (time excluding hash_positions) | Total | Speed-up | Correct? |
+|---|---|---|---|
+| double, stock allocator | 9684 ms | 1.00× | reference |
+| double + pool_internal | 8217 ms | 1.18× | yes |
+| float, stock allocator (1c) | 5586 ms | 1.73× | **no** (hash collisions) |
+| LNUM int32+double, stock allocator | 7135 ms | 1.36× | **yes**, all checksums identical |
+| **LNUM int32+double + pool_internal** | **5652 ms** | **1.71×** | **yes** |
+| LNUM int64+double | slower than int32 (int_loop 1218 vs 781 ms) | — | yes, but hash_positions 40 s: int64 keys ≥ 2^32 cluster in LNUM's table hash |
+
+* LNUM int32 speeds up integer code as much as float does (int_loop 3.3×,
+  callbacks 2.0×, abm_scan 1.9×) while keeping every result exact. Values
+  beyond 32 bits (position hashes, µs timestamps) overflow into exact doubles.
+* Fractional maths (physics_step, vector_tables' arithmetic) still costs
+  soft-float doubles. LNUM int32 + float would cut that too, but would bring
+  back float's precision loss for fractions, and mods rarely need that speed.
+* **Plan for the port: LNUM int32+double, plus a pooled Lua allocator with
+  slab recycling.** Before shipping it must pass Luanti's Lua unit tests
+  (`games/devtest` unittests) on the patched Lua, run on a PC first.
+
 ## 2. Toolchain / OS port (ESP-IDF)
 
 Build against **ESP-IDF v5.x** with CMake. The server build
