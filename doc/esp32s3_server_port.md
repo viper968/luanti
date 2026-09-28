@@ -33,6 +33,23 @@ Points that follow from that table:
 * **LuaJIT has no Xtensa backend.** Use the bundled PUC Lua 5.1 (`lib/lua`,
   `-DENABLE_LUAJIT=OFF`).
 
+### 1a. Target board: Waveshare ESP32-S3-Touch-LCD-2.8B
+
+| Board feature | Impact on the server |
+|---|---|
+| **ESP32-S3R8**: 8 MB octal PSRAM in-package, 16 MB flash | Meets the minimum. Use `CONFIG_SPIRAM_MODE_OCT=y`, `CONFIG_SPIRAM_SPEED_80M=y`. GPIO33–37 belong to the PSRAM, so leave them alone. |
+| **2.8" 480×640 RGB panel** | An RGB panel needs a full framebuffer in PSRAM, **scanned out by DMA continuously**: 480×640×2 B = **600 KB per buffer** (1.2 MB double-buffered), plus ~15–35 MB/s of PSRAM bandwidth for refresh at 30–60 Hz. That's a large share of both the RAM and the PSRAM bandwidth the server needs. **Run headless: don't initialize the LCD driver and keep the backlight off.** If you want a status screen later, use a single framebuffer, a low pixel clock and rare redraws, and budget ~0.6 MB for it. |
+| **TF card slot** | World, media and `minetest.conf` live here (FATFS/exFAT on `/sdcard`). Check the Waveshare demo or schematic for whether it's wired as SDMMC (1-bit/4-bit) or SPI, and whether a control line runs through the **TCA9554** I²C expander. If it does, the expander must be initialized over I²C (GPIO7/15) before mounting. Use a fast A1/A2-rated card. |
+| 2.4 GHz Wi-Fi, ceramic antenna (IPEX option) | Fine for 2 players close by. For range or stability, move the resistor to use the IPEX connector with an external antenna. Disable Wi-Fi power save (`esp_wifi_set_ps(WIFI_PS_NONE)`) to cut UDP latency. |
+| USB-C (native USB Serial/JTAG) | Flashing, plus `stdout`/`stderr` log console. |
+| PCF85063 RTC + RTC battery header | Keeps the wall clock valid without network time (log timestamps, auth `last_login`). SNTP over Wi-Fi works too. |
+| MP1605 2 A regulator, Li-ion charging | Plenty for S3 + Wi-Fi + SD. Could run as a battery-powered "pocket server". |
+| QMI8658 IMU, buzzer, touch, spare GPIO16 | Not needed. The buzzer could beep on player join, just for fun. |
+
+The Waveshare demos use **ESP-IDF v5.5.x**, so build the port with that
+version. Use ESP-IDF directly rather than Arduino, since we need a custom
+`sdkconfig` (exceptions, RTTI, PSRAM malloc, pthread stack sizes, lwIP buffers).
+
 ## 2. Toolchain / OS port (ESP-IDF)
 
 Build against **ESP-IDF v5.x** with CMake. The server build
