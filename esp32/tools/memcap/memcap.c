@@ -11,6 +11,8 @@
 // ESP32 those live in flash or are sized separately).
 #define _GNU_SOURCE
 #include <dlfcn.h>
+#include <execinfo.h>
+#include <signal.h>
 #include <malloc.h>
 #include <pthread.h>
 #include <stdatomic.h>
@@ -191,9 +193,39 @@ static void *reporter(void *arg)
 	return NULL;
 }
 
+// On a crash, print a backtrace to stderr (binary+offset; resolve with
+// addr2line -f -e <binary> <offset>), then die with the original signal.
+static void crash_handler(int sig)
+{
+	void *frames[64];
+	int n = backtrace(frames, 64);
+	char msg[64];
+	int len = snprintf(msg, sizeof(msg), "\n[memcap] fatal signal %d, backtrace:\n", sig);
+	write(2, msg, len);
+	backtrace_symbols_fd(frames, n, 2);
+	signal(sig, SIG_DFL);
+	raise(sig);
+}
+
 __attribute__((constructor)) static void memcap_init(void)
 {
 	resolve();
+	if (getenv("MEMCAP_BACKTRACE")) {
+		// Load libgcc's unwinder now; backtrace() would otherwise do it inside the handler
+		void *warm[2];
+		backtrace(warm, 2);
+		static char altstack[64 * 1024];
+		stack_t ss = {.ss_sp = altstack, .ss_size = sizeof(altstack)};
+		sigaltstack(&ss, NULL);
+		struct sigaction sa;
+		memset(&sa, 0, sizeof(sa));
+		sa.sa_handler = crash_handler;
+		sa.sa_flags = SA_ONSTACK;
+		sigaction(SIGSEGV, &sa, NULL);
+		sigaction(SIGBUS, &sa, NULL);
+		sigaction(SIGFPE, &sa, NULL);
+		sigaction(SIGABRT, &sa, NULL);
+	}
 	const char *l = getenv("MEMCAP_LIMIT_KB");
 	if (l)
 		limit = atol(l) * 1024;

@@ -46,6 +46,13 @@ see "Verification" below):
 * `string.format("%d"/"%x"...)` went through the 32-bit `lua_Integer`
   (`%d` of 1234567891011 wrapped). The stock `LUA_INTFRM_T` code is restored,
   and `LUA_INTFRMLEN`/`LUA_INTFRM_T` are defined again in `luaconf.h`.
+* Out-of-range double to integer conversions were plain C casts (undefined
+  behaviour), e.g. `math.randomseed(core.get_us_time())` and LNUM's
+  `tt_integer_valued`. `lua_number2int`/`lua_number2integer` now use
+  `luai_num2int_safe()`: same truncation in range, wraps modulo 2^32 out of
+  range (as LuaJIT does), NaN/inf give 0. This also covers the same pattern
+  inherited from stock Lua (table array-index checks).
+* `luaH_getint`: `key-1` overflowed for `key == INT_MIN`; now unsigned.
 
 Verification (LNUM_DOUBLE + LNUM_INT32):
 
@@ -53,6 +60,9 @@ Verification (LNUM_DOUBLE + LNUM_INT32):
   `^`, `tostring`, `tonumber` with bases, `string.format`, table keys, position
   hashes, colours, numeric for loops, coercions) prints identical output on
   stock and patched standalone interpreters.
+* The patched interpreter built with clang `-fsanitize=undefined` reports no
+  undefined behaviour on the semantics script. On the official suite, the only
+  report is `memcmp(NULL, ..., 0)` in unmodified stock `lstring.c` (harmless).
 * All 23 files of the official Lua 5.1 test suite (lua.org/tests) give
   identical exit codes and output on stock and patched.
 

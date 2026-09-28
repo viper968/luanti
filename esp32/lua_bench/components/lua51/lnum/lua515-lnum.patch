@@ -1,6 +1,6 @@
 diff -ruN a/src/lapi.c b/src/lapi.c
---- a/src/lapi.c	2026-09-28 17:27:49.971943799 -0500
-+++ b/src/lapi.c	2026-09-28 17:27:49.973991780 -0500
+--- a/src/lapi.c	2026-09-28 17:58:58.056234544 -0500
++++ b/src/lapi.c	2026-09-28 17:58:58.058594613 -0500
 @@ -28,7 +28,7 @@
  #include "ltm.h"
  #include "lundump.h"
@@ -242,8 +242,8 @@ diff -ruN a/src/lapi.c b/src/lapi.c
 +}
 +#endif
 diff -ruN a/src/lapi.h b/src/lapi.h
---- a/src/lapi.h	2026-09-28 17:27:49.971964727 -0500
-+++ b/src/lapi.h	2026-09-28 17:27:49.974012552 -0500
+--- a/src/lapi.h	2026-09-28 17:58:58.056264277 -0500
++++ b/src/lapi.h	2026-09-28 17:58:58.058611419 -0500
 @@ -13,4 +13,8 @@
  
  LUAI_FUNC void luaA_pushobject (lua_State *L, const TValue *o);
@@ -254,8 +254,8 @@ diff -ruN a/src/lapi.h b/src/lapi.h
 +
  #endif
 diff -ruN a/src/lauxlib.c b/src/lauxlib.c
---- a/src/lauxlib.c	2026-09-28 17:27:49.971977425 -0500
-+++ b/src/lauxlib.c	2026-09-28 17:27:49.974029105 -0500
+--- a/src/lauxlib.c	2026-09-28 17:58:58.056289634 -0500
++++ b/src/lauxlib.c	2026-09-28 17:58:58.058620628 -0500
 @@ -23,7 +23,7 @@
  #include "lua.h"
  
@@ -304,8 +304,8 @@ diff -ruN a/src/lauxlib.c b/src/lauxlib.c
    if (!lua_getmetatable(L, obj))  /* no metatable? */
      return 0;
 diff -ruN a/src/lauxlib.h b/src/lauxlib.h
---- a/src/lauxlib.h	2026-09-28 17:27:49.971991992 -0500
-+++ b/src/lauxlib.h	2026-09-28 17:27:49.974049152 -0500
+--- a/src/lauxlib.h	2026-09-28 17:58:58.056318954 -0500
++++ b/src/lauxlib.h	2026-09-28 17:58:58.058634614 -0500
 @@ -57,6 +57,12 @@
  LUALIB_API lua_Integer (luaL_checkinteger) (lua_State *L, int numArg);
  LUALIB_API lua_Integer (luaL_optinteger) (lua_State *L, int nArg,
@@ -320,8 +320,8 @@ diff -ruN a/src/lauxlib.h b/src/lauxlib.h
  LUALIB_API void (luaL_checkstack) (lua_State *L, int sz, const char *msg);
  LUALIB_API void (luaL_checktype) (lua_State *L, int narg, int t);
 diff -ruN a/src/lbaselib.c b/src/lbaselib.c
---- a/src/lbaselib.c	2026-09-28 17:27:49.972011390 -0500
-+++ b/src/lbaselib.c	2026-09-28 17:27:49.974063784 -0500
+--- a/src/lbaselib.c	2026-09-28 17:58:58.056343156 -0500
++++ b/src/lbaselib.c	2026-09-28 17:58:58.058647836 -0500
 @@ -18,7 +18,9 @@
  
  #include "lauxlib.h"
@@ -405,8 +405,8 @@ diff -ruN a/src/lbaselib.c b/src/lbaselib.c
    auxopen(L, "ipairs", luaB_ipairs, ipairsaux);
    auxopen(L, "pairs", luaB_pairs, luaB_next);
 diff -ruN a/src/lcode.c b/src/lcode.c
---- a/src/lcode.c	2026-09-28 17:27:49.972039044 -0500
-+++ b/src/lcode.c	2026-09-28 17:27:49.974082072 -0500
+--- a/src/lcode.c	2026-09-28 17:58:58.056372552 -0500
++++ b/src/lcode.c	2026-09-28 17:58:58.058663119 -0500
 @@ -22,13 +22,18 @@
  #include "lopcodes.h"
  #include "lparser.h"
@@ -637,8 +637,8 @@ diff -ruN a/src/lcode.c b/src/lcode.c
      case OPR_MINUS: {
        if (!isnumeral(e))
 diff -ruN a/src/lcode.h b/src/lcode.h
---- a/src/lcode.h	2026-09-28 17:27:49.972050124 -0500
-+++ b/src/lcode.h	2026-09-28 17:27:49.974101409 -0500
+--- a/src/lcode.h	2026-09-28 17:58:58.056401187 -0500
++++ b/src/lcode.h	2026-09-28 17:58:58.058680630 -0500
 @@ -71,6 +71,6 @@
  LUAI_FUNC void luaK_infix (FuncState *fs, BinOpr op, expdesc *v);
  LUAI_FUNC void luaK_posfix (FuncState *fs, BinOpr op, expdesc *v1, expdesc *v2);
@@ -648,8 +648,8 @@ diff -ruN a/src/lcode.h b/src/lcode.h
  
  #endif
 diff -ruN a/src/ldebug.c b/src/ldebug.c
---- a/src/ldebug.c	2026-09-28 17:27:49.972077907 -0500
-+++ b/src/ldebug.c	2026-09-28 17:27:49.974115257 -0500
+--- a/src/ldebug.c	2026-09-28 17:58:58.056445990 -0500
++++ b/src/ldebug.c	2026-09-28 17:58:58.058690272 -0500
 @@ -182,7 +182,7 @@
      int *lineinfo = f->l.p->lineinfo;
      int i;
@@ -680,8 +680,8 @@ diff -ruN a/src/ldebug.c b/src/ldebug.c
      luaG_runerror(L, "attempt to compare two %s values", t1);
    else
 diff -ruN a/src/ldo.c b/src/ldo.c
---- a/src/ldo.c	2026-09-28 17:27:49.972105521 -0500
-+++ b/src/ldo.c	2026-09-28 17:27:49.974133874 -0500
+--- a/src/ldo.c	2026-09-28 17:58:58.056491510 -0500
++++ b/src/ldo.c	2026-09-28 17:58:58.058705401 -0500
 @@ -219,9 +219,9 @@
      luaD_checkstack(L, p->maxstacksize);
      htab = luaH_new(L, nvar, 1);  /* create `arg' table */
@@ -695,8 +695,8 @@ diff -ruN a/src/ldo.c b/src/ldo.c
  #endif
    /* move fixed parameters to final position */
 diff -ruN a/src/ldump.c b/src/ldump.c
---- a/src/ldump.c	2026-09-28 17:27:49.972132698 -0500
-+++ b/src/ldump.c	2026-09-28 17:27:49.974148551 -0500
+--- a/src/ldump.c	2026-09-28 17:58:58.056534122 -0500
++++ b/src/ldump.c	2026-09-28 17:58:58.058718887 -0500
 @@ -52,6 +52,13 @@
   DumpVar(x,D);
  }
@@ -727,8 +727,8 @@ diff -ruN a/src/ldump.c b/src/ldump.c
     case LUA_TSTRING:
  	DumpString(rawtsvalue(o),D);
 diff -ruN a/src/liolib.c b/src/liolib.c
---- a/src/liolib.c	2026-09-28 17:27:49.972207148 -0500
-+++ b/src/liolib.c	2026-09-28 17:27:49.974162425 -0500
+--- a/src/liolib.c	2026-09-28 17:58:58.056665387 -0500
++++ b/src/liolib.c	2026-09-28 17:58:58.058728208 -0500
 @@ -9,6 +9,7 @@
  #include <stdio.h>
  #include <stdlib.h>
@@ -855,8 +855,8 @@ diff -ruN a/src/liolib.c b/src/liolib.c
    return pushresult(L, res == 0, NULL);
  }
 diff -ruN a/src/llex.c b/src/llex.c
---- a/src/llex.c	2026-09-28 17:27:49.972222572 -0500
-+++ b/src/llex.c	2026-09-28 17:27:49.974179336 -0500
+--- a/src/llex.c	2026-09-28 17:58:58.056689053 -0500
++++ b/src/llex.c	2026-09-28 17:58:58.058741957 -0500
 @@ -22,6 +22,7 @@
  #include "lstring.h"
  #include "ltable.h"
@@ -967,8 +967,8 @@ diff -ruN a/src/llex.c b/src/llex.c
          else if (isalpha(ls->current) || ls->current == '_') {
            /* identifier or reserved word */
 diff -ruN a/src/llex.h b/src/llex.h
---- a/src/llex.h	2026-09-28 17:27:49.972238450 -0500
-+++ b/src/llex.h	2026-09-28 17:27:49.974194469 -0500
+--- a/src/llex.h	2026-09-28 17:58:58.056710107 -0500
++++ b/src/llex.h	2026-09-28 17:58:58.058754433 -0500
 @@ -29,7 +29,10 @@
    TK_RETURN, TK_THEN, TK_TRUE, TK_UNTIL, TK_WHILE,
    /* other terminal symbols */
@@ -996,8 +996,8 @@ diff -ruN a/src/llex.h b/src/llex.h
  } SemInfo;  /* semantics information */
  
 diff -ruN a/src/llimits.h b/src/llimits.h
---- a/src/llimits.h	2026-09-28 17:27:49.972251394 -0500
-+++ b/src/llimits.h	2026-09-28 17:27:49.974204207 -0500
+--- a/src/llimits.h	2026-09-28 17:58:58.056728634 -0500
++++ b/src/llimits.h	2026-09-28 17:58:58.058765511 -0500
 @@ -49,6 +49,7 @@
  
  /* result of a `usual argument conversion' over lua_Number */
@@ -1024,8 +1024,8 @@ diff -ruN a/src/llimits.h b/src/llimits.h
  ** type for virtual-machine instructions
  ** must be an unsigned with (at least) 4 bytes (see details in lopcodes.h)
 diff -ruN a/src/lmathlib.c b/src/lmathlib.c
---- a/src/lmathlib.c	2026-09-28 17:27:49.972262160 -0500
-+++ b/src/lmathlib.c	2026-09-28 17:27:49.974214417 -0500
+--- a/src/lmathlib.c	2026-09-28 17:58:58.056752183 -0500
++++ b/src/lmathlib.c	2026-09-28 17:58:58.058775130 -0500
 @@ -4,7 +4,6 @@
  ** See Copyright Notice in lua.h
  */
@@ -1442,7 +1442,7 @@ diff -ruN a/src/lmathlib.c b/src/lmathlib.c
    lua_setfield(L, -2, "mod");
 diff -ruN a/src/lnum.c b/src/lnum.c
 --- a/src/lnum.c	1969-12-31 18:00:00.000000000 -0600
-+++ b/src/lnum.c	2026-09-28 17:27:49.974230353 -0500
++++ b/src/lnum.c	2026-09-28 17:58:58.058790297 -0500
 @@ -0,0 +1,337 @@
 +/*
 +** $Id: lnum.c,v ... $
@@ -1783,7 +1783,7 @@ diff -ruN a/src/lnum.c b/src/lnum.c
 +
 diff -ruN a/src/lnum.h b/src/lnum.h
 --- a/src/lnum.h	1969-12-31 18:00:00.000000000 -0600
-+++ b/src/lnum.h	2026-09-28 17:27:49.974244393 -0500
++++ b/src/lnum.h	2026-09-28 17:58:58.058802022 -0500
 @@ -0,0 +1,119 @@
 +/*
 +** $Id: lnum.h,v ... $
@@ -1905,8 +1905,8 @@ diff -ruN a/src/lnum.h b/src/lnum.h
 +
 +#endif
 diff -ruN a/src/lobject.c b/src/lobject.c
---- a/src/lobject.c	2026-09-28 17:27:49.972312756 -0500
-+++ b/src/lobject.c	2026-09-28 17:27:49.974256272 -0500
+--- a/src/lobject.c	2026-09-28 17:58:58.056841314 -0500
++++ b/src/lobject.c	2026-09-28 17:58:58.058812324 -0500
 @@ -21,7 +21,8 @@
  #include "lstate.h"
  #include "lstring.h"
@@ -2013,8 +2013,8 @@ diff -ruN a/src/lobject.c b/src/lobject.c
  }
 +
 diff -ruN a/src/lobject.h b/src/lobject.h
---- a/src/lobject.h	2026-09-28 17:27:49.972328952 -0500
-+++ b/src/lobject.h	2026-09-28 17:27:49.974269715 -0500
+--- a/src/lobject.h	2026-09-28 17:58:58.056863319 -0500
++++ b/src/lobject.h	2026-09-28 17:58:58.058822854 -0500
 @@ -17,7 +17,11 @@
  
  
@@ -2179,8 +2179,8 @@ diff -ruN a/src/lobject.h b/src/lobject.h
  #endif
  
 diff -ruN a/src/loslib.c b/src/loslib.c
---- a/src/loslib.c	2026-09-28 17:27:49.972368012 -0500
-+++ b/src/loslib.c	2026-09-28 17:27:49.974283571 -0500
+--- a/src/loslib.c	2026-09-28 17:58:58.056929456 -0500
++++ b/src/loslib.c	2026-09-28 17:58:58.058834992 -0500
 @@ -186,15 +186,30 @@
    }
    if (t == (time_t)(-1))
@@ -2215,8 +2215,8 @@ diff -ruN a/src/loslib.c b/src/loslib.c
  }
  
 diff -ruN a/src/lparser.c b/src/lparser.c
---- a/src/lparser.c	2026-09-28 17:27:49.972394933 -0500
-+++ b/src/lparser.c	2026-09-28 17:27:49.974297484 -0500
+--- a/src/lparser.c	2026-09-28 17:58:58.056959546 -0500
++++ b/src/lparser.c	2026-09-28 17:58:58.058847047 -0500
 @@ -32,7 +32,6 @@
  
  #define luaY_checklimit(fs,v,l,m)	if ((v)>(l)) errorlimit(fs,l,m)
@@ -2263,8 +2263,8 @@ diff -ruN a/src/lparser.c b/src/lparser.c
    }
    forbody(ls, base, line, 1, 1);
 diff -ruN a/src/lparser.h b/src/lparser.h
---- a/src/lparser.h	2026-09-28 17:27:49.972409759 -0500
-+++ b/src/lparser.h	2026-09-28 17:27:49.974323932 -0500
+--- a/src/lparser.h	2026-09-28 17:58:58.056988375 -0500
++++ b/src/lparser.h	2026-09-28 17:58:58.058870080 -0500
 @@ -31,7 +31,11 @@
    VRELOCABLE,	/* info = instruction pc */
    VNONRELOC,	/* info = result register */
@@ -2287,8 +2287,8 @@ diff -ruN a/src/lparser.h b/src/lparser.h
    int t;  /* patch list of `exit when true' */
    int f;  /* patch list of `exit when false' */
 diff -ruN a/src/lstate.c b/src/lstate.c
---- a/src/lstate.c	2026-09-28 17:27:49.972418258 -0500
-+++ b/src/lstate.c	2026-09-28 17:27:49.974335105 -0500
+--- a/src/lstate.c	2026-09-28 17:58:58.057010938 -0500
++++ b/src/lstate.c	2026-09-28 17:58:58.058879485 -0500
 @@ -7,6 +7,10 @@
  
  #include <stddef.h>
@@ -2310,8 +2310,8 @@ diff -ruN a/src/lstate.c b/src/lstate.c
  #define state_size(x)	(sizeof(x) + LUAI_EXTRASPACE)
  #define fromstate(l)	(cast(lu_byte *, (l)) - LUAI_EXTRASPACE)
 diff -ruN a/src/lstrlib.c b/src/lstrlib.c
---- a/src/lstrlib.c	2026-09-28 17:27:49.972466433 -0500
-+++ b/src/lstrlib.c	2026-09-28 17:27:49.974347553 -0500
+--- a/src/lstrlib.c	2026-09-28 17:58:58.057103485 -0500
++++ b/src/lstrlib.c	2026-09-28 17:58:58.058891119 -0500
 @@ -43,8 +43,8 @@
  static int str_sub (lua_State *L) {
    size_t l;
@@ -2362,8 +2362,8 @@ diff -ruN a/src/lstrlib.c b/src/lstrlib.c
    size_t l = strlen(form);
    char spec = form[l - 1];
 diff -ruN a/src/ltable.c b/src/ltable.c
---- a/src/ltable.c	2026-09-28 17:27:49.972482059 -0500
-+++ b/src/ltable.c	2026-09-28 17:27:49.974366932 -0500
+--- a/src/ltable.c	2026-09-28 17:58:58.057139400 -0500
++++ b/src/ltable.c	2026-09-28 17:58:58.058910324 -0500
 @@ -20,6 +20,8 @@
  
  #include <math.h>
@@ -2617,7 +2617,7 @@ diff -ruN a/src/ltable.c b/src/ltable.c
        gnext(othern) = n;  /* redo the chain with `n' in place of `mp' */
        *n = *mp;  /* copy colliding node into free pos. (mp->next also goes) */
        gnext(mp) = NULL;  /* now `mp' is free */
-@@ -431,18 +524,29 @@
+@@ -431,18 +524,30 @@
  
  /*
  ** search function for integers
@@ -2630,7 +2630,9 @@ diff -ruN a/src/ltable.c b/src/ltable.c
 -const TValue *luaH_getnum (Table *t, int key) {
 +const TValue *luaH_getint (Table *t, int key) {
    /* (1 <= key && key <= t->sizearray) */
-   if (cast(unsigned int, key-1) < cast(unsigned int, t->sizearray))
+-  if (cast(unsigned int, key-1) < cast(unsigned int, t->sizearray))
++  /* unsigned subtraction: key-1 overflows (UB) for key == INT_MIN */
++  if (cast(unsigned int, key) - 1u < cast(unsigned int, t->sizearray))
      return &t->array[key-1];
    else {
 -    lua_Number nk = cast_num(key);
@@ -2652,7 +2654,7 @@ diff -ruN a/src/ltable.c b/src/ltable.c
      } while (n);
      return luaO_nilobject;
    }
-@@ -467,27 +571,38 @@
+@@ -467,27 +572,38 @@
  ** main search function
  */
  const TValue *luaH_get (Table *t, const TValue *key) {
@@ -2706,7 +2708,7 @@ diff -ruN a/src/ltable.c b/src/ltable.c
  }
  
  
-@@ -498,20 +613,36 @@
+@@ -498,20 +614,36 @@
      return cast(TValue *, p);
    else {
      if (ttisnil(key)) luaG_runerror(L, "table index is nil");
@@ -2748,7 +2750,7 @@ diff -ruN a/src/ltable.c b/src/ltable.c
      return newkey(L, t, &k);
    }
  }
-@@ -533,20 +664,20 @@
+@@ -533,20 +665,20 @@
    unsigned int i = j;  /* i is zero or a present index */
    j++;
    /* find `i' and `j' such that i is present and j is not */
@@ -2773,8 +2775,8 @@ diff -ruN a/src/ltable.c b/src/ltable.c
    }
    return i;
 diff -ruN a/src/ltable.h b/src/ltable.h
---- a/src/ltable.h	2026-09-28 17:27:49.972494656 -0500
-+++ b/src/ltable.h	2026-09-28 17:27:49.974384892 -0500
+--- a/src/ltable.h	2026-09-28 17:58:58.057160612 -0500
++++ b/src/ltable.h	2026-09-28 17:58:58.058925527 -0500
 @@ -18,8 +18,8 @@
  #define key2tval(n)	(&(n)->i_key.tvk)
  
@@ -2787,8 +2789,8 @@ diff -ruN a/src/ltable.h b/src/ltable.h
  LUAI_FUNC TValue *luaH_setstr (lua_State *L, Table *t, TString *key);
  LUAI_FUNC const TValue *luaH_get (Table *t, const TValue *key);
 diff -ruN a/src/ltm.c b/src/ltm.c
---- a/src/ltm.c	2026-09-28 17:27:49.972516287 -0500
-+++ b/src/ltm.c	2026-09-28 17:27:49.974395665 -0500
+--- a/src/ltm.c	2026-09-28 17:58:58.057201273 -0500
++++ b/src/ltm.c	2026-09-28 17:58:58.058935903 -0500
 @@ -66,6 +66,11 @@
      case LUA_TUSERDATA:
        mt = uvalue(o)->metatable;
@@ -2802,8 +2804,8 @@ diff -ruN a/src/ltm.c b/src/ltm.c
        mt = G(L)->mt[ttype(o)];
    }
 diff -ruN a/src/lua.c b/src/lua.c
---- a/src/lua.c	2026-09-28 17:27:49.972549146 -0500
-+++ b/src/lua.c	2026-09-28 17:27:49.974406037 -0500
+--- a/src/lua.c	2026-09-28 17:58:58.057246492 -0500
++++ b/src/lua.c	2026-09-28 17:58:58.058944903 -0500
 @@ -16,7 +16,7 @@
  
  #include "lauxlib.h"
@@ -2838,8 +2840,8 @@ diff -ruN a/src/lua.c b/src/lua.c
    s.argv = argv;
    status = lua_cpcall(L, &pmain, &s);
 diff -ruN a/src/lua.h b/src/lua.h
---- a/src/lua.h	2026-09-28 17:27:49.972561324 -0500
-+++ b/src/lua.h	2026-09-28 17:27:49.974421072 -0500
+--- a/src/lua.h	2026-09-28 17:58:58.057285477 -0500
++++ b/src/lua.h	2026-09-28 17:58:58.058957077 -0500
 @@ -14,12 +14,15 @@
  
  
@@ -2927,8 +2929,8 @@ diff -ruN a/src/lua.h b/src/lua.h
  #endif
 +
 diff -ruN a/src/luaconf.h b/src/luaconf.h
---- a/src/luaconf.h	2026-09-28 17:27:49.972591443 -0500
-+++ b/src/luaconf.h	2026-09-28 17:27:49.974437104 -0500
+--- a/src/luaconf.h	2026-09-28 17:58:58.057336594 -0500
++++ b/src/luaconf.h	2026-09-28 17:58:58.058970595 -0500
 @@ -1,6 +1,6 @@
  /*
  ** $Id: luaconf.h,v 1.82.1.7 2008/02/11 16:25:08 roberto Exp $
@@ -3665,8 +3667,8 @@ diff -ruN a/src/luaconf.h b/src/luaconf.h
  
 diff -ruN a/src/luaconf_internal.h b/src/luaconf_internal.h
 --- a/src/luaconf_internal.h	1969-12-31 18:00:00.000000000 -0600
-+++ b/src/luaconf_internal.h	2026-09-28 17:27:49.974452756 -0500
-@@ -0,0 +1,631 @@
++++ b/src/luaconf_internal.h	2026-09-28 17:58:58.058983598 -0500
+@@ -0,0 +1,649 @@
 +/*
 +** $Id: luaconf_internal.h,v ... $
 +** Configuration file for Lua (internal)
@@ -3867,16 +3869,34 @@ diff -ruN a/src/luaconf_internal.h b/src/luaconf_internal.h
 +#  define lua_number2integer    lua_number2int
 +# endif
 +
-+/* this option always works (and is fast on most platforms) */
++/* Portable and well-defined: a plain (int) cast is undefined behaviour when
++ * the value is out of range (e.g. math.randomseed(core.get_us_time()) passes
++ * ~1e12). In range it truncates toward zero like the cast; out of range it
++ * wraps modulo 2^32 (as LuaJIT does); NaN and +-inf give 0. */
 +#else
-+# define lua_number2int(i,d)        ((i)=(int)(d))
++# include <math.h>
++static inline int luai_num2int_safe (double d) {
++  if (d > -2147483649.0 && d < 2147483648.0) return (int)d;
++  if (d != d || d == HUGE_VAL || d == -HUGE_VAL) return 0;
++  d = fmod(d, 4294967296.0);          /* exact; keeps the sign of d */
++  if (d < 0) d += 4294967296.0;       /* now in [0, 2^32) */
++  return (int)(unsigned int)d;        /* two's complement wrap */
++}
++static inline long long luai_num2ll_safe (double d) {
++  if (d >= -9223372036854775808.0 && d < 9223372036854775808.0) return (long long)d;
++  return 0;  /* NaN, inf or beyond 64 bits */
++}
++# define lua_number2int(i,d)        ((i)=luai_num2int_safe(d))
++# ifndef LNUM_INT64
++#  define lua_number2integer(i,d)   ((i)=luai_num2int_safe(d))
++# endif
 +#endif
 +
 +/* Note: Some compilers (OS X gcc 4.0?) may choke on double->long long conversion 
 + *       since it can lose precision. Others do require 'long long' there.  
 + */
 +#ifndef lua_number2integer
-+# define lua_number2integer(i,d)    ((i)=(lua_Integer)(d))
++# define lua_number2integer(i,d)    ((i)=(lua_Integer)luai_num2ll_safe(d))
 +#endif
 +
 +/*
@@ -4299,8 +4319,8 @@ diff -ruN a/src/luaconf_internal.h b/src/luaconf_internal.h
 +#endif
 +
 diff -ruN a/src/lualib.h b/src/lualib.h
---- a/src/lualib.h	2026-09-28 17:27:49.972606431 -0500
-+++ b/src/lualib.h	2026-09-28 17:27:49.974471962 -0500
+--- a/src/lualib.h	2026-09-28 17:58:58.057362175 -0500
++++ b/src/lualib.h	2026-09-28 17:58:58.058998352 -0500
 @@ -46,7 +46,7 @@
  
  
@@ -4311,8 +4331,8 @@ diff -ruN a/src/lualib.h b/src/lualib.h
  
  
 diff -ruN a/src/lundump.c b/src/lundump.c
---- a/src/lundump.c	2026-09-28 17:27:49.972616464 -0500
-+++ b/src/lundump.c	2026-09-28 17:27:49.974481956 -0500
+--- a/src/lundump.c	2026-09-28 17:58:58.057384461 -0500
++++ b/src/lundump.c	2026-09-28 17:58:58.059007230 -0500
 @@ -73,6 +73,15 @@
   return x;
  }
@@ -4363,8 +4383,8 @@ diff -ruN a/src/lundump.c b/src/lundump.c
 +    );
  }
 diff -ruN a/src/lvm.c b/src/lvm.c
---- a/src/lvm.c	2026-09-28 17:27:49.972640327 -0500
-+++ b/src/lvm.c	2026-09-28 17:27:49.974496208 -0500
+--- a/src/lvm.c	2026-09-28 17:58:58.057436493 -0500
++++ b/src/lvm.c	2026-09-28 17:58:58.059027149 -0500
 @@ -25,21 +25,36 @@
  #include "ltable.h"
  #include "ltm.h"
@@ -4960,8 +4980,8 @@ diff -ruN a/src/lvm.c b/src/lvm.c
          }
          continue;
 diff -ruN a/src/lvm.h b/src/lvm.h
---- a/src/lvm.h	2026-09-28 17:27:49.972653482 -0500
-+++ b/src/lvm.h	2026-09-28 17:27:49.974517104 -0500
+--- a/src/lvm.h	2026-09-28 17:58:58.057460970 -0500
++++ b/src/lvm.h	2026-09-28 17:58:58.059073300 -0500
 @@ -15,11 +15,9 @@
  
  #define tostring(L,o) ((ttype(o) == LUA_TSTRING) || (luaV_tostring(L, o)))
@@ -4977,8 +4997,8 @@ diff -ruN a/src/lvm.h b/src/lvm.h
  
  LUAI_FUNC int luaV_lessthan (lua_State *L, const TValue *l, const TValue *r);
 diff -ruN a/src/print.c b/src/print.c
---- a/src/print.c	2026-09-28 17:27:49.972683943 -0500
-+++ b/src/print.c	2026-09-28 17:27:49.974535687 -0500
+--- a/src/print.c	2026-09-28 17:58:58.057524798 -0500
++++ b/src/print.c	2026-09-28 17:58:58.059083391 -0500
 @@ -14,6 +14,7 @@
  #include "lobject.h"
  #include "lopcodes.h"
