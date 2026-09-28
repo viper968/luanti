@@ -1,0 +1,23 @@
+menu "Luanti board test"
+
+config LBT_WIFI_SSID
+	string "Wi-Fi SSID (leave empty to skip the network test)"
+	default ""
+
+config LBT_WIFI_PASSWORD
+	string "Wi-Fi password"
+	default ""
+
+config LBT_UDP_PORT
+	int "UDP echo port"
+	default 30000
+	help
+		Same as Luanti's default server port, so firewall rules can be
+		tested too.
+
+config LBT_SD_TEST_MB
+	int "Size of the SD sequential test file (MB)"
+	range 1 64
+	default 4
+
+endmenu
