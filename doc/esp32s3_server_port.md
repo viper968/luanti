@@ -88,6 +88,28 @@ The Waveshare demos use **ESP-IDF v5.5.x**, so build the port with that
 version. Use ESP-IDF directly rather than Arduino, since we need a custom
 `sdkconfig` (exceptions, RTTI, PSRAM malloc, pthread stack sizes, lwIP buffers).
 
+### 1b. Measured on the real board (2026-09-28, `esp32/board_test`)
+
+Waveshare ESP32-S3-Touch-LCD-2.8B, ESP32-S3 rev 0.2, Winbond 16 MB flash,
+8 MB octal PSRAM, ESP-IDF v5.5.2. The TF card is a 240 MB SDSC card (FAT, 4 KB clusters).
+
+| What | Result | What it means for the server |
+|---|---|---|
+| Free internal RAM | 298 KB at boot, **244 KB** after Wi-Fi + SD + status page (largest block 140 KB) | Only for stacks, DMA and hot data. Everything else goes in PSRAM. |
+| Free PSRAM | **8135 KB** (largest block 8064 KB) | The real budget for map blocks, Lua and the rest. |
+| memcpy | internal **365 MB/s**, PSRAM **21 MB/s** | PSRAM is ~17× slower for bulk copies. Keep per-tick hot structures small. |
+| float vs double | 11.4 vs 1.5 Mops/s (**double 7.6× slower**) | Confirms Lua (all doubles) is the CPU bottleneck. Keep mods minimal. |
+| TF sequential read / write | **3.50 MB/s** / **1.27 MB/s** (1-bit SDMMC, 40 MHz) | Plenty for media and block loads. |
+| TF random 4 KB read | **291 IOPS** (3.4 ms) | ~300 uncached map-block reads/s at best. The SQLite cache helps. |
+| TF random 4 KB write + fsync | **8 IOPS (130 ms each)** | The weak spot. SQLite must batch: one transaction per save, `sqlite_synchronous = 0`, a long `server_map_save_interval`. A modern A1/A2-rated card should do much better. |
+| Wi-Fi UDP round trip (RSSI −65…−69 dBm) | 0% loss of 500, min 4.4 / median **5.6** / p95 11.0 / max 127.5 ms | Fine for Luanti. |
+| I²C scan | 0x20 TCA9554, 0x51 PCF85063, 0x6b QMI8658 | Matches the schematic. |
+| RTC | oscillator-stopped flag set (time never set, no RTC battery) | Set the clock via SNTP at boot. Optionally fit an RTC cell. |
+
+Benchmark note: stdio `fread` with `_IONBF` made FatFs read one 512-byte
+sector per call (44 KB/s at 97% CPU). POSIX `read`/`pread` gets 3.5 MB/s. SQLite
+uses POSIX I/O, and the port must avoid unbuffered stdio for bulk data.
+
 ## 2. Toolchain / OS port (ESP-IDF)
 
 Build against **ESP-IDF v5.x** with CMake. The server build

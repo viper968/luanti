@@ -38,9 +38,8 @@ static void chip_info(void)
 }
 
 // memcpy bandwidth: MapBlock (de)serialization and zstd are mostly this
-static void memcpy_bench(const char *name, uint32_t caps)
+static void memcpy_bench(const char *name, uint32_t caps, size_t sz)
 {
-	const size_t sz = 256 * 1024;
 	uint8_t *a = heap_caps_malloc(sz, caps);
 	uint8_t *b = heap_caps_malloc(sz, caps);
 	if (!a || !b) {
@@ -50,7 +49,7 @@ static void memcpy_bench(const char *name, uint32_t caps)
 		return;
 	}
 	memset(a, 0x5a, sz);
-	const int reps = 16;
+	const int reps = (4 * 1024 * 1024) / sz; // copy 4 MB in total
 	int64_t t0 = esp_timer_get_time();
 	for (int i = 0; i < reps; i++)
 		memcpy(b, a, sz);
@@ -87,8 +86,8 @@ void app_main(void)
 	printf("\n==== Luanti ESP32-S3 board test ====\n");
 	chip_info();
 	print_memory("boot");
-	memcpy_bench("internal", MALLOC_CAP_INTERNAL | MALLOC_CAP_8BIT);
-	memcpy_bench("PSRAM", MALLOC_CAP_SPIRAM | MALLOC_CAP_8BIT);
+	memcpy_bench("internal", MALLOC_CAP_INTERNAL | MALLOC_CAP_8BIT, 32 * 1024);
+	memcpy_bench("PSRAM", MALLOC_CAP_SPIRAM | MALLOC_CAP_8BIT, 256 * 1024);
 	fp_bench();
 
 	board_backlight_off();

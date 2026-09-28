@@ -4,6 +4,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <sys/stat.h>
+#include <fcntl.h>
 #include <unistd.h>
 #include "esp_vfs_fat.h"
 #include "sdmmc_cmd.h"
@@ -79,33 +80,33 @@ void sd_benchmark(int test_mb)
 		buf[i] = (uint8_t)(i * 31);
 	const size_t total = (size_t)test_mb * 1024 * 1024;
 
+	// POSIX I/O, like SQLite: no stdio buffering layer in between
 	// Sequential write (map saves, world backups)
-	FILE *f = fopen(TEST_FILE, "wb");
-	if (!f) {
+	int fd = open(TEST_FILE, O_WRONLY | O_CREAT | O_TRUNC, 0644);
+	if (fd < 0) {
 		printf("SD: cannot create %s\n", TEST_FILE);
 		free(buf);
 		return;
 	}
-	setvbuf(f, NULL, _IONBF, 0);
 	int64_t t0 = esp_timer_get_time();
 	for (size_t done = 0; done < total; done += CHUNK)
-		fwrite(buf, 1, CHUNK, f);
-	fsync(fileno(f));
+		write(fd, buf, CHUNK);
+	fsync(fd);
 	int64_t t1 = esp_timer_get_time();
-	fclose(f);
+	close(fd);
 	printf("SD sequential write: %.2f MB/s (%d MB)\n", mb_per_s(total, t1 - t0), test_mb);
 
 	// Sequential read (sending media to clients)
-	f = fopen(TEST_FILE, "rb");
-	if (!f) {
+	fd = open(TEST_FILE, O_RDONLY);
+	if (fd < 0) {
 		printf("SD: cannot reopen %s\n", TEST_FILE);
 		free(buf);
 		return;
 	}
-	setvbuf(f, NULL, _IONBF, 0);
 	t0 = esp_timer_get_time();
-	size_t got = 0, n;
-	while ((n = fread(buf, 1, CHUNK, f)) > 0)
+	size_t got = 0;
+	ssize_t n;
+	while ((n = read(fd, buf, CHUNK)) > 0)
 		got += n;
 	t1 = esp_timer_get_time();
 	printf("SD sequential read:  %.2f MB/s\n", mb_per_s(got, t1 - t0));
@@ -113,32 +114,28 @@ void sd_benchmark(int test_mb)
 	// Random 4 KiB reads (SQLite page lookups when loading map blocks)
 	const long pages = total / PAGE;
 	t0 = esp_timer_get_time();
-	for (int i = 0; i < RANDOM_OPS; i++) {
-		fseek(f, (esp_random() % pages) * PAGE, SEEK_SET);
-		fread(buf, 1, PAGE, f);
-	}
+	for (int i = 0; i < RANDOM_OPS; i++)
+		pread(fd, buf, PAGE, (off_t)(esp_random() % pages) * PAGE);
 	t1 = esp_timer_get_time();
-	fclose(f);
+	close(fd);
 	printf("SD random 4K read:   %.0f IOPS (%.2f ms each)\n",
 		RANDOM_OPS / ((t1 - t0) / 1e6), (t1 - t0) / 1000.0 / RANDOM_OPS);
 
 	// Random 4 KiB writes + fsync (SQLite commits during map saves)
-	f = fopen(TEST_FILE, "r+b");
-	if (!f) {
+	fd = open(TEST_FILE, O_RDWR);
+	if (fd < 0) {
 		printf("SD: cannot reopen %s\n", TEST_FILE);
 		free(buf);
 		return;
 	}
-	setvbuf(f, NULL, _IONBF, 0);
 	const int wops = RANDOM_OPS / 4;
 	t0 = esp_timer_get_time();
 	for (int i = 0; i < wops; i++) {
-		fseek(f, (esp_random() % pages) * PAGE, SEEK_SET);
-		fwrite(buf, 1, PAGE, f);
-		fsync(fileno(f));
+		pwrite(fd, buf, PAGE, (off_t)(esp_random() % pages) * PAGE);
+		fsync(fd);
 	}
 	t1 = esp_timer_get_time();
-	fclose(f);
+	close(fd);
 	printf("SD random 4K write+fsync: %.0f IOPS (%.2f ms each)\n",
 		wops / ((t1 - t0) / 1e6), (t1 - t0) / 1000.0 / wops);
 
