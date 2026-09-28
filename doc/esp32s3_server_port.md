@@ -110,6 +110,41 @@ Benchmark note: stdio `fread` with `_IONBF` made FatFs read one 512-byte
 sector per call (44 KB/s at 97% CPU). POSIX `read`/`pread` gets 3.5 MB/s. SQLite
 uses POSIX I/O, and the port must avoid unbuffered stdio for bulk data.
 
+### 1c. Lua number type: double vs float (measured, `esp32/lua_bench`)
+
+Luanti's bundled Lua 5.1.5, built twice: stock (`lua_Number = double`) and
+patched to `float` (luaconf + single-precision libm). Same board and settings
+as 1b, best of 3 runs:
+
+| Workload | double | float | Speed-up | Result |
+|---|---|---|---|---|
+| int_loop (counters, `%`) | 2569 ms | 745 ms | 3.45× | same |
+| physics_step (fractional locals) | 1630 ms | 672 ms | 2.42× | slightly different (rounding) |
+| vector_tables (vector.* style, allocation-heavy) | 2567 ms | 2231 ms | 1.15× | slightly different |
+| hash_positions (`hash_node_position` keys, 32³) | 3459 ms | 190 ms | — | **float: 32 unique keys instead of 32768** |
+| table_churn (inventories, pairs/ipairs) | 1403 ms | 1082 ms | 1.30× | same |
+| strings (formspec format/concat/gmatch) | 393 ms | 351 ms | 1.12× | same |
+| abm_scan (16³ block scan + PRNG) | 170 ms | 68 ms | 2.48× | same |
+| callbacks (closures called in a loop) | 923 ms | 437 ms | 2.11× | same |
+| **Total, excluding the broken hash test** | 9654 ms | 5586 ms | **1.73×** | |
+| 20 000 `{x,y,z}` tables | 3636 KB | 2444 KB | **−33 % RAM** | `TValue` 16 → 8 bytes |
+
+Conclusions:
+
+* Arithmetic-heavy code gets 2–3.5× faster. Allocation-, table- and string-heavy
+  code only gets 1.1–1.3× faster, because there the time goes to malloc/GC and
+  PSRAM, not maths.
+* Plain float is **not usable as-is**. `hash_node_position` collides almost
+  totally (32 unique keys out of 32768). `get_us_time`/`os.time`, 32-bit
+  colours, PRNG seeds and `lib/bitop` (which `#error`s on float) break as well.
+* The way to get the integer-side speed-up safely is an **integer subtype**
+  (the LNUM-style patch for Lua 5.1). Whole numbers use native 32-bit ints and
+  overflow into doubles (exact up to 2^53, so 2^48 hashes stay correct), while
+  fractions stay double. That keeps correctness, but not the 33 % memory saving.
+* Allocation-heavy Lua is slow either way (vector_tables: ~74 µs per iteration).
+  A faster Lua allocator (e.g. a small-object pool in internal RAM) is likely
+  worth as much as the number type and should be measured next.
+
 ## 2. Toolchain / OS port (ESP-IDF)
 
 Build against **ESP-IDF v5.x** with CMake. The server build
