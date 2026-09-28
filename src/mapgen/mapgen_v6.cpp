@@ -1070,8 +1070,20 @@ void MapgenV6::growGrass() // Add surface nodes
 			} else if (bt == BT_TUNDRA) {
 				if (c == c_dirt) {
 					vm->m_data[i] = n_snowblock;
-					VoxelArea::add_y(em, i, -1);
-					vm->m_data[i] = n_dirt_with_snow;
+					// The node below is outside the voxel area when the
+					// surface is on its bottom row (common with small
+					// chunksizes); writing there corrupted memory or crashed.
+					if (surface_y > full_node_min.Y) {
+						VoxelArea::add_y(em, i, -1);
+						vm->m_data[i] = n_dirt_with_snow;
+					} else {
+						static bool logged = false;
+						if (!logged) {
+							logged = true;
+							infostream << "MapgenV6::growGrass: skipped out-of-area write"
+								<< " at y=" << surface_y - 1 << std::endl;
+						}
+					}
 				} else if (c == c_stone && surface_y < node_max.Y) {
 					VoxelArea::add_y(em, i, 1);
 					vm->m_data[i] = n_snowblock;

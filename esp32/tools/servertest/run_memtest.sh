@@ -28,7 +28,7 @@ echo "server: $root/bin/luantiserver  conf: $conf  duration: ${secs}s  limit: ${
 # NO_MEMCAP=1 runs without the heap tracker (e.g. for AddressSanitizer builds)
 preload="$memcap"; [ -n "${NO_MEMCAP:-}" ] && preload=""
 env MEMCAP_REPORT="$out/mem_now.txt" ${limit:+MEMCAP_LIMIT_KB=$limit} ${preload:+LD_PRELOAD=$preload} \
-	"$root/bin/luantiserver" --config "$conf" --world "$world" --port $port --logfile "$out/server.log" \
+	"$root/bin/luantiserver" --config "$conf" --world "$world" --port $port --logfile "$out/server.log" ${SERVER_ARGS:-} \
 	> "$out/server.out" 2>&1 &
 server=$!
 sleep 3
