@@ -503,6 +503,7 @@ set(common_SRCS
 	map_settings_manager.cpp
 	map.cpp
 	mapblock.cpp
+	mapblock_codec.cpp
 	mapnode.cpp
 	mapsector.cpp
 	nodedef.cpp

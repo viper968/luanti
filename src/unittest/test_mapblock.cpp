@@ -8,6 +8,7 @@
 #include "nodedef.h"
 #include "mapblock.h"
 #include "serialization.h"
+#include "mapblock_codec.h"
 #include "noise.h"
 #include "inventory.h"
 #include "util/serialize.h"
@@ -30,6 +31,16 @@ public:
 
 	void testLoad29(IGameDef *gamedef);
 
+	void testSave30Network(IGameDef *gamedef);
+
+	void testLoad30(IGameDef *gamedef);
+
+	// Corrupt or truncated input must only ever throw SerializationError
+	void testCorrupt30(IGameDef *gamedef);
+
+	// Checks the contents of the block stored in coded_mapblock29/30
+	void checkChestBlock(IGameDef *gamedef, const std::string_view buf, u8 expect_version);
+
 	// Tests loading a MapBlock from Minetest-c55 0.3
 	void testLoad20(IGameDef *gamedef);
 
@@ -45,9 +56,13 @@ static TestMapBlock g_test_instance;
 void TestMapBlock::runTests(IGameDef *gamedef)
 {
 	TEST(testSaveLoad, gamedef, SER_FMT_VER_HIGHEST_WRITE);
+	TEST(testSaveLoad, gamedef, 29);
 	TEST(testSaveLoadLowest, gamedef);
 	TEST(testSave29, gamedef);
 	TEST(testLoad29, gamedef);
+	TEST(testSave30Network, gamedef);
+	TEST(testLoad30, gamedef);
+	TEST(testCorrupt30, gamedef);
 	TEST(testLoad20, gamedef);
 	TEST(testLoadNonStd, gamedef);
 	TEST(testMonoblock, gamedef);
@@ -301,7 +316,6 @@ static const u8 coded_mapblock29[] = {
 
 void TestMapBlock::testLoad29(IGameDef *gamedef)
 {
-	UASSERT(MAP_BLOCKSIZE == 16);
 	const std::string_view buf(reinterpret_cast<const char*>(coded_mapblock29), sizeof(coded_mapblock29));
 
 	// this node is not part of the test gamedef, so we also test handling of
@@ -309,10 +323,18 @@ void TestMapBlock::testLoad29(IGameDef *gamedef)
 	auto *ndef = gamedef->getNodeDefManager();
 	UASSERT(ndef->getId("default:chest") == CONTENT_IGNORE);
 
+	checkChestBlock(gamedef, buf, 29);
+}
+
+void TestMapBlock::checkChestBlock(IGameDef *gamedef, const std::string_view buf, u8 expect_version)
+{
+	UASSERT(MAP_BLOCKSIZE == 16);
+	auto *ndef = gamedef->getNodeDefManager();
+
 	std::istringstream iss;
 	iss.str(std::string(buf));
 	u8 version = readU8(iss);
-	UASSERTEQ(int, version, 29);
+	UASSERTEQ(int, version, expect_version);
 	MapBlock block({}, gamedef);
 	block.deSerialize(iss, version, true);
 
@@ -337,6 +359,85 @@ void TestMapBlock::testLoad29(IGameDef *gamedef)
 	UASSERT(ilist);
 	UASSERTEQ(int, ilist->getSize(), 32);
 	UASSERTEQ(auto, ilist->getItem(1).name, "default:stone");
+}
+
+void TestMapBlock::testSave30Network(IGameDef *gamedef)
+{
+	MapBlock block({}, gamedef);
+	std::stringstream ss;
+	try {
+		block.serialize(ss, 30, false, -1);
+		UASSERT(!"version 30 must not be used for network transfer");
+	} catch (VersionMismatchException &e) {
+	}
+}
+
+// coded_mapblock29 converted to version 30.
+// If this test breaks, the version 30 bitstream has changed: that is a
+// format break and needs a new serialization version.
+static const u8 coded_mapblock30[] = {
+	30,70,132,145,217,72,217,230,150,179,1,217,172,114,211,183,124,118,202,215,42,198,191,239,
+	51,85,160,22,248,53,141,220,249,80,198,118,169,14,84,126,15,9,51,98,214,17,239,222,
+	90,105,182,171,249,178,10,161,71,135,120,6,76,240,209,238,51,99,36,252,147,39,42,150,
+	167,18,247,236,67,57,216,213,4,156,162,81,149,220,147,149,228,77,173,27,22,232,138,140,
+	196,95,142,219,78,151,239,143,114,30,225,10,134,137,34,201,235,116,80,216,171,144,152,249,
+	202,187,218,209,130,164,86,208,171,56,98,84,212,130,118,240,190,75,242,198,218,170,148,124,
+	138,54,88,221,164,151,29,20,151,187,201,232,158,83,211,169,121,39,70,242,114,14,91,194,
+	69,218,4,91,118,191,188,117,146,57,102,209,1,89,40,181,47,253,96,15,0,125,2,0,
+	146,196,15,17,144,125,0,90,16,77,174,24,22,142,85,69,155,191,21,145,20,255,226,255,
+	133,206,114,117,108,117,125,188,42,87,95,181,58,35,61,119,131,207,17,250,180,18,93,95,
+	154,68,33,81,59,201,132,57,164,202,70,137,206,114,253,120,240,33,4,0,52,143,106,165,
+	208,85,158,131,6,0,28
+};
+
+void TestMapBlock::testLoad30(IGameDef *gamedef)
+{
+	const std::string_view buf(reinterpret_cast<const char*>(coded_mapblock30), sizeof(coded_mapblock30));
+	checkChestBlock(gamedef, buf, 30);
+
+	// The codec must consume exactly its own data
+	std::istringstream iss(std::string(buf.substr(1)) + "trailing", std::ios_base::binary);
+	std::ostringstream oss(std::ios_base::binary);
+	mapblock_codec::decompress(iss, oss);
+	UASSERTEQ(int, (int)iss.tellg(), (int)buf.size() - 1);
+
+	// Re-encoding the decoded stream yields the same bytes
+	std::ostringstream again(std::ios_base::binary);
+	mapblock_codec::compress(oss.str(), again);
+	UASSERT(again.str() == buf.substr(1));
+}
+
+void TestMapBlock::testCorrupt30(IGameDef *gamedef)
+{
+	const std::string good(reinterpret_cast<const char*>(coded_mapblock30) + 1,
+		sizeof(coded_mapblock30) - 1);
+	u32 failures = 0, tries = 0;
+	auto attempt = [&] (const std::string &data) {
+		tries++;
+		std::istringstream iss(data, std::ios_base::binary);
+		std::ostringstream oss(std::ios_base::binary);
+		try {
+			mapblock_codec::decompress(iss, oss);
+		} catch (SerializationError &e) {
+			failures++;
+		}
+		// any other exception fails the test
+	};
+
+	for (size_t len = 0; len < good.size(); len++)
+		attempt(good.substr(0, len));
+
+	PcgRandom r(1234);
+	for (size_t i = 0; i < good.size(); i++) {
+		for (int k = 0; k < 4; k++) {
+			std::string data = good;
+			data[i] ^= (char)(1 + r.range(0, 254));
+			attempt(data);
+		}
+	}
+	// This block has a tail, which is length-prefixed, so truncation is always detected
+	UASSERT(failures >= good.size());
+	UASSERT(tries > failures);
 }
 
 static const u8 coded_mapblock20[] = {

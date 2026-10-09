@@ -2488,10 +2488,8 @@ map-dir (Map directory) [server] path
 #    See https://www.sqlite.org/pragma.html#pragma_synchronous
 sqlite_synchronous (Synchronous SQLite) [server] enum 2 0,1,2
 
-#    Compression level to use when saving mapblocks to disk.
-#    -1 - use default compression level
-#     0 - least compression, fastest
-#     9 - best compression, slowest
+#    Deprecated, has no effect: mapblocks are saved to disk with a dedicated
+#    codec that has no compression levels.
 map_compression_level_disk (Map Compression Level for Disk Storage) [server] int -1 -1 9
 
 #    Enable usage of remote media server (if provided by server).

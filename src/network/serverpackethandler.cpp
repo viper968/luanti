@@ -76,7 +76,7 @@ void Server::handleCommand_Init(NetworkPacket* pkt)
 	if (denyIfBanned(peer_id))
 		return;
 
-	u8 max_ser_ver; // SER_FMT_VER_HIGHEST_READ (of client)
+	u8 max_ser_ver; // SER_FMT_VER_HIGHEST_NET (of client)
 	u16 unused;
 	u16 min_net_proto_version;
 	u16 max_net_proto_version;
@@ -87,7 +87,7 @@ void Server::handleCommand_Init(NetworkPacket* pkt)
 			>> playerName;
 
 	// Use the highest version supported by both
-	const u8 serialization_ver = std::min(max_ser_ver, SER_FMT_VER_HIGHEST_WRITE);
+	const u8 serialization_ver = std::min(max_ser_ver, SER_FMT_VER_HIGHEST_NET);
 
 	if (!ser_ver_supported_write(serialization_ver)) {
 		actionstream << "Server: A mismatched client tried to connect from " <<

@@ -3709,10 +3709,8 @@
 #    type: enum values: 0, 1, 2
 # sqlite_synchronous = 2
 
-#    Compression level to use when saving mapblocks to disk.
-#    -1 - use default compression level
-#    0 - least compression, fastest
-#    9 - best compression, slowest
+#    Deprecated, has no effect: mapblocks are saved to disk with a dedicated
+#    codec that has no compression levels.
 #    type: int min: -1 max: 9
 # map_compression_level_disk = -1
 

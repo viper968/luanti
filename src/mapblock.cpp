@@ -13,6 +13,7 @@
 #include "log.h"
 #include "content_mapnode.h"  // For legacy name-id mapping
 #include "content_nodemeta.h" // For legacy deserialization
+#include "mapblock_codec.h"
 #include "serialization.h"
 #if CHECK_CLIENT_BUILD()
 #include "client/mapblock_mesh.h"
@@ -389,6 +390,8 @@ void MapBlock::serialize(std::ostream &os_compressed, u8 version, bool disk, int
 {
 	if (!ser_ver_supported_write(version))
 		throw VersionMismatchException("ERROR: MapBlock format not supported");
+	if (version > SER_FMT_VER_HIGHEST_NET && !disk)
+		throw VersionMismatchException("ERROR: MapBlock format is disk only");
 
 	std::ostringstream os_raw(std::ios_base::binary);
 	std::ostream &os = version >= 29 ? os_raw : os_compressed;
@@ -488,7 +491,10 @@ void MapBlock::serialize(std::ostream &os_compressed, u8 version, bool disk, int
 		}
 	}
 
-	if (version >= 29) {
+	if (version >= 30) {
+		// compression_level does not apply
+		mapblock_codec::compress(os_raw.str(), os_compressed);
+	} else if (version >= 29) {
 		// now compress the whole thing
 		compress(os_raw.str(), os_compressed, version, compression_level);
 	}
@@ -503,6 +509,8 @@ void MapBlock::deSerialize(std::istream &in_compressed, u8 version, bool disk)
 {
 	if (!ser_ver_supported_read(version))
 		throw VersionMismatchException("ERROR: MapBlock format not supported");
+	if (version > SER_FMT_VER_HIGHEST_NET && !disk)
+		throw VersionMismatchException("ERROR: MapBlock format is disk only");
 
 	TRACESTREAM(<<"MapBlock::deSerialize "<<getPos()<<std::endl);
 
@@ -517,14 +525,20 @@ void MapBlock::deSerialize(std::istream &in_compressed, u8 version, bool disk)
 
 	// Decompress the whole block (version >= 29)
 	std::stringstream in_raw(std::ios_base::binary | std::ios_base::in | std::ios_base::out);
-	if (version >= 29)
+	if (version >= 30)
+		mapblock_codec::decompress(in_compressed, in_raw);
+	else if (version >= 29)
 		decompress(in_compressed, in_raw, version);
 	std::istream &is = version >= 29 ? in_raw : in_compressed;
 
 	u8 flags = readU8(is);
 	is_underground = (flags & 0x01) != 0;
-	// IMPORTANT: when the version is bumped to 30 we can read m_is_air from here
-	// m_is_air = (flags & 0x02) == 0;
+	if (version >= 30) {
+		// Older versions may have been written by servers that set this flag
+		// to day-night-differs instead of !isAir()
+		m_is_air = (flags & 0x02) == 0;
+		m_is_air_expired = false;
+	}
 
 	if (version < 27)
 		m_lighting_complete = 0xFFFF;

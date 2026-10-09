@@ -1,4 +1,4 @@
-# Luanti World Format 22...29
+# Luanti World Format 22...30
 
 This applies to a world format carrying the block serialization version
 22...27, used at least in
@@ -7,6 +7,7 @@ This applies to a world format carrying the block serialization version
 * 24 was never released as stable and existed for ~2 days
 * 27 was added in `0.4.15-dev`
 * 29 was added in `5.5.0-dev`
+* 30 was added in `5.18.0-dev` (disk only; the network still uses 29)
 
 The block serialization version does not fully specify every aspect of this
 format; if compliance with this format is to be checked, it needs to be
@@ -364,6 +365,9 @@ See below for description.
 >          directly decompress.
 >  * NOTE: Since version 29 zstd is used instead of zlib. In addition, the
 >          **entire block** is first serialized and then compressed (except version byte).
+>  * NOTE: Version 30 is only used on disk. It has exactly the same layout as
+>          version 29, but the entire block is compressed with a dedicated
+>          mapblock codec instead of zstd (see below).
 
 `u8` version
 * map format version number, see serialization.h for the latest number
@@ -378,6 +382,8 @@ See below for description.
     * `0x02`: `day_night_differs`: Whether the lighting of the block is different
       on day and night. Only blocks that have this bit set are updated when
       day transforms to night.
+      Since version 30 this bit is reliably set exactly when the block is not
+      entirely air.
 
     * `0x04`: `lighting_expired`: Not used in version 27 and above. If true,
       lighting is invalid and should be updated. If you can't calculate
@@ -656,3 +662,26 @@ The wear value in tools is 0...65535.
     Empty
     EndInventoryList
     EndInventory
+
+# Mapblock codec (version 30)
+
+Version 30 blocks consist of the version byte followed by the output of the
+codec in `src/mapblock_codec.cpp`, which replaces the zstd stream of version
+29. Decoding it yields the same byte stream that version 29 would have
+compressed, except that the name-id mapping is renumbered in name order.
+There is no independent specification: third-party tools should reuse
+`src/mapblock_codec.cpp` (it only depends on `exceptions.h` and libzstd).
+
+Outline of the encoded data:
+
+1. A binary arithmetic coded stream containing the header (flags,
+   lighting_complete, timestamp), whether the block is uniform, whether the
+   tail is non-empty, the name-id mapping (sorted, front-coded names) and the
+   node data. Node data is coded in z+, y-, x+ order, predicting each node
+   from its neighbours at x-1, z-1 and y+1. The model priors in
+   `src/mapblock_codec_priors.h` are part of the format.
+2. If the tail (node metadata, static objects, node timers) is not the empty
+   default: `u8` encoding (0 = raw, 1 = zstd), a LEB128 length, then the data.
+
+Any change to the codec's models, priors or update rules changes the
+bitstream and requires a new serialization version.

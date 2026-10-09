@@ -82,7 +82,8 @@ void Client::handleCommand_Hello(NetworkPacket* pkt)
 			<< ", proto_ver=" << proto_ver
 			<< ". Doing auth with mech " << chosen_auth_mechanism << std::endl;
 
-	if (!ser_ver_supported_read(serialization_ver)) {
+	if (!ser_ver_supported_read(serialization_ver) ||
+			serialization_ver > SER_FMT_VER_HIGHEST_NET) {
 		infostream << "Client: TOCLIENT_HELLO: Server sent "
 				<< "unsupported ser_fmt_ver=" << (int)serialization_ver << std::endl;
 		return;
