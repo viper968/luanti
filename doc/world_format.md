@@ -677,8 +677,9 @@ Outline of the encoded data:
 1. A binary arithmetic coded stream containing the header (flags,
    lighting_complete, timestamp), whether the block is uniform, whether the
    tail is non-empty, the name-id mapping (sorted, front-coded names) and the
-   node data. Node data is coded in z+, y-, x+ order, predicting each node
-   from its neighbours at x-1, z-1 and y+1. The model priors in
+   node data. Node data is coded in z+, y-, x+ order: each row of 16 nodes is
+   first predicted as a copy of the row behind or above it, otherwise each
+   node is predicted from its neighbours at x-1, z-1 and y+1. The model priors in
    `src/mapblock_codec_priors.h` are part of the format.
 2. If the tail (node metadata, static objects, node timers) is not the empty
    default: `u8` encoding (0 = raw, 1 = zstd), a LEB128 length, then the data.

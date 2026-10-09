@@ -186,9 +186,9 @@ int main(int argc, char **argv)
 		dec[i] = decode(out[i]);
 	double dt = t2.sec();
 	report("mapblock_codec", total, ct, dt);
-	printf("estimated bytes: whole-node %.0f  content %.0f  param1 %.0f  param2 %.0f"
+	printf("estimated bytes: rows %.0f  whole-node %.0f  content %.0f  param1 %.0f  param2 %.0f"
 		"  header %.0f  names %.0f  mono %.0f\n",
-		cost[0], cost[1], cost[2], cost[3], cost[4], cost[5], cost[6]);
+		cost[7], cost[0], cost[1], cost[2], cost[3], cost[4], cost[5], cost[6]);
 
 	size_t bad = 0;
 	for (size_t i = 0; i < test.size(); i++)

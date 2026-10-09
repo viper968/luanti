@@ -9,6 +9,7 @@ It is used for disk storage only; network transfer stays at version 29.
 |-----------------|---------|
 | `train.cpp`     | Trains the model priors (`src/mapblock_codec_priors.h`) and benchmarks size/speed against zstd |
 | `memory.cpp`    | Compares heap usage of the codec with zstd as Luanti uses it |
+| `scan.cpp`      | Streams a whole (large) world through zstd and the codec with several threads and verifies every block |
 | `make_world.sh` | Generates a test world (emerges a fixed area, then shuts down) |
 | `common.h`      | Parser for uncompressed version 29 blocks (used by `train.cpp`) |
 

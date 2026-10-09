@@ -26,7 +26,8 @@
 
 	Nodes are visited in z (ascending), y (descending), x (ascending) order so
 	that the neighbours left (x-1), behind (z-1) and above (y+1) are known.
-	For every node we first ask whether it is identical to one of the distinct
+	For every row of 16 nodes along x we first ask whether it is identical to
+	the row behind or above it. Otherwise, for every node we ask whether it is identical to one of the distinct
 	neighbour values; only on a miss content, param1 and param2 are coded
 	individually, again preferring neighbour values (and a light propagation
 	estimate for param1) before falling back to a binary tree.
@@ -124,26 +125,35 @@ void parseRaw(std::string_view raw, RawBlock &b)
 
 void writeRaw(const RawBlock &b, std::ostream &os)
 {
-	std::string s;
-	s.reserve(7 + 3 + NODECOUNT * 4 + 2 + b.tail.size() + 32 * b.names.size());
-	wr8(s, b.flags);
-	wr16(s, b.lighting);
-	wr32(s, b.timestamp);
-	wr8(s, 0);
-	wr16(s, b.names.size());
+	// Written in pieces: building one string first would cost an extra copy
+	u8 buf[2 * NODECOUNT];
+	u8 *p = buf;
+	auto put16 = [&](u16 v) { p[0] = v >> 8; p[1] = v & 0xff; p += 2; };
+	*p++ = b.flags;
+	put16(b.lighting);
+	put16(b.timestamp >> 16);
+	put16(b.timestamp & 0xffff);
+	*p++ = 0;
+	put16(b.names.size());
+	os.write(reinterpret_cast<char *>(buf), p - buf);
 	for (size_t i = 0; i < b.names.size(); i++) {
-		wr16(s, i);
-		wr16(s, b.names[i].size());
-		s += b.names[i];
+		p = buf;
+		put16(i);
+		put16(b.names[i].size());
+		os.write(reinterpret_cast<char *>(buf), p - buf);
+		os.write(b.names[i].data(), b.names[i].size());
 	}
-	wr8(s, 2);
-	wr8(s, 2);
+	p = buf;
+	*p++ = 2;
+	*p++ = 2;
+	os.write(reinterpret_cast<char *>(buf), p - buf);
+	p = buf;
 	for (int i = 0; i < NODECOUNT; i++)
-		wr16(s, b.content[i]);
-	s.append((const char *)b.p1, NODECOUNT);
-	s.append((const char *)b.p2, NODECOUNT);
-	s += b.tail;
-	os.write(s.data(), s.size());
+		put16(b.content[i]);
+	os.write(reinterpret_cast<char *>(buf), p - buf);
+	os.write(reinterpret_cast<const char *>(b.p1), NODECOUNT);
+	os.write(reinterpret_cast<const char *>(b.p2), NODECOUNT);
+	os.write(b.tail.data(), b.tail.size());
 }
 
 // Reorder the palette by name so that names can be front-coded.
@@ -267,9 +277,9 @@ struct Decoder {
 */
 
 struct Slot {
-	u16 p = 32768; // probability of a 1 bit
-	u8 n = 0;      // number of updates seen (caps the learning rate)
-	u8 pad = 0;
+	u16 p = 32768;  // probability of a 1 bit
+	u8 n = 0;       // number of updates seen (caps the learning rate)
+	u8 dirty = 0;   // modified since the model was last reset (not part of the format)
 };
 
 constexpr int RATE_LIMIT = 12;
@@ -296,6 +306,7 @@ struct StaticModel {
 // Adaptive, reset to the priors for every block.
 constexpr int PCLS = 8; // node classes: 0 air, 1 ignore, 2.. by palette index
 struct NodeModel {
+	Slot row[2][2][2][2][2];         // candidate (behind/above), prev row hit, behind == above, candidate uniform, same relation held for the neighbouring row
 	Slot same[3][8][2][2][PCLS];     // rank, neighbour mask, prev hit, diagonal agrees, class
 	Slot cHit[3][8][2][2];           // rank, neighbour mask, prev hit, diagonal agrees
 	Slot cEsc[17][256];              // context: first candidate (capped) or none
@@ -345,6 +356,7 @@ struct Stats {
 };
 Stats *g_stats = nullptr;
 std::unique_ptr<Priors> g_priors_override;
+u64 g_priors_generation = 0;
 int g_cat = 0;
 #define TRAINING_CATEGORY(c) (g_cat = (c))
 
@@ -354,6 +366,7 @@ const Priors &activePriors()
 }
 #else
 #define TRAINING_CATEGORY(c) ((void)0)
+constexpr u64 g_priors_generation = 0;
 
 inline const Priors &activePriors()
 {
@@ -367,6 +380,7 @@ struct Coder {
 	Decoder *d = nullptr;
 	const StaticModel *S = nullptr;
 	NodeModel *N = nullptr;
+	std::vector<Slot *> *dirty = nullptr; // adaptive slots modified in this block
 
 	inline int code(u32 p, int b)
 	{
@@ -399,6 +413,10 @@ struct Coder {
 		if (ENC && g_stats)
 			(b ? g_stats->n1 : g_stats->n0)[&m - reinterpret_cast<Slot *>(N)]++;
 #endif
+		if (!m.dirty) {
+			m.dirty = 1;
+			dirty->push_back(&m);
+		}
 		const int target = b ? 65535 : 0;
 		const int np = m.p + (int)(((int64_t)(target - m.p) * (int64_t)RATE[m.n]) >> 16);
 		m.p = (u16)std::clamp(np, 32, 65535 - 32);
@@ -476,6 +494,19 @@ inline u8 lightPredict(int nL, int nB, int nU, const u8 *p1)
 	return (u8)(std::max(day, 0) | (std::max(night, 0) << 4));
 }
 
+inline bool rowsEqual(const u32 *a, const u32 *b)
+{
+	return memcmp(a, b, 16 * sizeof(u32)) == 0;
+}
+
+inline int rowUniform(const u32 *r)
+{
+	for (int x = 1; x < 16; x++)
+		if (r[x] != r[0])
+			return 0;
+	return 1;
+}
+
 template <bool ENC>
 struct NodeCoder {
 	Coder<ENC> c;
@@ -493,155 +524,200 @@ struct NodeCoder {
 	{
 		NodeModel &N = *c.N;
 		const int cbits = bitsFor(npal);
-		int phC = 0, phP[2] = {0, 0}, prevSame = 0;
+		int phC = 0, phP[2] = {0, 0}, prevSame = 0, prevRow = 0;
 		u32 pk[NODECOUNT]; // packed content << 16 | param1 << 8 | param2
 
 		for (int z = 0; z < 16; z++)
-		for (int y = 15; y >= 0; y--)
-		for (int x = 0; x < 16; x++) {
-			const int i = z * 256 + y * 16 + x;
-			const int nL = x > 0 ? i - 1 : -1;
-			const int nB = z > 0 ? i - 256 : -1;
-			const int nU = y < 15 ? i + 16 : -1;
-			const int nD = (x > 0 && y < 15) ? i - 1 + 16 : -1; // diagonal
-			const int nb[3] = { nL, nB, nU };
-
-			// Whole node identical to one of the neighbours?
-			TRAINING_CATEGORY(0);
+		for (int y = 15; y >= 0; y--) {
+			// Whole row (16 nodes along x) identical to the row behind or above?
+			TRAINING_CATEGORY(7);
 			{
-				u32 cand[3];
-				int cm[3], nc = 0;
-				for (int k = 0; k < 3; k++) {
-					if (nb[k] < 0)
-						continue;
-					const u32 v = pk[nb[k]];
-					int j = 0;
-					while (j < nc && cand[j] != v)
-						j++;
-					if (j == nc) {
-						cand[nc] = v;
-						cm[nc] = 0;
-						nc++;
-					}
-					cm[j] |= 1 << k;
+				const int r0 = z * 256 + y * 16;
+				const int rB = z > 0 ? r0 - 256 : -1;
+				const int rU = y < 15 ? r0 + 16 : -1;
+				const bool same_rows = rB >= 0 && rU >= 0 && rowsEqual(pk + rB, pk + rU);
+				int cand[2], nc = 0;
+				if (rB >= 0)
+					cand[nc++] = rB;
+				if (rU >= 0 && !same_rows)
+					cand[nc++] = rU;
+				u32 cur[16];
+				if constexpr (ENC) {
+					for (int x = 0; x < 16; x++)
+						cur[x] = (u32)content[r0 + x] << 16 | p1[r0 + x] << 8 | p2[r0 + x];
 				}
-				const u32 me = ENC ? ((u32)content[i] << 16 | p1[i] << 8 | p2[i]) : 0;
+				// Did the same relation hold one row over? (above vs. above-behind,
+				// or behind vs. behind-above)
+				const bool diag = rB >= 0 && rU >= 0;
+				const int rel[2] = {
+					diag && rowsEqual(pk + rU, pk + rU - 256),
+					diag && rowsEqual(pk + rB, pk + rB + 16),
+				};
 				int j = 0;
 				for (; j < nc; j++) {
-					const int agree = nD >= 0 && pk[nD] == cand[j];
-					Slot &s = N.same[j][cm[j]][prevSame][agree][cls[cand[j] >> 16]];
-					if (c.abit(s, ENC ? me == cand[j] : 0))
+					const u32 *cr = pk + cand[j];
+					const int which = cand[j] == rB ? 0 : 1;
+					Slot &s = N.row[which][prevRow][same_rows][rowUniform(cr)][rel[which]];
+					if (c.abit(s, ENC ? rowsEqual(cur, cr) : 0))
 						break;
 				}
 				if (j < nc) {
-					pk[i] = cand[j];
-					content[i] = cand[j] >> 16;
-					p1[i] = (cand[j] >> 8) & 255;
-					p2[i] = cand[j] & 255;
-					prevSame = phC = phP[0] = phP[1] = 1;
+					const int src = cand[j];
+					memcpy(pk + r0, pk + src, 16 * sizeof(u32));
+					memcpy(content + r0, content + src, 16 * sizeof(u16));
+					memcpy(p1 + r0, p1 + src, 16);
+					memcpy(p2 + r0, p2 + src, 16);
+					prevRow = prevSame = phC = phP[0] = phP[1] = 1;
 					continue;
 				}
-				prevSame = 0;
+				prevRow = 0;
 			}
 
-			// Content
-			TRAINING_CATEGORY(1);
-			if (npal <= 1) {
-				content[i] = 0;
-			} else {
-				u16 cand[3];
-				int cm[3], nc = 0;
-				for (int k = 0; k < 3; k++) {
-					if (nb[k] < 0)
-						continue;
-					const u16 v = content[nb[k]];
-					int j = 0;
-					while (j < nc && cand[j] != v)
-						j++;
-					if (j == nc) {
-						cand[nc] = v;
-						cm[nc] = 0;
-						nc++;
+			for (int x = 0; x < 16; x++) {
+				const int i = z * 256 + y * 16 + x;
+				const int nL = x > 0 ? i - 1 : -1;
+				const int nB = z > 0 ? i - 256 : -1;
+				const int nU = y < 15 ? i + 16 : -1;
+				const int nD = (x > 0 && y < 15) ? i - 1 + 16 : -1; // diagonal
+				const int nb[3] = { nL, nB, nU };
+
+				// Whole node identical to one of the neighbours?
+				TRAINING_CATEGORY(0);
+				{
+					u32 cand[3];
+					int cm[3], nc = 0;
+					for (int k = 0; k < 3; k++) {
+						if (nb[k] < 0)
+							continue;
+						const u32 v = pk[nb[k]];
+						int j = 0;
+						while (j < nc && cand[j] != v)
+							j++;
+						if (j == nc) {
+							cand[nc] = v;
+							cm[nc] = 0;
+							nc++;
+						}
+						cm[j] |= 1 << k;
 					}
-					cm[j] |= 1 << k;
+					const u32 me = ENC ? ((u32)content[i] << 16 | p1[i] << 8 | p2[i]) : 0;
+					int j = 0;
+					for (; j < nc; j++) {
+						const int agree = nD >= 0 && pk[nD] == cand[j];
+						Slot &s = N.same[j][cm[j]][prevSame][agree][cls[cand[j] >> 16]];
+						if (c.abit(s, ENC ? me == cand[j] : 0))
+							break;
+					}
+					if (j < nc) {
+						pk[i] = cand[j];
+						content[i] = cand[j] >> 16;
+						p1[i] = (cand[j] >> 8) & 255;
+						p2[i] = cand[j] & 255;
+						prevSame = phC = phP[0] = phP[1] = 1;
+						continue;
+					}
+					prevSame = 0;
 				}
-				u16 v = content[i];
-				int j = 0;
-				for (; j < nc; j++) {
-					const int agree = nD >= 0 && content[nD] == cand[j];
-					if (c.abit(N.cHit[j][cm[j]][phC][agree], ENC ? v == cand[j] : 0))
-						break;
-				}
-				if (j < nc) {
-					v = cand[j];
-					phC = 1;
+
+				// Content
+				TRAINING_CATEGORY(1);
+				if (npal <= 1) {
+					content[i] = 0;
 				} else {
-					phC = 0;
-					if (cbits <= 8) {
-						const int ctx = nc > 0 ? std::min<int>(cand[0], 15) : 16;
-						v = (u16)c.template tree<true>(N.cEsc[ctx], v, cbits);
+					u16 cand[3];
+					int cm[3], nc = 0;
+					for (int k = 0; k < 3; k++) {
+						if (nb[k] < 0)
+							continue;
+						const u16 v = content[nb[k]];
+						int j = 0;
+						while (j < nc && cand[j] != v)
+							j++;
+						if (j == nc) {
+							cand[nc] = v;
+							cm[nc] = 0;
+							nc++;
+						}
+						cm[j] |= 1 << k;
+					}
+					u16 v = content[i];
+					int j = 0;
+					for (; j < nc; j++) {
+						const int agree = nD >= 0 && content[nD] == cand[j];
+						if (c.abit(N.cHit[j][cm[j]][phC][agree], ENC ? v == cand[j] : 0))
+							break;
+					}
+					if (j < nc) {
+						v = cand[j];
+						phC = 1;
 					} else {
-						v = (u16)c.raw(v, cbits);
+						phC = 0;
+						if (cbits <= 8) {
+							const int ctx = nc > 0 ? std::min<int>(cand[0], 15) : 16;
+							v = (u16)c.template tree<true>(N.cEsc[ctx], v, cbits);
+						} else {
+							v = (u16)c.raw(v, cbits);
+						}
+						if (v >= npal)
+							throw SerializationError("mapblock_codec: content id out of range");
 					}
-					if (v >= npal)
-						throw SerializationError("mapblock_codec: content id out of range");
+					content[i] = v;
 				}
-				content[i] = v;
-			}
 
-			// param1, param2
-			const u16 ci = content[i];
-			const int k_cls = cls[ci];
-			for (int f = 0; f < 2; f++) {
-				TRAINING_CATEGORY(2 + f);
-				u8 *vals = f ? p2 : p1;
-				u8 cand[4];
-				int cm[4], sm[4], nc = 0;
-				for (int k = 0; k < 3; k++) {
-					if (nb[k] < 0)
-						continue;
-					const u8 v = vals[nb[k]];
-					int j = 0;
-					while (j < nc && cand[j] != v)
-						j++;
-					if (j == nc) {
-						cand[nc] = v;
-						cm[nc] = sm[nc] = 0;
-						nc++;
+				// param1, param2
+				const u16 ci = content[i];
+				const int k_cls = cls[ci];
+				for (int f = 0; f < 2; f++) {
+					TRAINING_CATEGORY(2 + f);
+					u8 *vals = f ? p2 : p1;
+					u8 cand[4];
+					int cm[4], sm[4], nc = 0;
+					for (int k = 0; k < 3; k++) {
+						if (nb[k] < 0)
+							continue;
+						const u8 v = vals[nb[k]];
+						int j = 0;
+						while (j < nc && cand[j] != v)
+							j++;
+						if (j == nc) {
+							cand[nc] = v;
+							cm[nc] = sm[nc] = 0;
+							nc++;
+						}
+						cm[j] |= 1 << k;
+						if (content[nb[k]] == ci)
+							sm[j] |= 1 << k;
 					}
-					cm[j] |= 1 << k;
-					if (content[nb[k]] == ci)
-						sm[j] |= 1 << k;
-				}
-				if (f == 0) {
-					const u8 v = lightPredict(nL, nB, nU, p1);
-					int j = 0;
-					while (j < nc && cand[j] != v)
-						j++;
-					if (j == nc) {
-						cand[nc] = v;
-						cm[nc] = sm[nc] = 0;
-						nc++;
+					if (f == 0) {
+						const u8 v = lightPredict(nL, nB, nU, p1);
+						int j = 0;
+						while (j < nc && cand[j] != v)
+							j++;
+						if (j == nc) {
+							cand[nc] = v;
+							cm[nc] = sm[nc] = 0;
+							nc++;
+						}
+						cm[j] |= 8;
 					}
-					cm[j] |= 8;
+					u8 v = vals[i];
+					int j = 0;
+					for (; j < nc; j++) {
+						Slot &s = N.pHit[f][k_cls][j][cm[j]][sm[j]][phP[f]];
+						if (c.abit(s, ENC ? v == cand[j] : 0))
+							break;
+					}
+					if (j < nc) {
+						v = cand[j];
+						phP[f] = 1;
+					} else {
+						phP[f] = 0;
+						v = (u8)c.template tree<true>(N.pEsc[f][k_cls], v, 8);
+					}
+					vals[i] = v;
 				}
-				u8 v = vals[i];
-				int j = 0;
-				for (; j < nc; j++) {
-					Slot &s = N.pHit[f][k_cls][j][cm[j]][sm[j]][phP[f]];
-					if (c.abit(s, ENC ? v == cand[j] : 0))
-						break;
-				}
-				if (j < nc) {
-					v = cand[j];
-					phP[f] = 1;
-				} else {
-					phP[f] = 0;
-					v = (u8)c.template tree<true>(N.pEsc[f][k_cls], v, 8);
-				}
-				vals[i] = v;
+				pk[i] = (u32)content[i] << 16 | p1[i] << 8 | p2[i];
 			}
-			pk[i] = (u32)content[i] << 16 | p1[i] << 8 | p2[i];
 		}
 	}
 };
@@ -736,12 +812,31 @@ u64 getVarint(const u8 *&p, const u8 *end)
 	throw SerializationError("mapblock_codec: invalid varint");
 }
 
-// Per-thread scratch model so that we don't allocate ~100KB per block
-NodeModel &scratchModel(const Priors &P)
+// Per-thread scratch model, reset to the priors for every block. Only the
+// slots the previous block modified are restored, which is much cheaper than
+// copying the whole ~100KB model.
+struct ScratchModel {
+	NodeModel n;
+	std::vector<Slot *> dirty;
+	const Priors *priors = nullptr;
+	u64 generation = 0;
+};
+
+ScratchModel &scratchModel(const Priors &P)
 {
-	thread_local std::unique_ptr<NodeModel> N(new NodeModel());
-	memcpy(static_cast<void *>(N.get()), &P.n, sizeof(NodeModel));
-	return *N;
+	thread_local std::unique_ptr<ScratchModel> M(new ScratchModel());
+	if (M->priors != &P || M->generation != g_priors_generation) {
+		memcpy(static_cast<void *>(&M->n), &P.n, sizeof(NodeModel));
+		M->priors = &P;
+		M->generation = g_priors_generation;
+	} else {
+		Slot *base = reinterpret_cast<Slot *>(&M->n);
+		const Slot *prior = reinterpret_cast<const Slot *>(&P.n);
+		for (Slot *s : M->dirty)
+			*s = prior[s - base];
+	}
+	M->dirty.clear();
+	return *M;
 }
 
 constexpr u8 TAIL_RAW = 0;
@@ -752,7 +847,7 @@ constexpr size_t MAX_TAIL_SIZE = 64 << 20;
 
 void compress(std::string_view raw, std::ostream &os)
 {
-	auto b = std::make_unique<RawBlock>();
+	std::unique_ptr<RawBlock> b(new RawBlock);
 	parseRaw(raw, *b);
 	sortPalette(*b);
 
@@ -783,9 +878,11 @@ void compress(std::string_view raw, std::ostream &os)
 		c.template tree<false>(P.s.monoP1, b->p1[0], 8);
 		c.template tree<false>(P.s.monoP2, b->p2[0], 8);
 	} else {
+		ScratchModel &M = scratchModel(P);
 		NodeCoder<true> nc;
 		nc.c = c;
-		nc.c.N = &scratchModel(P);
+		nc.c.N = &M.n;
+		nc.c.dirty = &M.dirty;
 		nc.setClasses(b->names);
 		nc.codeNodes(b->content, b->p1, b->p2, npal);
 	}
@@ -812,10 +909,15 @@ void decompress(std::istream &is, std::ostream &os)
 	// Our input is self-delimiting, but we don't know its length up front.
 	// Read everything and put back what we didn't use.
 	const std::streampos start = is.tellg();
-	std::string in{std::istreambuf_iterator<char>(is), std::istreambuf_iterator<char>()};
+	std::string in;
+	{
+		char buf[4096];
+		while (is.read(buf, sizeof(buf)), is.gcount() > 0)
+			in.append(buf, is.gcount());
+	}
 	const u8 *begin = (const u8 *)in.data(), *end = begin + in.size();
 
-	auto b = std::make_unique<RawBlock>();
+	std::unique_ptr<RawBlock> b(new RawBlock);
 	const Priors &P = activePriors();
 	Decoder dec(begin, end);
 	Coder<false> c;
@@ -839,9 +941,11 @@ void decompress(std::istream &is, std::ostream &os)
 		std::fill_n(b->p1, NODECOUNT, a);
 		std::fill_n(b->p2, NODECOUNT, d);
 	} else {
+		ScratchModel &M = scratchModel(P);
 		NodeCoder<false> nc;
 		nc.c = c;
-		nc.c.N = &scratchModel(P);
+		nc.c.N = &M.n;
+		nc.c.dirty = &M.dirty;
 		nc.setClasses(b->names);
 		nc.codeNodes(b->content, b->p1, b->p2, npal);
 	}
@@ -896,6 +1000,7 @@ namespace {
 void useFlatPriors()
 {
 	g_priors_override = std::make_unique<Priors>();
+	g_priors_generation++;
 }
 
 void beginStats()
@@ -918,6 +1023,7 @@ void usePriorsFromStats()
 	build(reinterpret_cast<Slot *>(&P->n), g_stats->n0, g_stats->n1);
 	g_stats = nullptr;
 	g_priors_override = std::move(P);
+	g_priors_generation++;
 }
 
 std::string priorsSource()

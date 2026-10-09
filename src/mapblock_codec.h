@@ -45,7 +45,7 @@ namespace training
 	// C++ source of the current priors, suitable for mapblock_codec_priors.h.
 	std::string priorsSource();
 	// Estimated coded size in bytes per category since the last beginStats():
-	// 0 whole-node, 1 content, 2 param1, 3 param2, 4 header, 5 names, 6 mono
+	// 0 whole-node, 1 content, 2 param1, 3 param2, 4 header, 5 names, 6 mono, 7 rows
 	const double *costBytes();
 }
 #endif
