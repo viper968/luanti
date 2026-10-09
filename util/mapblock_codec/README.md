@@ -35,13 +35,22 @@ Converting the whole map (9,420,151 blocks, including 416,962 old version 28
 blocks) with `luantiserver --recompress` took 8.5 minutes with a peak RSS of
 110 MiB. The SQLite file shrinks from 1,531 MB to 680 MB (both vacuumed); the
 rest of the file is SQLite's per-row overhead, which this world's old
-`pos INT PRIMARY KEY` schema makes large. Every converted block decodes. All
-version 29 blocks decode to the same content, except for normalisation that
-any re-save by the current engine performs: the `0x02` flag is recomputed
-(older servers wrote day-night-differs), node metadata fields may be
-reordered, and node timer elapsed times can drop by 1 ms (float rounding when
-timers are loaded and saved). NodeCore ALPHA with its mods then loaded,
-modified and re-saved the converted world without errors.
+`pos INT PRIMARY KEY` schema makes large.
+
+Every converted block decodes, and every block was compared with the
+original: 8,053,036 are identical. The other 950,153 differ only by what any
+re-save by the current engine does, independent of the codec:
+
+- 929,310: the `0x02` flag is recomputed (older servers wrote
+  day-night-differs, the engine now writes "not all air").
+- 20,945: node metadata fields are written in a different order (same keys
+  and values).
+- 458: node timer timeouts/elapsed times or static object positions changed
+  by one unit (1 ms or 1/1000 node), float rounding when they are loaded and
+  saved.
+
+NodeCore ALPHA with its mods then loaded, modified and re-saved the converted
+world without errors.
 
 ### Minetest Game worlds
 
