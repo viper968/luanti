@@ -15,37 +15,65 @@ It is used for disk storage only; network transfer stays at version 29.
 
 ## Results
 
-Minetest Game worlds, 640×192×640 nodes each. Priors were trained on MTG v7 +
-carpathian and devtest v7 + carpathian; results are measured on MTG valleys,
-v6 and v5 (112,659 blocks the training never saw). Single thread, `-O2`.
+All timings are single-threaded per block, with zstd driven exactly like
+`src/serialization.cpp` does (streaming API, per-thread contexts).
 
-| Codec                             | Size      | vs. default | Compress   | Decompress |
-|-----------------------------------|-----------|-------------|------------|------------|
-| zstd (Luanti default, -1)         | 24.75 MB  | 100%        | 142 µs/blk | 32 µs/blk  |
-| zstd (Luanti level 9)             | 20.86 MB  | 84.3%       | 79–109 µs  | 29–32 µs   |
-| zstd -19 (not selectable)         | 18.94 MB  | 76.5%       | 1549 µs    | 33 µs      |
-| **mapblock codec (version 30)**   | **6.63 MB** | **26.8%** | **48 µs**  | **54 µs**  |
+### NodeCore server (real, player-built world)
 
-Converting the valleys world in place with `luantiserver --recompress`:
-5.39 MB → 1.02 MB of block data, every block decodes to identical content.
+The public world of a long-running NodeCore server (2000³ nodes), 9,003,189
+version 29 blocks, measured with `mbscan`. NodeCore was not part of the
+training data.
 
-On the simpler devtest game the codec reaches 15% of the default size.
+| Codec                           | Block data   | vs. default | Compress | Decompress |
+|---------------------------------|--------------|-------------|----------|------------|
+| as stored on the server         | 1,043.8 MB   | 99.4%       |          |            |
+| zstd (Luanti default, -1)       | 1,050.3 MB   | 100%        | 7.4 µs   | 7.6 µs     |
+| zstd (Luanti level 9)           | 925.0 MB     | 88.1%       | 35.6 µs  | 7.6 µs     |
+| **mapblock codec (version 30)** | **338.7 MB** | **32.2%**   | 33.8 µs  | 16.1 µs    |
+
+Converting the whole map (9,420,151 blocks, including 416,962 old version 28
+blocks) with `luantiserver --recompress` took 8.5 minutes with a peak RSS of
+110 MiB. The SQLite file shrinks from 1,531 MB to 680 MB (both vacuumed); the
+rest of the file is SQLite's per-row overhead, which this world's old
+`pos INT PRIMARY KEY` schema makes large. Every converted block decodes. All
+version 29 blocks decode to the same content, except for normalisation that
+any re-save by the current engine performs: the `0x02` flag is recomputed
+(older servers wrote day-night-differs), node metadata fields may be
+reordered, and node timer elapsed times can drop by 1 ms (float rounding when
+timers are loaded and saved). NodeCore ALPHA with its mods then loaded,
+modified and re-saved the converted world without errors.
+
+### Minetest Game worlds
+
+640×192×640 nodes each. Priors were trained on MTG v7 + carpathian and
+devtest v7 + carpathian; results are for MTG valleys, v6 and v5 (112,659
+blocks the training never saw).
+
+| Codec                           | Size        | vs. default | Compress | Decompress |
+|---------------------------------|-------------|-------------|----------|------------|
+| zstd (Luanti default, -1)       | 24.63 MB    | 100%        | 11.5 µs  | 8.9 µs     |
+| zstd (Luanti level 9)           | 20.69 MB    | 84.0%       | 48.8 µs  | 8.9 µs     |
+| **mapblock codec (version 30)** | **6.76 MB** | **27.4%**   | 33.8 µs  | 27.1 µs    |
+
+The codec compresses faster than zstd at Luanti's highest setting and
+decompresses about 2–3× slower than zstd. On the simpler devtest game it
+reaches 15% of the default size.
 
 ### Memory
 
-`mbmemory` on the same 112,659 blocks. *Retained* is what stays allocated
-after the run (per-thread contexts, caches, priors); *peak* is the highest
-heap use above the starting point at any moment.
+`mbmemory` on the MTG test worlds. *Retained* is what stays allocated after
+the run (per-thread contexts, caches, priors); *peak* is the highest heap use
+above the starting point at any moment.
 
 | Operation                  | Retained   | Peak       |
 |----------------------------|------------|------------|
 | compress zstd (Luanti -1)  | 3581 KiB   | 3587 KiB   |
 | compress zstd (Luanti 9)   | 25341 KiB  | 25344 KiB  |
-| compress mapblock codec    | 461 KiB    | 659 KiB    |
+| compress mapblock codec    | 469 KiB    | 667 KiB    |
 | decompress zstd            | 2530 KiB   | 2580 KiB   |
-| decompress mapblock codec  | 461 KiB    | 574 KiB    |
+| decompress mapblock codec  | 469 KiB    | 582 KiB    |
 
-Of the codec's 461 KiB, 367 KiB are the priors, shared by the whole process.
+Of the codec's 469 KiB, 367 KiB are the priors, shared by the whole process.
 Each thread additionally keeps a 100 KiB model buffer. The extra transient
 memory comes from the parsed block (~33 KiB) and zstd for non-empty
 metadata/object tails. Stack use is ~20 KiB, similar to Luanti's zstd wrappers
@@ -59,27 +87,30 @@ directly and codes every decision with a binary arithmetic coder (16-bit
 probabilities, count-based adaptive learning rate, integer-only so it is
 bit-exact on every platform).
 
-1. **Whole-node prediction.** Nodes are visited z+, y- (top-down), x+. The
-   distinct values among the neighbours left (x-1), behind (z-1) and above
-   (y+1) are candidates, and a cascade of binary decisions asks "is this node
+1. **Row prediction.** Nodes are visited z+, y- (top-down), x+. Each row of
+   16 nodes is first checked against the row behind and the row above it,
+   which makes uniform regions very cheap to code and to decode.
+2. **Whole-node prediction.** Otherwise, for each node the distinct values
+   among the neighbours left (x-1), behind (z-1) and above (y+1) are
+   candidates, and a cascade of binary decisions asks "is this node
    identical (content + param1 + param2) to candidate *k*?". Context: rank,
    which neighbours share the value, whether the diagonal neighbour agrees,
    whether the previous node was a hit, the class of the candidate
    (air / ignore / other). Most nodes cost a small fraction of a bit.
-2. **Per-field fallback.** On a miss, content, param1 and param2 are coded
+3. **Per-field fallback.** On a miss, content, param1 and param2 are coded
    separately with the same candidate idea. param1/param2 contexts include
    which neighbours have the same content as this node, and param1 gets an
    extra candidate from a **light propagation predictor** (max neighbour light
    − 1, or 15 directly under sunlight). Escapes use binary trees.
-3. **Uniform blocks** (about 2/3 of a typical map) cost a few bits plus their
+4. **Uniform blocks** (about 2/3 of a typical map) cost a few bits plus their
    name.
-4. **Header and names** use static trained probabilities: lighting_complete
+5. **Header and names** use static trained probabilities: lighting_complete
    0xFFFF as one bit, timestamp as Elias-gamma, palette sorted by name and
    front-coded, built-in tokens for `air`/`ignore`/`unknown`, an order-1
    character model for the rest.
-5. **Trained priors.** Adaptive models start every block from probabilities
+6. **Trained priors.** Adaptive models start every block from probabilities
    measured on training worlds.
-6. **Tail** (node metadata, static objects, node timers) is one bit when
+7. **Tail** (node metadata, static objects, node timers) is one bit when
    empty, otherwise appended length-prefixed after the arithmetic stream
    (zstd-compressed when smaller).
 
@@ -132,3 +163,7 @@ against accidental changes.
   a smaller model would shrink the shared memory.
 - No checksum: like zstd as Luanti uses it, some corruptions decode to a
   wrong but valid-looking block.
+- Decompression is still 2–3× slower than zstd; it is dominated by the
+  arithmetic decoder for blocks with mixed content.
+- On worlds with many small blocks the database's per-row overhead becomes a
+  large part of the file (see the NodeCore numbers).
