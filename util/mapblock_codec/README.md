@@ -135,6 +135,33 @@ thread every `server_map_save_interval` seconds. In this area the codec
 decodes a block in 70 µs against zstd's 10 µs; over the whole map the
 average is 16 µs against 7.6 µs, because most blocks are simple terrain.
 
+### CPU usage
+
+CPU time per block on one core, zstd driven exactly like the engine does.
+"Load" is decompression, "save" is compression.
+
+| Map                               | load: zstd | load: codec      | save: zstd default | save: zstd level 9 | save: codec |
+|-----------------------------------|------------|------------------|--------------------|--------------------|-------------|
+| NodeCore server, whole map (9.0 M)| 7.7 µs     | 14.2 µs (1.8×)   | 6.5 µs             | 31.7 µs            | 20.9 µs     |
+| Minetest Game                     | 9.6 µs     | 29.4 µs (3.1×)   | 11.8 µs            | 48.9 µs            | 32.5 µs     |
+| VoxeLibre                         | 10.6 µs    | 39.7 µs (3.7×)   | 14.1 µs            | 63.5 µs            | 41.6 µs     |
+| NodeCore server spawn (built up)  | 15.9 µs    | 73.1 µs (4.6×)   | 22.2 µs            | 120.6 µs           | 76.4 µs     |
+
+Saving costs about 3× the CPU of zstd's default level and about a third less
+than zstd at Luanti's highest level (9).
+
+Whole server process (all threads) with NodeCore ALPHA and its mods, on the
+19,200 blocks of the NodeCore spawn area, median of five runs:
+
+| Workload                          | before (v29, zstd) | after (v30, codec) |
+|-----------------------------------|--------------------|--------------------|
+| start and shut down (baseline)    | 1.09 s             | 1.08 s             |
+| load all blocks                   | 2.90 s             | 3.79 s             |
+| load, modify and save all blocks  | 4.69 s             | 6.75 s             |
+
+Without the baseline, loading this area takes about 50% more server CPU and
+the save about 65% more; this is the worst case, most blocks are cheaper.
+
 ### Memory
 
 `mbmemory` on the MTG test worlds. *Retained* is what stays allocated after
