@@ -162,6 +162,13 @@ Whole server process (all threads) with NodeCore ALPHA and its mods, on the
 Without the baseline, loading this area takes about 50% more server CPU and
 the save about 65% more; this is the worst case, most blocks are cheaper.
 
+Compiling the codec for newer instruction sets (`-march=x86-64-v2`, `-v3`
+with AVX2/BMI2, `-v4` with AVX-512, or `native`) made no measurable
+difference (all within ±5%, no consistent direction) on an Intel Xeon. The
+hot path is a chain of dependent scalar steps (each arithmetic decoding step
+needs the result of the previous one) plus hard-to-predict branches, which
+wider vector units cannot speed up. The output is identical for all builds.
+
 ### Memory
 
 `mbmemory` on the MTG test worlds. *Retained* is what stays allocated after
