@@ -1,11 +1,15 @@
 #!/bin/bash
 # Generates a test world with the given game and mapgen.
-# usage: make_world.sh <luantiserver binary> <output dir> <gameid> <mapgen> <seed>
+# usage: make_world.sh <luantiserver binary> <output dir> <gameid> <mapgen> <seed> [mod dir...]
+# Extra mod directories are installed as world mods.
 set -e
 server=$1; world=$2; game=$3; mg=$4; seed=$5
 here=$(cd "$(dirname "$0")" && pwd)
 rm -rf "$world"; mkdir -p "$world/worldmods"
 cp -r "$here/emerger" "$world/worldmods/"
+for mod in "${@:6}"; do
+	cp -r "$mod" "$world/worldmods/"
+done
 printf "gameid = %s\nbackend = sqlite3\n" "$game" > "$world/world.mt"
 printf "mg_name = %s\nseed = %s\n[end_of_params]\n" "$mg" "$seed" > "$world/map_meta.txt"
 conf=$(mktemp)

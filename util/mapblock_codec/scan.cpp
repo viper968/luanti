@@ -87,13 +87,22 @@ bool decompressZstd(std::istream &is, std::ostream &os)
 }
 
 struct Stats {
-	u64 blocks = 0, stored = 0, zDefault = 0, z9 = 0, codec = 0, bad = 0;
+	u64 blocks = 0, stored = 0, zDefault = 0, z9 = 0, codec = 0, bad = 0, raw = 0;
 	double tzDefault = 0, tz9 = 0, tzDec = 0, tc = 0, td = 0;
+	// Database blob sizes (version byte included) by block kind:
+	// [0] uniform blocks (all nodes identical), [1] mixed blocks
+	u64 kindBlocks[2] = {}, kindZstd[2] = {}, kindCodec[2] = {};
+	// Per-block saving of the codec against zstd (Luanti default level)
+	std::vector<float> savings;
 	void add(const Stats &o)
 	{
 		blocks += o.blocks; stored += o.stored; zDefault += o.zDefault; z9 += o.z9;
-		codec += o.codec; bad += o.bad;
+		codec += o.codec; bad += o.bad; raw += o.raw;
 		tzDefault += o.tzDefault; tz9 += o.tz9; tzDec += o.tzDec; tc += o.tc; td += o.td;
+		for (int k = 0; k < 2; k++) {
+			kindBlocks[k] += o.kindBlocks[k]; kindZstd[k] += o.kindZstd[k]; kindCodec[k] += o.kindCodec[k];
+		}
+		savings.insert(savings.end(), o.savings.begin(), o.savings.end());
 	}
 };
 
@@ -132,12 +141,14 @@ void process(const std::string &blob, Stats &st)
 	}
 
 	// Luanti maps its levels -1..9 to zstd 0 (= default) .. 10
+	size_t zsize;
 	{
 		std::ostringstream os(std::ios::binary);
 		Timer t1;
 		compressZstd(raw, os, 0);
 		st.tzDefault += t1.sec();
-		st.zDefault += os.str().size();
+		zsize = os.str().size();
+		st.zDefault += zsize;
 	}
 	{
 		std::ostringstream os(std::ios::binary);
@@ -168,6 +179,17 @@ void process(const std::string &blob, Stats &st)
 		st.bad++;
 	st.blocks++;
 	st.stored += blob.size() + 1;
+	st.raw += raw.size();
+
+	const Block b = parseRaw(raw);
+	bool uniform = true;
+	for (int i = 1; i < NODES && uniform; i++)
+		uniform = b.content[i] == b.content[0] && b.p1[i] == b.p1[0] && b.p2[i] == b.p2[0];
+	const int kind = uniform ? 0 : 1;
+	st.kindBlocks[kind]++;
+	st.kindZstd[kind] += zsize + 1;
+	st.kindCodec[kind] += enc.size() + 1;
+	st.savings.push_back(1.0f - (float)(enc.size() + 1) / (float)(zsize + 1));
 }
 
 }
@@ -269,6 +291,30 @@ int main(int argc, char **argv)
 	row("mapblock codec", total.codec, total.tc);
 	printf("decompress: zstd %.1f us/block, mapblock codec %.1f us/block\n",
 		total.tzDec * 1e6 / nb, total.td * 1e6 / nb);
+
+	// Per-block view: database blob sizes including the version byte, so
+	// this is exactly what each block costs inside the database, without
+	// any SQLite overhead.
+	printf("\nper block (blob bytes incl. version byte, no database overhead):\n");
+	const u64 zb = total.zDefault + total.blocks, cb = total.codec + total.blocks;
+	printf("  uncompressed %.0f B/block | zstd %.1f B/block (%.1fx) | codec %.1f B/block (%.1fx)\n",
+		total.raw / nb, zb / nb, (double)total.raw / zb, cb / nb, (double)total.raw / cb);
+	printf("  saving vs zstd: total bytes %.1f%%", 100.0 * (1.0 - (double)cb / zb));
+	if (!total.savings.empty()) {
+		auto &v = total.savings;
+		double mean = std::accumulate(v.begin(), v.end(), 0.0) / v.size();
+		std::nth_element(v.begin(), v.begin() + v.size() / 2, v.end());
+		printf(" | per-block mean %.1f%% | per-block median %.1f%%", 100.0 * mean, 100.0 * v[v.size() / 2]);
+	}
+	printf("\n");
+	const char *kinds[2] = {"uniform", "mixed"};
+	for (int k = 0; k < 2; k++) {
+		const double n = std::max<u64>(total.kindBlocks[k], 1);
+		printf("  %-7s %9llu blocks (%4.1f%%): zstd %7.1f B/block, codec %7.1f B/block, saving %.1f%%\n",
+			kinds[k], (unsigned long long)total.kindBlocks[k], 100.0 * total.kindBlocks[k] / nb,
+			total.kindZstd[k] / n, total.kindCodec[k] / n,
+			100.0 * (1.0 - (double)total.kindCodec[k] / std::max<u64>(total.kindZstd[k], 1)));
+	}
 	printf("round trip: %s (%llu failures)\n", total.bad ? "FAILED" : "ok",
 		(unsigned long long)total.bad);
 	return total.bad ? 1 : 0;
