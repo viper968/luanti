@@ -35,6 +35,21 @@ in-distribution; the biome mods and NodeCore were never seen in training.
 | NodeCore ALPHA                          | 245.8 B/block  | 76.7 B/block | 68.8%            | 78.1%          | 81.0%            |
 | NodeCore server (9.0 M blocks)          | 117.7 B/block  | 38.7 B/block | 67.1%            | 79.8%          | 83.3%            |
 
+The NodeCore server's low per-block cost comes from where its blocks are:
+85.6% lie above y = 95 and 11.1% below y = -96, mostly empty air and solid
+stone, and only 3.3% in the surface band the other worlds cover. Measured on
+the same area as the generated worlds (its built-up spawn region), its
+blocks are far larger and the codec saves less:
+
+| NodeCore server slice                     | zstd (default) | codec        | saving, all bytes |
+|-------------------------------------------|----------------|--------------|-------------------|
+| same area as above (19,200 blocks)        | 561.3 B/block  | 270.7 B/block | 51.8%            |
+| whole surface band y -96..95 (258,051)    | 400.9 B/block  | 179.6 B/block | 55.2%            |
+
+Player builds are less regular than generated terrain, so expect roughly
+50–55% in built-up areas, 65–75% on generated terrain and 80–90% for empty
+or solid regions; a map's overall figure depends on its mix.
+
 "All bytes" is the saving on the total size; the per-block figures average
 each block's own saving, which weighs the many small uniform blocks (all
 air, all stone…) more. Split by kind, uniform blocks shrink by 81–92% and
