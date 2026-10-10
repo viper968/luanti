@@ -68,6 +68,26 @@ The codec compresses faster than zstd at Luanti's highest setting and
 decompresses about 2–3× slower than zstd. On the simpler devtest game it
 reaches 15% of the default size.
 
+### Server performance
+
+Only loading and saving blocks change: the network still uses version 29,
+serialized from the in-memory block exactly as before. Measured in the
+engine with NodeCore ALPHA and its mods on the NodeCore world, comparing
+an unmodified build on the original map ("before") with this branch on the
+converted map ("after"). The area loaded is the server's densely built spawn
+region, the worst case for the codec.
+
+| 19,200 blocks around spawn                | before  | after    |
+|-------------------------------------------|---------|----------|
+| loading one block (engine profiler)       | 61 µs   | 121–128 µs |
+| of which decoding (`deSer block`)         | 43 µs   | 101–107 µs |
+| saving all of them (one periodic save)    | 2.1–2.6 s | 2.4–2.7 s |
+
+Block loading runs on the emerge threads; map saving runs on the server
+thread every `server_map_save_interval` seconds. In this area the codec
+decodes a block in 70 µs against zstd's 10 µs; over the whole map the
+average is 16 µs against 7.6 µs, because most blocks are simple terrain.
+
 ### Memory
 
 `mbmemory` on the MTG test worlds. *Retained* is what stays allocated after
@@ -121,7 +141,8 @@ bit-exact on every platform).
    measured on training worlds.
 7. **Tail** (node metadata, static objects, node timers) is one bit when
    empty, otherwise appended length-prefixed after the arithmetic stream
-   (zstd-compressed when smaller).
+   (zstd level 7 when smaller; tails are rare but can be large inventories,
+   and higher levels are far slower for almost no gain).
 
 The decoder bounds every count, length and id it reads and stops when it reads
 more than 16 bytes past its input, so corrupt data only raises
@@ -172,7 +193,8 @@ against accidental changes.
   a smaller model would shrink the shared memory.
 - No checksum: like zstd as Luanti uses it, some corruptions decode to a
   wrong but valid-looking block.
-- Decompression is still 2–3× slower than zstd; it is dominated by the
-  arithmetic decoder for blocks with mixed content.
+- Decompression is still 2–3× slower than zstd on average and up to 7× on
+  densely built blocks; it is dominated by the arithmetic decoder for blocks
+  with mixed content.
 - On worlds with many small blocks the database's per-row overhead becomes a
   large part of the file (see the NodeCore numbers).

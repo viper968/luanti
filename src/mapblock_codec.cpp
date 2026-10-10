@@ -841,6 +841,14 @@ ScratchModel &scratchModel(const Priors &P)
 
 constexpr u8 TAIL_RAW = 0;
 constexpr u8 TAIL_ZSTD = 1;
+// Tails are rare (well under 1% of blocks) but can be large, e.g. inventories.
+// Higher levels gain little and are very slow (~2 ms per tail at level 19),
+// which matters because map saving runs on the server thread.
+constexpr int TAIL_ZSTD_LEVEL = 7;
+
+struct ZstdCCtxDeleter {
+	void operator()(ZSTD_CCtx *c) { ZSTD_freeCCtx(c); }
+};
 constexpr size_t MAX_TAIL_SIZE = 64 << 20;
 
 } // anonymous namespace
@@ -890,7 +898,9 @@ void compress(std::string_view raw, std::ostream &os)
 
 	if (has_tail) {
 		std::string z(ZSTD_compressBound(b->tail.size()), '\0');
-		size_t zs = ZSTD_compress(z.data(), z.size(), b->tail.data(), b->tail.size(), 19);
+		thread_local std::unique_ptr<ZSTD_CCtx, ZstdCCtxDeleter> cctx(ZSTD_createCCtx());
+		size_t zs = ZSTD_compressCCtx(cctx.get(), z.data(), z.size(),
+			b->tail.data(), b->tail.size(), TAIL_ZSTD_LEVEL);
 		if (!ZSTD_isError(zs) && zs < b->tail.size()) {
 			out.push_back(TAIL_ZSTD);
 			putVarint(out, zs);
