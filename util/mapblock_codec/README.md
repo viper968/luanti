@@ -18,6 +18,28 @@ It is used for disk storage only; network transfer stays at version 29.
 All timings are single-threaded per block, with zstd driven exactly like
 `src/serialization.cpp` does (streaming API, per-thread contexts).
 
+### Per-block savings, without any database overhead
+
+What each block costs inside the database (blob bytes including the version
+byte), measured with `mbscan`. The first four worlds were generated with an
+unmodified Luanti (version 29), mapgen v7, seed 2026, 640×192×640 nodes
+(37,553 blocks each). The codec's priors were trained on devtest and
+Minetest Game with the same mapgen (other seeds), so those two are
+in-distribution; the biome mods and NodeCore were never seen in training.
+
+| World                                   | zstd (default) | codec       | saving, all bytes | per-block mean | per-block median |
+|-----------------------------------------|----------------|-------------|-------------------|----------------|------------------|
+| devtest                                 | 106.4 B/block  | 16.5 B/block | 84.5%            | 87.7%          | 87.0%            |
+| Minetest Game                           | 238.4 B/block  | 65.4 B/block | 72.6%            | 81.3%          | 82.5%            |
+| Minetest Game + Ethereal NG + Everness  | 291.3 B/block  | 97.4 B/block | 66.6%            | 77.3%          | 78.2%            |
+| NodeCore ALPHA                          | 245.8 B/block  | 76.7 B/block | 68.8%            | 78.1%          | 81.0%            |
+| NodeCore server (9.0 M blocks)          | 117.7 B/block  | 38.7 B/block | 67.1%            | 79.8%          | 83.3%            |
+
+"All bytes" is the saving on the total size; the per-block figures average
+each block's own saving, which weighs the many small uniform blocks (all
+air, all stone…) more. Split by kind, uniform blocks shrink by 81–92% and
+blocks with mixed content by 60–82%.
+
 ### NodeCore server (real, player-built world)
 
 The public world of a long-running NodeCore server (2000³ nodes), 9,003,189
