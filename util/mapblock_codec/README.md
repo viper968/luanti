@@ -29,7 +29,7 @@ training data.
 | as stored on the server         | 1,043.8 MB   | 99.4%       |          |            |
 | zstd (Luanti default, -1)       | 1,050.3 MB   | 100%        | 7.4 µs   | 7.6 µs     |
 | zstd (Luanti level 9)           | 925.0 MB     | 88.1%       | 35.6 µs  | 7.6 µs     |
-| **mapblock codec (version 30)** | **338.7 MB** | **32.2%**   | 33.8 µs  | 16.1 µs    |
+| **mapblock codec (version 30)** | **339.4 MB** | **32.3%**   | 20.9 µs  | 14.9 µs    |
 
 Converting the whole map (9,420,151 blocks, including 416,962 old version 28
 blocks) with `luantiserver --recompress` took 8.5 minutes with a peak RSS of
