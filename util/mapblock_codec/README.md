@@ -23,17 +23,19 @@ All timings are single-threaded per block, with zstd driven exactly like
 What each block costs inside the database (blob bytes including the version
 byte), measured with `mbscan`. The first four worlds were generated with an
 unmodified Luanti (version 29), mapgen v7, seed 2026, 640×192×640 nodes
-(37,553 blocks each). The codec's priors were trained on devtest and
-Minetest Game with the same mapgen (other seeds), so those two are
-in-distribution; the biome mods and NodeCore were never seen in training.
+(37,553 blocks each). The priors were trained on the same games but other
+seeds and areas (see "Retraining the priors"); none of these worlds were part
+of the training set. The NodeCore server row includes the 60,000 blocks of
+that world used for training (0.7% of it).
 
 | World                                   | zstd (default) | codec       | saving, all bytes | per-block mean | per-block median |
 |-----------------------------------------|----------------|-------------|-------------------|----------------|------------------|
-| devtest                                 | 106.4 B/block  | 16.5 B/block | 84.5%            | 87.7%          | 87.0%            |
-| Minetest Game                           | 238.4 B/block  | 65.4 B/block | 72.6%            | 81.3%          | 82.5%            |
-| Minetest Game + Ethereal NG + Everness  | 291.3 B/block  | 97.4 B/block | 66.6%            | 77.3%          | 78.2%            |
-| NodeCore ALPHA                          | 245.8 B/block  | 76.7 B/block | 68.8%            | 78.1%          | 81.0%            |
-| NodeCore server (9.0 M blocks)          | 117.7 B/block  | 38.7 B/block | 67.1%            | 79.8%          | 83.3%            |
+| devtest                                 | 106.4 B/block  | 17.6 B/block | 83.4%            | 86.8%          | 85.2%            |
+| Minetest Game                           | 238.4 B/block  | 64.8 B/block | 72.8%            | 81.3%          | 82.5%            |
+| Minetest Game + Ethereal NG + Everness  | 291.3 B/block  | 89.9 B/block | 69.1%            | 78.9%          | 78.6%            |
+| NodeCore ALPHA                          | 245.8 B/block  | 66.3 B/block | 73.0%            | 81.1%          | 82.5%            |
+| VoxeLibre                               | 335.3 B/block  | 114.2 B/block | 65.9%           | 80.2%          | 82.5%            |
+| NodeCore server (9.0 M blocks)          | 117.7 B/block  | 34.4 B/block | 70.8%            | 82.7%          | 84.1%            |
 
 The NodeCore server's low per-block cost comes from where its blocks are:
 85.6% lie above y = 95 and 11.1% below y = -96, mostly empty air and solid
@@ -43,12 +45,17 @@ blocks are far larger and the codec saves less:
 
 | NodeCore server slice                     | zstd (default) | codec        | saving, all bytes |
 |-------------------------------------------|----------------|--------------|-------------------|
-| same area as above (19,200 blocks)        | 561.3 B/block  | 270.7 B/block | 51.8%            |
-| whole surface band y -96..95 (258,051)    | 400.9 B/block  | 179.6 B/block | 55.2%            |
+| same area as above (19,200 blocks)        | 561.3 B/block  | 254.2 B/block | 54.7%            |
+| whole surface band y -96..95 (258,051)    | 400.9 B/block  | 165.8 B/block | 58.7%            |
+
+The spawn area was kept out of training; the rest of the surface band
+overlaps the training sample.
 
 Player builds are less regular than generated terrain, so expect roughly
-50–55% in built-up areas, 65–75% on generated terrain and 80–90% for empty
-or solid regions; a map's overall figure depends on its mix.
+55–60% in built-up areas, 65–75% on generated terrain and 80–90% for empty
+or solid regions; a map's overall figure depends on its mix. About a third of
+the bytes in NodeCore's built-up areas are node metadata (numbers stored as
+text by the game), which is compressed with zstd.
 
 "All bytes" is the saving on the total size; the per-block figures average
 each block's own saving, which weighs the many small uniform blocks (all
@@ -66,7 +73,7 @@ training data.
 | as stored on the server         | 1,043.8 MB   | 99.4%       |          |            |
 | zstd (Luanti default, -1)       | 1,050.3 MB   | 100%        | 7.4 µs   | 7.6 µs     |
 | zstd (Luanti level 9)           | 925.0 MB     | 88.1%       | 35.6 µs  | 7.6 µs     |
-| **mapblock codec (version 30)** | **339.4 MB** | **32.3%**   | 20.9 µs  | 14.9 µs    |
+| **mapblock codec (version 30)** | **300.7 MB** | **28.6%**   | 19.5 µs  | 14.8 µs    |
 
 Converting the whole map (9,420,151 blocks, including 416,962 old version 28
 blocks) with `luantiserver --recompress` took 8.5 minutes with a peak RSS of
@@ -91,19 +98,18 @@ world without errors.
 
 ### Minetest Game worlds
 
-640×192×640 nodes each. Priors were trained on MTG v7 + carpathian and
-devtest v7 + carpathian; results are for MTG valleys, v6 and v5 (112,659
-blocks the training never saw).
+640×192×640 nodes each: MTG valleys, v6 and v5 (112,659 blocks the training
+never saw).
 
 | Codec                           | Size        | vs. default | Compress | Decompress |
 |---------------------------------|-------------|-------------|----------|------------|
-| zstd (Luanti default, -1)       | 24.63 MB    | 100%        | 11.5 µs  | 8.9 µs     |
-| zstd (Luanti level 9)           | 20.69 MB    | 84.0%       | 48.8 µs  | 8.9 µs     |
-| **mapblock codec (version 30)** | **6.76 MB** | **27.4%**   | 33.8 µs  | 27.1 µs    |
+| zstd (Luanti default, -1)       | 24.63 MB    | 100%        | 12.6 µs  | 10.5 µs    |
+| zstd (Luanti level 9)           | 20.69 MB    | 84.0%       | 52.3 µs  | 10.5 µs    |
+| **mapblock codec (version 30)** | **6.69 MB** | **27.2%**   | 33.7 µs  | 32.0 µs    |
 
 The codec compresses faster than zstd at Luanti's highest setting and
-decompresses about 2–3× slower than zstd. On the simpler devtest game it
-reaches 15% of the default size.
+decompresses about 2–3× slower than zstd (up to 6× in densely built areas,
+see below). On the simpler devtest game it reaches 16% of the default size.
 
 ### Server performance
 
@@ -119,6 +125,10 @@ region, the worst case for the codec.
 | loading one block (engine profiler)       | 61 µs   | 121–128 µs |
 | of which decoding (`deSer block`)         | 43 µs   | 101–107 µs |
 | saving all of them (one periodic save)    | 2.1–2.6 s | 2.4–2.7 s |
+
+These engine measurements predate a later decoder speed-up and retraining:
+decoding the spawn area in isolation went from 70 µs to 62 µs per block
+since, so the "after" load times are somewhat pessimistic.
 
 Block loading runs on the emerge threads; map saving runs on the server
 thread every `server_map_save_interval` seconds. In this area the codec
@@ -216,6 +226,14 @@ baselines.
 ```sh
 ./mbtrain train1.sqlite,train2.sqlite test.sqlite src/mapblock_codec_priors.h
 ```
+
+The shipped priors were trained on version 29 worlds generated with
+`make_world.sh` (mapgen v7 unless noted): Minetest Game (seeds 12345 and 777,
+plus carpathian seed 77), devtest (seed 12345, carpathian seed 77),
+VoxeLibre, NodeCore ALPHA and Minetest Game with Ethereal NG and Everness
+(seed 777), and 60,000 random blocks of a NodeCore server outside its spawn
+area. Node names are a large part of small blocks, so games that are not in
+the mix still work but compress somewhat less well.
 
 **The priors are part of the version 30 format.** Retraining them, or changing
 anything about the models, makes existing version 30 worlds unreadable unless
