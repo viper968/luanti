@@ -10,6 +10,7 @@
 #include <cstring>
 #include <memory>
 #include <numeric>
+#include <type_traits>
 #include <vector>
 #ifdef MAPBLOCK_CODEC_TRAINING
 #include <cmath>
@@ -55,6 +56,8 @@ constexpr u32 MAX_NAME_LEN = 65535;
 // How many bytes the decoder may read past the end of its input before the
 // data is considered corrupt (the coder looks ahead up to 4 bytes).
 constexpr int MAX_OVERREAD = 16;
+// Zero bytes appended to the decoder input so it can always read 4 bytes
+constexpr int DECODER_PADDING = MAX_OVERREAD + 8;
 
 /*
 	Uncompressed block (version >= 29, disk)
@@ -188,11 +191,11 @@ struct Encoder {
 	// p1 = probability of a 1 bit, scaled to 16 bits
 	inline void encode(int bit, u32 p1)
 	{
-		u32 xmid = x1 + (u32)(((u64)(x2 - x1) * p1) >> 16);
-		if (bit)
-			x2 = xmid;
-		else
-			x1 = xmid + 1;
+		const u32 xmid = x1 + (u32)(((u64)(x2 - x1) * p1) >> 16);
+		// branch-free: keep the lower part for a 1, the upper part for a 0
+		const u32 mask = 0u - (u32)(bit != 0);
+		x2 = (xmid & mask) | (x2 & ~mask);
+		x1 = (x1 & mask) | ((xmid + 1) & ~mask);
 		while (((x1 ^ x2) & 0xff000000) == 0) {
 			out.push_back((char)(x2 >> 24));
 			x1 <<= 8;
@@ -248,19 +251,25 @@ struct Decoder {
 		return 0;
 	}
 
+	// Requires at least DECODER_PADDING readable bytes after `end`.
 	inline int decode(u32 p1)
 	{
-		u32 xmid = x1 + (u32)(((u64)(x2 - x1) * p1) >> 16);
-		int bit = x <= xmid;
-		if (bit)
-			x2 = xmid;
-		else
-			x1 = xmid + 1;
-		while (((x1 ^ x2) & 0xff000000) == 0) {
-			x1 <<= 8;
-			x2 = (x2 << 8) | 255;
-			x = (x << 8) | next();
-		}
+		const u32 xmid = x1 + (u32)(((u64)(x2 - x1) * p1) >> 16);
+		const int bit = x <= xmid;
+		const u32 mask = 0u - (u32)bit;
+		x2 = (xmid & mask) | (x2 & ~mask);
+		x1 = (x1 & mask) | ((xmid + 1) & ~mask);
+		// Shift out all settled leading bytes at once (0..4), branch-free
+		const u32 diff = x1 ^ x2;
+		const int n = diff ? __builtin_clz(diff) >> 3 : 4;
+		const int sh = n * 8;
+		const u32 in = (u32)p[0] << 24 | (u32)p[1] << 16 | (u32)p[2] << 8 | p[3];
+		x1 = (u32)((u64)x1 << sh);
+		x2 = (u32)(((u64)x2 << sh) | ((1ull << sh) - 1));
+		x = (u32)(((u64)x << sh) | ((u64)in >> (32 - sh)));
+		p += n;
+		if (p - end > MAX_OVERREAD)
+			throw SerializationError("mapblock_codec: truncated data");
 		return bit;
 	}
 
@@ -417,11 +426,10 @@ struct Coder {
 			m.dirty = 1;
 			dirty->push_back(&m);
 		}
-		const int target = b ? 65535 : 0;
+		const int target = (0 - b) & 65535;
 		const int np = m.p + (int)(((int64_t)(target - m.p) * (int64_t)RATE[m.n]) >> 16);
-		m.p = (u16)std::clamp(np, 32, 65535 - 32);
-		if (m.n < RATE_LIMIT)
-			m.n++;
+		m.p = (u16)std::min(std::max(np, 32), 65535 - 32);
+		m.n += m.n < RATE_LIMIT;
 		return b;
 	}
 
@@ -494,17 +502,72 @@ inline u8 lightPredict(int nL, int nB, int nU, const u8 *p1)
 	return (u8)(std::max(day, 0) | (std::max(night, 0) << 4));
 }
 
+// Distinct values among the causal neighbours left (bit 0), behind (bit 1) and
+// above (bit 2), in the order they are first seen, with a mask of the
+// neighbours that hold each value. Indexed by which neighbours exist (3 bits)
+// and which pairs are equal (left==behind, left==above, behind==above).
+struct CandidateTable {
+	struct Entry {
+		u8 count;
+		u8 source[3]; // neighbour that provides candidate j
+		u8 mask[3];   // neighbours that hold candidate j
+	};
+	Entry entries[64];
+
+	CandidateTable()
+	{
+		for (int key = 0; key < 64; key++) {
+			const int exist = key & 7;
+			const bool lb = key & 8, lu = key & 16, bu = key & 32;
+			// Stand-in values that satisfy the equalities (impossible
+			// combinations get some entry but never occur).
+			const int value[3] = { 0, lb ? 0 : 1, lu ? 0 : bu ? (lb ? 0 : 1) : 2 };
+			Entry &e = entries[key];
+			e.count = 0;
+			int seen[3] = {};
+			for (int k = 0; k < 3; k++) {
+				if (!(exist & (1 << k)))
+					continue;
+				int j = 0;
+				while (j < e.count && seen[j] != value[k])
+					j++;
+				if (j == e.count) {
+					seen[j] = value[k];
+					e.source[j] = k;
+					e.mask[j] = 0;
+					e.count++;
+				}
+				e.mask[j] |= 1 << k;
+			}
+		}
+	}
+
+	template <typename T>
+	inline const Entry &get(int exist, const T *v) const
+	{
+		const int key = exist |
+			((exist & 3) == 3 && v[0] == v[1]) << 3 |
+			((exist & 5) == 5 && v[0] == v[2]) << 4 |
+			((exist & 6) == 6 && v[1] == v[2]) << 5;
+		return entries[key];
+	}
+};
+const CandidateTable CANDIDATES;
+
 inline bool rowsEqual(const u32 *a, const u32 *b)
 {
-	return memcmp(a, b, 16 * sizeof(u32)) == 0;
+	u32 diff = 0;
+	for (int x = 0; x < 16; x++)
+		diff |= a[x] ^ b[x];
+	return diff == 0;
 }
 
 inline int rowUniform(const u32 *r)
 {
+	u32 diff = 0;
 	for (int x = 1; x < 16; x++)
-		if (r[x] != r[0])
-			return 0;
-	return 1;
+		diff |= r[x] ^ r[0];
+	return diff == 0;
 }
 
 template <bool ENC>
@@ -573,46 +636,41 @@ struct NodeCoder {
 				prevRow = 0;
 			}
 
+			const int row = z * 256 + y * 16;
+			const int exist_row = (z > 0 ? 2 : 0) | (y < 15 ? 4 : 0);
 			for (int x = 0; x < 16; x++) {
-				const int i = z * 256 + y * 16 + x;
-				const int nL = x > 0 ? i - 1 : -1;
-				const int nB = z > 0 ? i - 256 : -1;
-				const int nU = y < 15 ? i + 16 : -1;
-				const int nD = (x > 0 && y < 15) ? i - 1 + 16 : -1; // diagonal
-				const int nb[3] = { nL, nB, nU };
+				const int i = row + x;
+				const int exist = exist_row | (x > 0 ? 1 : 0);
+				const bool has_diag = x > 0 && y < 15;
+				// neighbour indices; only used where the neighbour exists
+				const int nb[3] = { i - 1, i - 256, i + 16 };
+				auto load = [&](const auto *arr, auto *out) {
+					for (int k = 0; k < 3; k++)
+						out[k] = (exist & (1 << k)) ? arr[nb[k]] : 0;
+				};
 
 				// Whole node identical to one of the neighbours?
 				TRAINING_CATEGORY(0);
 				{
-					u32 cand[3];
-					int cm[3], nc = 0;
-					for (int k = 0; k < 3; k++) {
-						if (nb[k] < 0)
-							continue;
-						const u32 v = pk[nb[k]];
-						int j = 0;
-						while (j < nc && cand[j] != v)
-							j++;
-						if (j == nc) {
-							cand[nc] = v;
-							cm[nc] = 0;
-							nc++;
-						}
-						cm[j] |= 1 << k;
-					}
+					u32 v[3];
+					load(pk, v);
+					const auto &e = CANDIDATES.get(exist, v);
 					const u32 me = ENC ? ((u32)content[i] << 16 | p1[i] << 8 | p2[i]) : 0;
+					const u32 diag = has_diag ? pk[i + 15] : 0;
 					int j = 0;
-					for (; j < nc; j++) {
-						const int agree = nD >= 0 && pk[nD] == cand[j];
-						Slot &s = N.same[j][cm[j]][prevSame][agree][cls[cand[j] >> 16]];
-						if (c.abit(s, ENC ? me == cand[j] : 0))
+					for (; j < e.count; j++) {
+						const u32 cand = v[e.source[j]];
+						const int agree = has_diag && diag == cand;
+						Slot &s = N.same[j][e.mask[j]][prevSame][agree][cls[cand >> 16]];
+						if (c.abit(s, ENC ? me == cand : 0))
 							break;
 					}
-					if (j < nc) {
-						pk[i] = cand[j];
-						content[i] = cand[j] >> 16;
-						p1[i] = (cand[j] >> 8) & 255;
-						p2[i] = cand[j] & 255;
+					if (j < e.count) {
+						const u32 cand = v[e.source[j]];
+						pk[i] = cand;
+						content[i] = cand >> 16;
+						p1[i] = (cand >> 8) & 255;
+						p2[i] = cand & 255;
 						prevSame = phC = phP[0] = phP[1] = 1;
 						continue;
 					}
@@ -624,98 +682,88 @@ struct NodeCoder {
 				if (npal <= 1) {
 					content[i] = 0;
 				} else {
-					u16 cand[3];
-					int cm[3], nc = 0;
-					for (int k = 0; k < 3; k++) {
-						if (nb[k] < 0)
-							continue;
-						const u16 v = content[nb[k]];
-						int j = 0;
-						while (j < nc && cand[j] != v)
-							j++;
-						if (j == nc) {
-							cand[nc] = v;
-							cm[nc] = 0;
-							nc++;
-						}
-						cm[j] |= 1 << k;
-					}
-					u16 v = content[i];
+					u16 v[3];
+					load(content, v);
+					const auto &e = CANDIDATES.get(exist, v);
+					const u16 diag = has_diag ? content[i + 15] : 0;
+					u16 val = content[i];
 					int j = 0;
-					for (; j < nc; j++) {
-						const int agree = nD >= 0 && content[nD] == cand[j];
-						if (c.abit(N.cHit[j][cm[j]][phC][agree], ENC ? v == cand[j] : 0))
+					for (; j < e.count; j++) {
+						const u16 cand = v[e.source[j]];
+						const int agree = has_diag && diag == cand;
+						if (c.abit(N.cHit[j][e.mask[j]][phC][agree], ENC ? val == cand : 0))
 							break;
 					}
-					if (j < nc) {
-						v = cand[j];
+					if (j < e.count) {
+						val = v[e.source[j]];
 						phC = 1;
 					} else {
 						phC = 0;
 						if (cbits <= 8) {
-							const int ctx = nc > 0 ? std::min<int>(cand[0], 15) : 16;
-							v = (u16)c.template tree<true>(N.cEsc[ctx], v, cbits);
+							const int ctx = e.count > 0 ? std::min<int>(v[e.source[0]], 15) : 16;
+							val = (u16)c.template tree<true>(N.cEsc[ctx], val, cbits);
 						} else {
-							v = (u16)c.raw(v, cbits);
+							val = (u16)c.raw(val, cbits);
 						}
-						if (v >= npal)
+						if (val >= npal)
 							throw SerializationError("mapblock_codec: content id out of range");
 					}
-					content[i] = v;
+					content[i] = val;
 				}
 
 				// param1, param2
 				const u16 ci = content[i];
 				const int k_cls = cls[ci];
-				for (int f = 0; f < 2; f++) {
+				int same_content = 0; // neighbours with the same content as this node
+				for (int k = 0; k < 3; k++) {
+					// content[i] is already known and stands in for a missing neighbour
+					const int idx = (exist & (1 << k)) ? nb[k] : i;
+					same_content |= ((exist >> k) & (content[idx] == ci)) << k;
+				}
+				auto code_param = [&](auto field) {
+					constexpr int f = decltype(field)::value;
 					TRAINING_CATEGORY(2 + f);
 					u8 *vals = f ? p2 : p1;
-					u8 cand[4];
-					int cm[4], sm[4], nc = 0;
-					for (int k = 0; k < 3; k++) {
-						if (nb[k] < 0)
-							continue;
-						const u8 v = vals[nb[k]];
-						int j = 0;
-						while (j < nc && cand[j] != v)
-							j++;
-						if (j == nc) {
-							cand[nc] = v;
-							cm[nc] = sm[nc] = 0;
-							nc++;
-						}
-						cm[j] |= 1 << k;
-						if (content[nb[k]] == ci)
-							sm[j] |= 1 << k;
+					u8 v[3];
+					load(vals, v);
+					const auto &e = CANDIDATES.get(exist, v);
+					u8 cand[4] = {};
+					int cm[4], nc = e.count;
+					for (int j = 0; j < nc; j++) {
+						cand[j] = v[e.source[j]];
+						cm[j] = e.mask[j];
 					}
-					if (f == 0) {
-						const u8 v = lightPredict(nL, nB, nU, p1);
+					if constexpr (f == 0) {
+						const u8 pred = lightPredict(exist & 1 ? i - 1 : -1,
+							exist & 2 ? i - 256 : -1, exist & 4 ? i + 16 : -1, p1);
 						int j = 0;
-						while (j < nc && cand[j] != v)
+						while (j < nc && cand[j] != pred)
 							j++;
 						if (j == nc) {
-							cand[nc] = v;
-							cm[nc] = sm[nc] = 0;
+							cand[nc] = pred;
+							cm[nc] = 0;
 							nc++;
 						}
 						cm[j] |= 8;
 					}
-					u8 v = vals[i];
+					u8 val = vals[i];
 					int j = 0;
 					for (; j < nc; j++) {
-						Slot &s = N.pHit[f][k_cls][j][cm[j]][sm[j]][phP[f]];
-						if (c.abit(s, ENC ? v == cand[j] : 0))
+						Slot &s = N.pHit[f][k_cls][j][cm[j]][cm[j] & same_content][phP[f]];
+						if (c.abit(s, ENC ? val == cand[j] : 0))
 							break;
 					}
 					if (j < nc) {
-						v = cand[j];
+						val = cand[j];
 						phP[f] = 1;
 					} else {
 						phP[f] = 0;
-						v = (u8)c.template tree<true>(N.pEsc[f][k_cls], v, 8);
+						val = (u8)c.template tree<true>(N.pEsc[f][k_cls], val, 8);
 					}
-					vals[i] = v;
-				}
+					vals[i] = val;
+				};
+				code_param(std::integral_constant<int, 0>());
+				code_param(std::integral_constant<int, 1>());
 				pk[i] = (u32)content[i] << 16 | p1[i] << 8 | p2[i];
 			}
 		}
@@ -925,7 +973,9 @@ void decompress(std::istream &is, std::ostream &os)
 		while (is.read(buf, sizeof(buf)), is.gcount() > 0)
 			in.append(buf, is.gcount());
 	}
-	const u8 *begin = (const u8 *)in.data(), *end = begin + in.size();
+	const size_t in_size = in.size();
+	in.append(DECODER_PADDING, '\0');
+	const u8 *begin = (const u8 *)in.data(), *end = begin + in_size;
 
 	std::unique_ptr<RawBlock> b(new RawBlock);
 	const Priors &P = activePriors();
@@ -961,7 +1011,7 @@ void decompress(std::istream &is, std::ostream &os)
 	}
 
 	size_t used = dec.consumed();
-	if (used > in.size())
+	if (used > in_size)
 		throw SerializationError("mapblock_codec: truncated data");
 
 	if (has_tail) {
