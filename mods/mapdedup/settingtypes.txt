@@ -1,0 +1,17 @@
+# Time in milliseconds a check/clean job may spend per server step.
+mapdedup.step_budget (Step time budget in ms) int 30 1 1000
+
+# Chunks with a player closer than this many nodes are never deleted.
+mapdedup.player_margin (Player margin in nodes) int 64 0 1024
+
+# When enabled, logs how long recording each freshly generated chunk took.
+mapdedup.debug (Debug timing) bool false
+
+# Where freshly generated chunks are fingerprinted.
+# mapgen: in the mapgen threads. Costs the server almost nothing, but changes made
+#   right after generation (water settling, other mods' on_generated callbacks)
+#   count as modifications, so fewer chunks can be deleted.
+# server: on the main server thread after all on_generated callbacks. Finds more
+#   deletable chunks but costs roughly 50-70 ms per generated chunk, which can
+#   cause lag while players explore.
+mapdedup.record_in (Where to fingerprint new chunks) enum mapgen mapgen,server
