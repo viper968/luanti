@@ -303,6 +303,35 @@ would need a new serialization version, and a protocol version for the
 network. It does not help the codec, which already predicts from all three
 neighbouring directions.
 
+### Combined with a zstd dictionary
+
+A zstd dictionary trained on whole blocks helps plain zstd too, and stacks
+with transposition (the dictionary is then trained on transposed blocks).
+16 KB was enough; larger dictionaries did not help. Decoding is as fast as
+without a dictionary (about 5 µs per block in this test).
+
+A *generic* dictionary, trained once on a mix of games (Minetest Game,
+VoxeLibre, NodeCore, Minetest Game with biome mods and a NodeCore server
+sample) and tested on the held-out worlds, at Luanti's default level:
+
+| World                        | dictionary | transposed | both       | both, level 9 |
+|------------------------------|------------|------------|------------|---------------|
+| Minetest Game                | -15.6%     | -14.2%     | **-27.5%** | -40.0%        |
+| Minetest Game + biome mods   | -16.0%     | -13.1%     | **-26.6%** | -39.0%        |
+| NodeCore ALPHA               | -16.0%     | -16.9%     | **-30.3%** | -42.5%        |
+| VoxeLibre                    | -10.0%     | -16.7%     | **-24.6%** | -35.2%        |
+| NodeCore server spawn        | -6.5%      | -14.9%     | **-19.6%** | -32.0%        |
+
+All percentages are relative to plain zstd at the default level. A
+dictionary trained on the world itself (on one half of each world, tested on
+the other half) gains only 1–4 points more (-23% to -32% combined), so a
+generic dictionary shipped with the engine captures most of it.
+
+For comparison, the mapblock codec is 66–74% smaller than plain zstd on the
+same worlds (55% on the NodeCore spawn), so transposition plus a dictionary
+is mainly interesting where zstd stays in use: the network protocol, or a
+low-CPU alternative to the codec.
+
 ## Possible improvements
 
 - Node names are now the second largest cost. A world-wide name table would
