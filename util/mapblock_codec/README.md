@@ -274,6 +274,35 @@ anything about the models, makes existing version 30 worlds unreadable unless
 it comes with a new serialization version. `TestMapBlock::testLoad30` guards
 against accidental changes.
 
+## Finding: transposing blocks for zstd
+
+Independent of the codec, plain zstd (as used for version 29 and for the
+network) compresses blocks noticeably better if the node arrays are
+reordered first. Measured on the test worlds with zstd at Luanti's default
+level and at level 9 (the highest setting):
+
+| World                        | default level | level 9 |
+|------------------------------|---------------|---------|
+| Minetest Game                | -14.2%        | -8.9%   |
+| Minetest Game + biome mods   | -13.1%        | -8.9%   |
+| NodeCore ALPHA               | -16.9%        | -11.9%  |
+| VoxeLibre                    | -16.7%        | -10.5%  |
+| NodeCore server spawn        | -14.9%        | -11.2%  |
+
+The best transform has two parts:
+
+- **Byte split** (most of the gain): store the 16-bit content ids as all high
+  bytes, then all low bytes. Most high bytes are zero.
+- **Layer order**: store the nodes with y as the slowest axis (y, z, x)
+  instead of z, y, x, so each horizontal 16×16 slice is contiguous. Terrain is
+  layered, so slices are often uniform.
+
+Other orders (z, x, y; snake/boustrophedon; Morton/Z-order) were worse.
+Undoing the transform costs about 4 µs per block with a simple loop. It
+would need a new serialization version, and a protocol version for the
+network. It does not help the codec, which already predicts from all three
+neighbouring directions.
+
 ## Possible improvements
 
 - Node names are now the second largest cost. A world-wide name table would
