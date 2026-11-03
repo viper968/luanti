@@ -373,3 +373,80 @@ visibly slow block loading (~several blocks/s) and ~5 Hz server ticks. Running
 Minetest Game, mobs, or live v7 mapgen will not fit. For comparison, a
 Raspberry Pi Zero 2 W (512 MB RAM) runs a stock server easily. The ESP32-S3
 is a fun "because we can" target, not a practical host.
+
+## 8. Stretch goal: map generation on helper boards
+
+Use plain ESP32-S3 boards as helpers, not more 2.8B units: the 2.8B's LCD
+takes most of its pins.
+
+### Where Luanti splits
+
+`EmergeThread` (`src/emerge.cpp:737`) already isolates the work:
+`ServerMap::initBlockMake()` locks the chunk and fills a VoxelManipulator with
+the chunk plus a 1-block border (`src/servermap.cpp:200`), then
+`Mapgen::makeChunk(&bmdata)` runs, then `on_generated` (Lua), then
+`finishBlockMake()`. A helper replaces only `makeChunk`:
+
+* **Request:** chunk min/max, `blockseed`, and the VoxelManipulator contents.
+  Fresh terrain is mostly `CONTENT_IGNORE`, so this compresses to almost nothing.
+* **Reply:** the filled VoxelManipulator (zstd, likely tens of KB at
+  chunksize 1), `transforming_liquid`, and the gennotify events.
+* On the main board, each helper is one "proxy" emerge thread
+  (`num_emerge_threads` = number of helpers). Lua `on_generated` stays on the main board.
+* The helper needs the node definitions (already serializable,
+  `src/nodedef.h:681`) plus the ore, decoration and biome definitions (in-memory
+  `clone()` only today, so a serializer is new work). **v6** is the easiest:
+  its terrain, caves and trees are C++, and it looks up ~15 `mapgen_*` aliases.
+  It still runs `placeAllOres`/`placeAllDecos` (`mapgen_v6.cpp:623,627`), which
+  could stay on the main board at first.
+* Same chip, compiler and settings on both sides, so the output is deterministic.
+
+### Helper board
+
+* **ESP32-S3 with ≥ 2 MB PSRAM.** v6 at chunksize 1 needs ~0.6 MB of buffers,
+  plus definitions and transfer buffers. Good fits: ESP32-S3-DevKitC-1-N16R8
+  (8 MB octal), Seeed XIAO ESP32S3 (8 MB). Boards with 2 MB quad PSRAM are tight
+  but possible.
+* No Wi-Fi, TF card or Lua needed. Leaving the radio off saves ~60–100 KB of
+  internal RAM.
+* Avoid **GPIO0/3/45/46** (strapping), **19/20** (USB) and, on octal-PSRAM
+  modules, **33–37**.
+
+### Links between boards
+
+| Role | Bus | Notes |
+|---|---|---|
+| **Data** | **SPI**, main board = master | Use the SPI2 IO_MUX pins on the helpers (GPIO10 CS, 11 MOSI, 12 CLK, 13 MISO; 9/14 for quad). ESP-IDF's *SPI Slave HD* driver is designed for MCU-to-MCU links. CLK/MOSI/MISO are shared, and each helper gets its own **CS** and a **"ready" GPIO** (the slave must queue a transaction before the master clocks). Over short wires, ~20–40 MHz is realistic, so several MB/s. A chunk needs tens of KB, so link speed won't be the limit. |
+| **Alternative data** | **UART** at up to 5 Mbaud | 2 crossed wires per helper, ~400–500 KB/s. The S3 has 3 UARTs; with the console on USB Serial/JTAG, all 3 are free, so up to 3 helpers. Simplest wiring. |
+| **Control** | **I²C**, second controller (I2C1), main board = master | Low bandwidth but independent: discovery, "alive?", load, temperature, error codes. Give each helper its own address (e.g. 0x40 + slot). Keep this off any on-board sensor bus. |
+| **Recovery** | 1 GPIO per helper → helper **EN** | Lets the main board hard-reset a hung helper. |
+
+Wiring rules:
+
+* Common **GND**, with one ground wire next to each fast signal (a ribbon cable
+  with alternating grounds is ideal).
+* Keep SPI runs under ~10 cm, and add 22–33 Ω series resistors on CLK and MOSI at the master.
+* Power every board from one 5 V rail. Never tie the boards' 3V3 regulator outputs together.
+* Identical boards can't stack pin-to-pin (TX would meet TX, CS lines would
+  collide). Build a **backplane** instead: a carrier PCB or protoboard where each
+  slot's CS, ready and EN lines go to different main-board pins, and the bus
+  lines are shared.
+
+### Main board
+
+The 2.8B can stay the main board, with 1–2 helpers over UART (GPIO43/44 and
+GPIO16/4), since it has no spare pins for an SPI bus. For SPI with several
+helpers, use a DevKitC-1-N16R8 as the main board plus a TF breakout in **4-bit
+SDMMC** mode (GPIO matrix, 40 MHz). That's several times faster than the 2.8B's
+1-bit wiring.
+
+### Before building it
+
+1. Measure `EmergeThread: Mapgen::makeChunk` time (the profiler already
+   exists, `emerge.cpp:734`) while exploring new land. With a pre-generated world,
+   mapgen rarely runs.
+2. Prototype the request/reply protocol between two `luantiserver` processes
+   on a PC over TCP. The protocol stays the same over SPI, UART or Wi-Fi.
+3. Expect 1–2 helpers to be the useful limit for 2 players. Past that, the main
+   board's own work dominates: `finishBlockMake`, Lua `on_generated`, SQLite writes
+   and sending blocks.
